@@ -5,33 +5,87 @@ c c++消息队列服务 消息队列中间件
 c c++Message Queue Service
 
 #### Software Architecture
-Software architecture description
+the software developed based on xengine,using c/c++ development  
+the software is a simple and high performance server,Allow users to use it directly without secondary development  
+the software mainly provides a message queue engine,support http and private protocol api server  
 
-#### Installation
+## Software features
+this software support following features  
+1.message serial  
+2.Permanent message(planning)  
+3.message timeout  
+4.topic Partition  
+5.message tracking(planning)  
+6.encrypt Communication(planning)  
+7.load balanc(planning)  
+7.Active delivery acquisition mode or passive subscription notification module  
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## install
 
-#### Instructions
+#### Requirements  
+support system above windows 7sp1 and linux(ubuntu20.04,centos8)  
+XEngine need V7.14 or above  
+vcpkg need 2021.05.11 or above  
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### Windows
+use vs2019 x86(debug or release) x64(only release) open and complie  
+You need to configure the environment in the following way, otherwise you may need to set the library directory in the project yourself  
 
-#### Contribution
+##### install Dependent library
+vcpkg:https://github.com/microsoft/vcpkg   
+vcpkg.exe install jsoncpp  
+vcpkg integrate install  
+you can not use vcpkg and config jsoncpp development for youself   
 
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+##### XEngine
+XEngine can be download with mine repository,whe you downloaded xengine,you have to add value to you user environment  
+- XEngine_Include header file path
+- XEngine_Library library file path
 
+#### Linux
+Linux use Makefile to complie  
+supproted ubuntu x64 or centos x64     
 
-#### Gitee Feature
+##### install Dependent library
+install jsoncpp to your system  
+ubuntu20.04  
+sudo apt install libjsoncpp-devel  
+Centos8.x  
+sudo dnf install jsoncpp-devel  
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+##### XEngine Install
+you can install xengine env to your system by shell   
+like this:sudo XEngine_RunEnv.sh -c 3  
+##### complie
+execute command in XEngine_Source path
+make complie  
+make FLAGS=InstallAll install  
+make FLAGS=CleanAll clear  
+
+#### use
+
+1.  Switch to the MASTER branch
+2.  download code
+3.  complie
+4.  install
+5.  run
+6.  use curl or postman test message post and get  
+
+## directory struct
+- XEngine_Docment  docment directory
+- XEngine_Release  install directory
+- XEngine_Source   code    directory
+
+## other problems   
+You can refer to the document under the docment directory. It contains API protocol and service description.  
+
+## Participate in contribution
+
+1. Fork this code
+2. Create new Feat_xxx branch
+3. Submit the code
+4. New Pull Request
+
+## post issues
+
+if you have eny quest.post issues...
