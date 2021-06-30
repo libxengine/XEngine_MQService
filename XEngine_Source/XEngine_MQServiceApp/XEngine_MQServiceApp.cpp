@@ -10,16 +10,18 @@ NETENGIEN_MQSERVICECFG st_ServiceCfg;
 
 void ServiceApp_Stop(int signo)
 {
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("服务器退出..."));
+	if (bIsRun)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("服务器退出..."));
+		bIsRun = FALSE;
 
-	bIsRun = FALSE;
-
-	NetCore_TCPXCore_DestroyEx(xhTCPSocket);
-	NetCore_UDPXCore_DestroyEx(xhUDPSocket);
-	ManagePool_Thread_Destroy(xhPool);
-	HelpComponents_Datas_Destory(xhTCPPacket);
-	XMQService_Packet_Destory();
-	HelpComponents_XLog_Destroy(xhLog);
+		HelpComponents_Datas_Destory(xhTCPPacket);
+		XMQService_Packet_Destory();
+		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
+		NetCore_UDPXCore_DestroyEx(xhUDPSocket);
+		ManagePool_Thread_Destroy(xhPool);
+		HelpComponents_XLog_Destroy(xhLog);
+	}
 #ifdef _WINDOWS
 	WSACleanup();
 #endif
@@ -34,7 +36,7 @@ int main(int argc, char** argv)
 #endif
 	bIsRun = TRUE;
 	TCHAR tszStringMsg[2048];
-	LPCTSTR lpszLogFile = _T("./MQService_Log/MQService.Log");
+	LPCTSTR lpszLogFile = _T("./XEngine_Log/XEngine_MQServiceApp.Log");
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 	THREADPOOL_PARAMENT** ppSt_ListParam;
 
@@ -122,15 +124,19 @@ int main(int argc, char** argv)
 	}
 
 NETSERVICEEXIT:
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("有服务启动失败，服务器退出..."));
-	bIsRun = FALSE;
 
-	NetCore_TCPXCore_DestroyEx(xhTCPSocket);
-	NetCore_UDPXCore_DestroyEx(xhUDPSocket);
-	ManagePool_Thread_Destroy(xhPool);
-	HelpComponents_Datas_Destory(xhTCPPacket);
-	XMQService_Packet_Destory();
-	HelpComponents_XLog_Destroy(xhLog);
+	if (bIsRun)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("有服务启动失败，服务器退出..."));
+		bIsRun = FALSE;
+
+		HelpComponents_Datas_Destory(xhTCPPacket);
+		XMQService_Packet_Destory();
+		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
+		NetCore_UDPXCore_DestroyEx(xhUDPSocket);
+		ManagePool_Thread_Destroy(xhPool);
+		HelpComponents_XLog_Destroy(xhLog);
+	}
 #ifdef _WINDOWS
 	WSACleanup();
 #endif

@@ -2,7 +2,7 @@
 
 BOOL MQ_Service_Parament(int argc,char **argv,NETENGIEN_MQSERVICECFG *pSt_StartlParam)
 {
-    LPCTSTR lpszAuthCfg = _T("./MQService_Config/MQService_Config.ini");
+    LPCTSTR lpszAuthCfg = _T("./XEngine_Config/XEngine_Config.ini");
 
     pSt_StartlParam->nDeamon = GetPrivateProfileInt(_T("ServiceConfig"),_T("AutoStart"),0,lpszAuthCfg);
     pSt_StartlParam->nThreadCount = GetPrivateProfileInt(_T("ServiceConfig"), _T("ThreadCount"), 0, lpszAuthCfg);
