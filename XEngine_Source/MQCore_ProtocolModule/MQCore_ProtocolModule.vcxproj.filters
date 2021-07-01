@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\ProtocolModule_Parse">
+      <UniqueIdentifier>{d38a881d-1dd1-4f11-859a-72fb6cdc0f5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ProtocolModule_Parse">
+      <UniqueIdentifier>{1df8134b-df39-49fa-bf38-3eff22270dab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ProtocolModule_Packet">
+      <UniqueIdentifier>{14265c43-2992-4952-a6de-6fe441d4abea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ProtocolModule_Packet">
+      <UniqueIdentifier>{f7fd7d55-a4d7-4d8c-afa5-5b8511d25efe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtocolModule_Parse\ProtocolModule_Parse.h">
+      <Filter>头文件\ProtocolModule_Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtocolModule_Packet\ProtocolModule_Packet.h">
+      <Filter>头文件\ProtocolModule_Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol_Define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol_Error.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ProtocolModule_Parse\ProtocolModule_Parse.cpp">
+      <Filter>源文件\ProtocolModule_Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="ProtocolModule_Packet\ProtocolModule_Packet.cpp">
+      <Filter>源文件\ProtocolModule_Packet</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MQCore_ProtocolModule.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
+</Project>

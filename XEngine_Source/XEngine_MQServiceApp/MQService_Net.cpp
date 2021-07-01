@@ -19,9 +19,9 @@ void __stdcall MessageQueue_Callback_TCPLeave(LPCTSTR lpszClientAddr, SOCKET hSo
     XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO,_T("TCP客户端离开，TCP客户端地址：%s"),lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////
-BOOL NetEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, int nIPProto)
+BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, int nIPProto)
 {
-    if (1 == nIPProto)
+    if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
     {
         if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
         {
@@ -29,7 +29,7 @@ BOOL NetEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, in
             return FALSE;
         }
     }
-    if (2 == nIPProto)
+    if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
     }
     return TRUE;

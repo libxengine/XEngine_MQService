@@ -1,0 +1,6 @@
+LIBRARY
+
+EXPORTS
+	Protocol_GetLastError
+
+	ProtocolModule_Packet_TCPCommon
