@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_MQServiceApp", "XEngine_MQServiceApp\XEngine_MQServiceApp.vcxproj", "{34C9695F-7097-412F-ACC2-A3979A91D776}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_XMQModule", "MQCore_XMQModule\MQCore_XMQModule.vcxproj", "{9B100B27-CC80-4B10-B042-10E2623FF27A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ConfigModule", "MQCore_ConfigModule\MQCore_ConfigModule.vcxproj", "{32D3FC68-6252-4D20-BB07-6C98BD753D11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +25,22 @@ Global
 		{34C9695F-7097-412F-ACC2-A3979A91D776}.Release|x64.Build.0 = Release|x64
 		{34C9695F-7097-412F-ACC2-A3979A91D776}.Release|x86.ActiveCfg = Release|Win32
 		{34C9695F-7097-412F-ACC2-A3979A91D776}.Release|x86.Build.0 = Release|Win32
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Debug|x64.ActiveCfg = Debug|x64
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Debug|x64.Build.0 = Debug|x64
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Debug|x86.ActiveCfg = Debug|Win32
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Debug|x86.Build.0 = Debug|Win32
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Release|x64.ActiveCfg = Release|x64
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Release|x64.Build.0 = Release|x64
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Release|x86.ActiveCfg = Release|Win32
+		{9B100B27-CC80-4B10-B042-10E2623FF27A}.Release|x86.Build.0 = Release|Win32
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Debug|x64.ActiveCfg = Debug|x64
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Debug|x64.Build.0 = Debug|x64
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Debug|x86.ActiveCfg = Debug|Win32
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Debug|x86.Build.0 = Debug|Win32
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Release|x64.ActiveCfg = Release|x64
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Release|x64.Build.0 = Release|x64
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Release|x86.ActiveCfg = Release|Win32
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

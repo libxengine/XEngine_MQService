@@ -1,4 +1,4 @@
 #pragma once
 
 XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam);
-BOOL MessageQueue_Callback_ThreadPool(NETENGIEN_MQTHREADPOOL* pSt_ThreadPool);
+BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen);

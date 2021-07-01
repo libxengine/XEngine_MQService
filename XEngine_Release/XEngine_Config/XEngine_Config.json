@@ -1,0 +1,43 @@
+{
+  "tszIPAddr": "127.0.0.1",
+  "tszTopic": "XEngine_CommKey",
+  "bDeamon": 0,
+  "nTCPPort": 5100,
+  "nHttpPort": 5101,
+  "XMax": {
+    "nMaxClient": 10000,
+    "nMaxQueue": 10000,
+    "nIOThread": 2,
+    "nTCPThread": 2,
+    "nHttpThread": 2
+  },
+  "XTime": {
+    "bHBTime": 0,
+    "nDBMonth": 3,
+    "nTimeCheck": 3,
+    "nTCPTimeOut": 5,
+    "nHttpTimeOut": 5
+  },
+  "XLog": {
+    "MaxSize": 1024000,
+    "MaxCount": 10,
+    "LogLeave": 32
+  },
+  "XSql": {
+    "SQLAddr": "192.168.1.9",
+    "SQLPort": 3306,
+    "SQLUser": "root",
+    "SQLPass": "123123Ruiyue"
+  },
+  "XDDSConfig": {
+    "nMixPort": 30000,
+    "nMaxPort": 50000,
+    "nBroadPort": 50901,
+    "tszMultiCastAddr": "224.0.2.100"
+  },
+  "XVer": {
+    "StorageVersion": [
+      "1.1.0.1001 Build20210702"
+    ]
+  }
+}
