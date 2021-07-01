@@ -4,7 +4,6 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
-
 	while (bIsRun)
 	{
 		if (!HelpComponents_Datas_WaitEventEx(xhTCPPacket, nThreadPos))

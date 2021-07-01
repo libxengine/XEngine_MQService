@@ -7,7 +7,7 @@ INCLUDE = -I ./
 FILECENTOS = /etc/redhat-release
 LIBEX = -static-libgcc -lrt -ldl -lpthread
 LOADSO = -Wl,-rpath=./,--disable-new-dtags
-LIBINCLUDE = XMQService_Packet.o XMQService_Protocol.o XMQService_User.o pch.o
+LIBINCLUDE = XMQModule_Packet.o pch.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c -O2 
@@ -24,30 +24,19 @@ UNICODE =
 endif
 
 all:$(LIBINCLUDE)
-	$(CC) $(DEBUG) $(LIBINCLUDE) -o libMQCore_XMQService.so -shared -fPIC $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
+	$(CC) $(DEBUG) $(LIBINCLUDE) -o libMQCore_XMQModule.so -shared -fPIC $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
 
 
-XMQService_Packet.o:./XMQService_Packet/XMQService_Packet.cpp                         
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./XMQService_Packet/XMQService_Packet.cpp
-XMQService_Protocol.o:./XMQService_Protocol/XMQService_Protocol.cpp                         
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./XMQService_Protocol/XMQService_Protocol.cpp
-XMQService_User.o:./XMQService_User/XMQService_User.cpp                         
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./XMQService_User/XMQService_User.cpp
+XMQModule_Packet.o:./XMQModule_Packet/XMQModule_Packet.cpp                         
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./XMQModule_Packet/XMQModule_Packet.cpp
 	
 pch.o:./pch.cpp                          
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./pch.cpp
 
 
-InstallAll:InstallSo InstallHeader
-InstallSo:./libMQCore_XMQService.so
-ifeq ($(FILECENTOS), $(wildcard $(FILECENTOS)))
-	cp ./libMQCore_XMQService.so ../../../XEngine_Release/XEngine_Linux/Centos/XEngine_MQCore/libMQCore_XMQService.so
-else
-	cp ./libMQCore_XMQService.so ../../../XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore/libMQCore_XMQService.so
-endif
-InstallHeader:./XMQService_Define.h ./XMQService_Error.h
-	cp ./XMQService_Define.h ../../../XEngine_Release/XEngine_Include/XEngine_MQCore/XMQService_Define.h
-	cp ./XMQService_Error.h ../../../XEngine_Release/XEngine_Include/XEngine_MQCore/XMQService_Error.h
+InstallAll:InstallSo 
+InstallSo:./libMQCore_XMQModule.so
+	cp ./libMQCore_XMQModule.so ../../XEngine_Release/libMQCore_XMQModule.so
 
 CleanAll:CleanObj CleanMk
 CleanObj:

@@ -76,9 +76,9 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         return FALSE;
     }
     Json::Value st_JsonXMax = st_JsonRoot["XMax"];
-    pSt_ServerConfig->st_XMax.nMaxClient = st_JsonXMax["MaxClient"].asInt();
-    pSt_ServerConfig->st_XMax.nMaxQueue = st_JsonXMax["MaxQueue"].asInt();
-    pSt_ServerConfig->st_XMax.nIOThread = st_JsonXMax["IOThread"].asInt();
+    pSt_ServerConfig->st_XMax.nMaxClient = st_JsonXMax["nMaxClient"].asInt();
+    pSt_ServerConfig->st_XMax.nMaxQueue = st_JsonXMax["nMaxQueue"].asInt();
+    pSt_ServerConfig->st_XMax.nIOThread = st_JsonXMax["nIOThread"].asInt();
     pSt_ServerConfig->st_XMax.nTCPThread = st_JsonXMax["nTCPThread"].asInt();
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
 
@@ -124,11 +124,11 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XDDS;
         return FALSE;
     }
-    Json::Value st_JsonXStorage = st_JsonRoot["XStorage"];
-	pSt_ServerConfig->st_XDDSConfig.nMixPort = st_JsonXStorage["nMixPort"].asInt();
-    pSt_ServerConfig->st_XDDSConfig.nMaxPort = st_JsonXStorage["nMaxPort"].asInt();
-    pSt_ServerConfig->st_XDDSConfig.nBroadPort = st_JsonXStorage["nBroadPort"].asInt();
-	_tcscpy(pSt_ServerConfig->st_XDDSConfig.tszMultiCastAddr, st_JsonXStorage["tszMultiCastAddr"].asCString());
+    Json::Value st_JsonXDDSConfig = st_JsonRoot["XDDSConfig"];
+	pSt_ServerConfig->st_XDDSConfig.nMixPort = st_JsonXDDSConfig["nMixPort"].asInt();
+    pSt_ServerConfig->st_XDDSConfig.nMaxPort = st_JsonXDDSConfig["nMaxPort"].asInt();
+    pSt_ServerConfig->st_XDDSConfig.nBroadPort = st_JsonXDDSConfig["nBroadPort"].asInt();
+	_tcscpy(pSt_ServerConfig->st_XDDSConfig.tszMultiCastAddr, st_JsonXDDSConfig["tszMultiCastAddr"].asCString());
 
 	if (st_JsonRoot["XVer"].empty())
 	{
