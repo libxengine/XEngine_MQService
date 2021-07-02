@@ -110,6 +110,17 @@ BOOL CXMQModule_Packet::XMQModule_Packet_TopicCreate(LPCTSTR lpszKeyStr)
 		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_CREATE_PARAMENT;
 		return FALSE;
     }
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_PACKETINFO*>::const_iterator stl_MapIterator = stl_MapMQPacket.find(lpszKeyStr);
+	if (stl_MapIterator != stl_MapMQPacket.end())
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_CREATE_EXIST;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	st_Locker.unlock_shared();
+
 	XENGINE_PACKETINFO* pSt_PacketInfo = new XENGINE_PACKETINFO;
 	if (NULL == pSt_PacketInfo)
 	{
@@ -327,27 +338,33 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
         stl_MapIterator->second->st_Locker.unlock();
 		return FALSE;
 	}
+	BOOL bFree = FALSE;
 	//拷贝数据
 	*pInt_Len = stl_ListIterator->nMsgLen;
 	memcpy(ptszMsgBuffer, stl_ListIterator->ptszMsgBuffer, stl_ListIterator->nMsgLen);
 	//判断保存时间是否等于0
 	if (0 == stl_ListIterator->st_XMQProtocol.nKeepTime)
 	{
+		bFree = TRUE;
 		free(stl_ListIterator->ptszMsgBuffer);
 		stl_ListIterator->ptszMsgBuffer = NULL;
-		stl_MapIterator->second->pStl_ListPacket->erase(stl_ListIterator);    
+		stl_MapIterator->second->pStl_ListPacket->erase(stl_ListIterator);
 	}
-	if (stl_ListIterator->st_XMQProtocol.nGetTimer > 0)
+	if (!bFree)
 	{
-		//是否有取出次数限制
-		stl_ListIterator->nGetNow++;
-		if (stl_ListIterator->nGetNow >= stl_ListIterator->st_XMQProtocol.nGetTimer)
+		if (stl_ListIterator->st_XMQProtocol.nGetTimer > 0)
 		{
-			free(stl_ListIterator->ptszMsgBuffer);
-			stl_ListIterator->ptszMsgBuffer = NULL;
-			stl_MapIterator->second->pStl_ListPacket->erase(stl_ListIterator);
+			//是否有取出次数限制
+			stl_ListIterator->nGetNow++;
+			if (stl_ListIterator->nGetNow >= stl_ListIterator->st_XMQProtocol.nGetTimer)
+			{
+				free(stl_ListIterator->ptszMsgBuffer);
+				stl_ListIterator->ptszMsgBuffer = NULL;
+				stl_MapIterator->second->pStl_ListPacket->erase(stl_ListIterator);
+			}
 		}
 	}
+	
     stl_MapIterator->second->st_Locker.unlock();
     st_Locker.unlock_shared();
     return TRUE;
@@ -397,12 +414,23 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 		return FALSE;
 	}
 	stl_MapIterator->second->st_Locker.lock();
+	//是否为空的队列
+	if (stl_MapIterator->second->pStl_ListPacket->empty())
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_DEL_EMPTY;
+		stl_MapIterator->second->st_Locker.unlock();
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	BOOL bFound = FALSE;
 	list<XENGINE_MQXPACKET>::iterator stl_ListIterator = stl_MapIterator->second->pStl_ListPacket->begin();
 	for (; stl_ListIterator != stl_MapIterator->second->pStl_ListPacket->end();)
 	{
 		if (pSt_MQProtocol->nSerial == stl_ListIterator->st_XMQProtocol.nSerial)
 		{
 			//找到直接删除
+			bFound = TRUE;
 			free(stl_ListIterator->ptszMsgBuffer);
 			stl_ListIterator->ptszMsgBuffer = NULL;
 			stl_MapIterator->second->pStl_ListPacket->erase(stl_ListIterator);
@@ -411,6 +439,13 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 	}
 	stl_MapIterator->second->st_Locker.unlock();
 	st_Locker.unlock_shared();
+
+	if (!bFound)
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_DEL_NOEXIST;
+		return FALSE;
+	}
 	return TRUE;
 }
 ///////////////////////////////////////////////////////////////////////////////
