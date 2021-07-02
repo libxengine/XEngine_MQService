@@ -42,6 +42,7 @@ extern BOOL bIsRun;
 extern XLOG xhLog;
 extern XNETHANDLE xhTCPSocket;
 extern XNETHANDLE xhTCPPacket;
+extern XNETHANDLE xhTCPHeart;
 extern XNETHANDLE xhPool;
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 

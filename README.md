@@ -17,7 +17,8 @@ c c++Message Queue Service
 5.消息回溯(planning)  
 6.加密通信(planning)  
 7.负载均衡(planning)  
-7.主动投递获取模式或者被动订阅通知模块  
+8.消息次数  
+9.主动投递获取模式或者被动订阅通知模块  
 
 ## 安装教程
 
@@ -52,7 +53,7 @@ Centos8.x
 sudo dnf install jsoncpp-devel  
 
 ##### XEngine环境
-XEngine可以通过脚本文件安装sudo XEngine_RunEnv.sh -c 3
+XEngine可以通过脚本文件安装sudo XEngine_RunEnv.sh -i 3
 ##### 编译命令
 在XEngine_Source目录下执行命令
 make 编译  

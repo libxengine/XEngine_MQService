@@ -4,6 +4,7 @@ BOOL bIsRun = FALSE;
 XLOG xhLog = NULL;
 XNETHANDLE xhTCPSocket = 0;
 XNETHANDLE xhTCPPacket = 0;
+XNETHANDLE xhTCPHeart = 0;
 XNETHANDLE xhPool = 0;
 XENGINE_SERVERCONFIG st_ServiceCfg;
 
@@ -17,6 +18,7 @@ void ServiceApp_Stop(int signo)
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		ManagePool_Thread_NQDestroy(xhPool);
+		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
@@ -91,6 +93,20 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化消息队列服务成功"));
 
+	if (st_ServiceCfg.st_XTime.bHBTime)
+	{
+		if (!SocketOpt_HeartBeat_InitEx(&xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), XMQModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化TCP心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，TCP心跳服务被设置为不启用"));
+	}
+
 	if (!NetCore_TCPXCore_StartEx(&xhTCPSocket, st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP网络服务器失败，错误：%lX"), NetCore_GetLastError());
@@ -131,6 +147,7 @@ NETSERVICEEXIT:
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		ManagePool_Thread_NQDestroy(xhPool);
+		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);

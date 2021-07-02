@@ -18,7 +18,8 @@ this software support following features
 5.message tracking(planning)  
 6.encrypt Communication(planning)  
 7.load balanc(planning)  
-7.Active delivery acquisition mode or passive subscription notification module  
+8.message get time  
+9.Active delivery acquisition mode or passive subscription notification module  
 
 ## install
 
@@ -55,7 +56,7 @@ sudo dnf install jsoncpp-devel
 
 ##### XEngine Install
 you can install xengine env to your system by shell   
-like this:sudo XEngine_RunEnv.sh -c 3  
+like this:sudo XEngine_RunEnv.sh -i 3  
 ##### complie
 execute command in XEngine_Source path
 make complie  
