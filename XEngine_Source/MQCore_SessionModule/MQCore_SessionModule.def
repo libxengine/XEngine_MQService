@@ -1,0 +1,11 @@
+LIBRARY
+
+EXPORTS
+	SessionModule_GetLastError
+
+	SessionModule_Client_Init
+	SessionModule_Client_Destory
+	SessionModule_Client_Create
+	SessionModule_Client_Delete
+	SessionModule_Client_Get
+	SessionModule_Client_Set

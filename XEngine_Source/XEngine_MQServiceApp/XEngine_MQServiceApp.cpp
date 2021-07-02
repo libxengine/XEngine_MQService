@@ -18,6 +18,7 @@ void ServiceApp_Stop(int signo)
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		ManagePool_Thread_NQDestroy(xhPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
 #ifdef _WINDOWS
@@ -76,6 +77,13 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP组包器成功"));
 	
+	if (!SessionModule_Client_Init())
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化客户端会话管理器成功"));
+
 	if (!XMQModule_Packet_Init(st_ServiceCfg.tszTopic, st_ServiceCfg.st_XMax.nMaxQueue))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化消息队列服务失败，错误：%lX"), XMQModule_GetLastError());
@@ -124,6 +132,7 @@ NETSERVICEEXIT:
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		ManagePool_Thread_NQDestroy(xhPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
 #ifdef _WINDOWS

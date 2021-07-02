@@ -32,6 +32,8 @@ using namespace std;
 #include "../MQCore_XMQModule/XMQModule_Error.h"
 #include "../MQCore_ProtocolModule/Protocol_Define.h"
 #include "../MQCore_ProtocolModule/Protocol_Error.h"
+#include "../MQCore_SessionModule/Session_Define.h"
+#include "../MQCore_SessionModule/Session_Error.h"
 
 #define XENGINE_MQAPP_NETTYPE_TCP 1
 #define XENGINE_MQAPP_NETTYPE_HTTP 2
@@ -55,6 +57,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Debug/MQCore_XMQModule.lib")
+#pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"x86/XEngine_Core/XEngine_Core.lib")
 #pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
@@ -64,6 +67,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_XMQModule.lib")
+#pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"x64/XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"x64/XEngine_Core/XEngine_Core.lib")
 #pragma comment(lib,"x64/XEngine_Core/XEngine_ManagePool.lib")
