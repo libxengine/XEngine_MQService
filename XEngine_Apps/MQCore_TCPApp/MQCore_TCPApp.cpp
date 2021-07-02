@@ -84,7 +84,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	st_XMQProtocol.nSerial = 0;          //序列号,0服务会自动处理
-	st_XMQProtocol.nKeepTime = 0;        //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，PacketKey不能为空
+	st_XMQProtocol.nKeepTime = -1;        //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，PacketKey不能为空
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + strlen(lpszMsgBuffer);
@@ -220,10 +220,12 @@ int main()
 	MQ_Create();
 
 	MQ_Post(lpszMsgBuffer);
+	MQ_Post(lpszMsgBuffer);
 
 	MQ_Get();
-
-	MQ_Delete();
+	MQ_Get();
+	MQ_Get();
+	//MQ_Delete();
 
 	XClient_TCPSelect_Close(m_Socket);
 #ifdef _WINDOWS

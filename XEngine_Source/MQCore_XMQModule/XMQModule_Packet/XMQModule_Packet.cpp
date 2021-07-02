@@ -288,6 +288,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 	{
 		MQX_IsErrorOccur = TRUE;
 		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_NOTFOUND;
+		st_Locker.unlock_shared();
 		return FALSE;
 	}
     //队列是否为空
@@ -297,6 +298,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 		MQX_IsErrorOccur = TRUE;
 		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_EMPTY;
         stl_MapIterator->second->st_Locker.unlock();
+		st_Locker.unlock_shared();
         return FALSE;
     }
 	BOOL bIsFound = FALSE;
@@ -304,19 +306,8 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 	list<XENGINE_MQXPACKET>::iterator stl_ListIterator = stl_MapIterator->second->pStl_ListPacket->begin();
 	for (; stl_ListIterator != stl_MapIterator->second->pStl_ListPacket->end(); stl_ListIterator++)
 	{
-		//只取序列号,那么需要判断当前是否输入了值
-		if (pSt_MQProtocol->nSerial > 0)
+		if (pSt_MQProtocol->nSerial == stl_ListIterator->st_XMQProtocol.nSerial)
 		{
-			//输入了按照匹配取
-			if (pSt_MQProtocol->nSerial == stl_ListIterator->st_XMQProtocol.nSerial)
-			{
-				bIsFound = TRUE;
-				break;
-			}
-		}
-		else
-		{
-			//没有输入就取最小的一个
 			bIsFound = TRUE;
 			break;
 		}
@@ -327,6 +318,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 		MQX_IsErrorOccur = TRUE;
 		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_NOSERIAL;
         stl_MapIterator->second->st_Locker.unlock();
+		st_Locker.unlock_shared();
 		return FALSE;
 	}
 	//判断长度
@@ -336,6 +328,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_LEN;
 		*pInt_Len = stl_ListIterator->nMsgLen;
         stl_MapIterator->second->st_Locker.unlock();
+		st_Locker.unlock_shared();
 		return FALSE;
 	}
 	BOOL bFree = FALSE;
@@ -364,7 +357,6 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 			}
 		}
 	}
-	
     stl_MapIterator->second->st_Locker.unlock();
     st_Locker.unlock_shared();
     return TRUE;

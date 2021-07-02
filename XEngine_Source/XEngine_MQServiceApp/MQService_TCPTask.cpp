@@ -53,10 +53,17 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)
 	{
 		XENGINE_PROTOCOL_XMQ st_MQProtocol;
-		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+		XENGINE_PROTOCOL_XMQ st_MQClient;
 
+		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+		memset(&st_MQClient, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 		memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 
+		if (!SessionModule_Client_Get(lpszClientAddr, &st_MQClient))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("TCP消息端:%s,没有找到指定会话地址,无法继续,错误：%lX"), lpszClientAddr, SessionModule_GetLastError());
+			return FALSE;
+		}
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST;
@@ -82,23 +89,31 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET;
+			if ((st_MQProtocol.nSerial > 0) || (0 != _tcsnicmp(st_MQClient.tszMQKey, st_MQProtocol.tszMQKey, _tcslen(st_MQProtocol.tszMQKey))))
+			{
+				//如果序列号和主题有修改
+				if (0 == st_MQProtocol.nSerial)
+				{
+					st_MQProtocol.nSerial = 1; //不能以0为序列号
+				}
+				SessionModule_Client_Set(lpszClientAddr, &st_MQProtocol);
+			}
+			else
+			{
+				st_MQProtocol.nSerial = st_MQClient.nSerial;
+			}
 			if (!XMQModule_Packet_Get(&st_MQProtocol, tszRVBuffer, &nRVLen))
 			{
-				if (pSt_ProtocolHdr->byIsReply)
-				{
-					pSt_ProtocolHdr->wReserve = 703;
-					ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
-				}
+				pSt_ProtocolHdr->wReserve = 703;
+				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("TCP消息端:%s,主题:%s,序列:%lld,获取消息数据失败,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, XMQModule_GetLastError());
 				return FALSE;
 			}
-			if (pSt_ProtocolHdr->byIsReply)
-			{
-				pSt_ProtocolHdr->wReserve = 0;
-				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
-			}
+			pSt_ProtocolHdr->wReserve = 0;
+			ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+			SessionModule_Client_ADDSerial(lpszClientAddr);       //移动序列号
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,主题:%s,序列:%lld,获取消息数据成功,消息大小:%d"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, nRVLen);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL == pSt_ProtocolHdr->unOperatorCode)

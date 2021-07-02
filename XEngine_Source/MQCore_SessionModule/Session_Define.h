@@ -101,3 +101,17 @@ extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
 备注：
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
+/********************************************************************
+函数名称：SessionModule_Client_ADDSerial
+函数功能：序列号自加
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入客户端地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr);

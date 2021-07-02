@@ -146,8 +146,8 @@ BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XEN
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
-	stl_MapIterator->second.st_XMQProtocol.nSerial = stl_MapIterator->second.nSerialPos;
-	*pSt_MQProtocol = stl_MapIterator->second.st_XMQProtocol;
+	pSt_MQProtocol->nSerial = stl_MapIterator->second.nSerialPos;
+	_tcscpy(pSt_MQProtocol->tszMQKey, stl_MapIterator->second.tszKeyStr);
 	st_Locker.unlock_shared();
     return TRUE;
 }
@@ -181,7 +181,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XEN
     }
     //开始取出数据
     st_Locker.lock_shared();
-    unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(pSt_MQProtocol->tszMQKey);
+    unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
 		Session_IsErrorOccur = TRUE;
@@ -189,7 +189,45 @@ BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XEN
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
-	stl_MapIterator->second.st_XMQProtocol = *pSt_MQProtocol;
+	stl_MapIterator->second.nSerialPos = pSt_MQProtocol->nSerial;
+	_tcscpy(stl_MapIterator->second.tszKeyStr, pSt_MQProtocol->tszMQKey);
     st_Locker.unlock_shared();
     return TRUE;
+}
+/********************************************************************
+函数名称：SessionModule_Client_ADDSerial
+函数功能：序列号自加
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入客户端地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second.nSerialPos++;
+	st_Locker.unlock_shared();
+	return TRUE;
 }

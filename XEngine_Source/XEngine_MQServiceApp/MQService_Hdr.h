@@ -65,6 +65,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
 #else
+#ifdef WIN64
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_XMQModule.lib")
@@ -74,6 +75,17 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"x64/XEngine_Core/XEngine_ManagePool.lib")
 #pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_XLog.lib")
 #pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_Packets.lib")
+#else
+#pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
+#pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
+#pragma comment(lib,"../Release/MQCore_XMQModule.lib")
+#pragma comment(lib,"../Release/MQCore_SessionModule.lib")
+#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"x86/XEngine_Core/XEngine_Core.lib")
+#pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
+#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
+#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
+#endif
 #endif
 #pragma comment(lib,"Ws2_32.lib")
 #endif

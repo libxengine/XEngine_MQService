@@ -20,7 +20,6 @@ void __stdcall MessageQueue_Callback_TCPRecv(LPCTSTR lpszClientAddr, SOCKET hSoc
 void __stdcall MessageQueue_Callback_TCPLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, FALSE);
-    XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO,_T("TCP客户端离开，TCP客户端地址：%s"),lpszClientAddr);
 }
 void __stdcall MessageQueue_Callback_TCPHeart(LPCSTR lpszClientAddr, SOCKET hSocket, int nStatus, LPVOID lParam)
 {
@@ -42,6 +41,7 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
         {
             SocketOpt_HeartBeat_DeleteAddrEx(xhTCPHeart, lpszClientAddr);
         }
+        XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
 }
 //////////////////////////////////////////////////////////////////////////

@@ -17,6 +17,7 @@
 #include <shared_mutex>
 #include <unordered_map>
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include "Session_Define.h"
 #include "Session_Error.h"
