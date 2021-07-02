@@ -13,33 +13,44 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\SessionModule_Client">
+      <UniqueIdentifier>{07cbcbdb-fe23-4624-9a7f-ed74166d92cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\SessionModule_Client">
+      <UniqueIdentifier>{c7883222-ba6a-4681-af59-553676384789}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XEngine_MQServiceApp.cpp">
+    <ClInclude Include="framework.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionModule_Client\SessionModule_Client.h">
+      <Filter>头文件\SessionModule_Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Session_Define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Session_Error.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_Config.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_Net.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MQService_TCPTask.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="SessionModule_Client\SessionModule_Client.cpp">
+      <Filter>源文件\SessionModule_Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MQService_Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Hdr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Net.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_TCPTask.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <None Include="MQCore_SessionModule.def">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

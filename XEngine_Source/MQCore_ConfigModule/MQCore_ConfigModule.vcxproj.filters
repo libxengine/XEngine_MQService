@@ -13,33 +13,44 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Config_Json">
+      <UniqueIdentifier>{9e8551fc-25fa-4c0f-892f-505bc366daa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Config_Json">
+      <UniqueIdentifier>{c5d1a84b-fb69-4b9e-b9c5-af8d9607392a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XEngine_MQServiceApp.cpp">
+    <ClInclude Include="framework.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Config_Json\Config_Json.h">
+      <Filter>头文件\Config_Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Config_Define.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Config_Error.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_Config.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_Net.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MQService_TCPTask.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="Config_Json\Config_Json.cpp">
+      <Filter>源文件\Config_Json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MQService_Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Hdr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Net.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_TCPTask.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <None Include="MQCore_ConfigModule.def">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -15,31 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XEngine_MQServiceApp.cpp">
+    <ClCompile Include="MQCore_TCPApp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_Config.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MQService_Net.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MQService_TCPTask.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MQService_Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Hdr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_Net.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_TCPTask.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

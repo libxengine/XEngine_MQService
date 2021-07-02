@@ -3,10 +3,10 @@
 BOOL bIsRun = FALSE;
 XLOG xhLog = NULL;
 XNETHANDLE xhTCPSocket = 0;
-XNETHANDLE xhUDPSocket = 0;
 XNETHANDLE xhTCPPacket = 0;
+XNETHANDLE xhTCPHeart = 0;
 XNETHANDLE xhPool = 0;
-NETENGIEN_MQSERVICECFG st_ServiceCfg;
+XENGINE_SERVERCONFIG st_ServiceCfg;
 
 void ServiceApp_Stop(int signo)
 {
@@ -15,11 +15,12 @@ void ServiceApp_Stop(int signo)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("服务器退出..."));
 		bIsRun = FALSE;
 
-		HelpComponents_Datas_Destory(xhTCPPacket);
-		XMQService_Packet_Destory();
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
-		NetCore_UDPXCore_DestroyEx(xhUDPSocket);
-		ManagePool_Thread_Destroy(xhPool);
+		HelpComponents_Datas_Destory(xhTCPPacket);
+		ManagePool_Thread_NQDestroy(xhPool);
+		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		XMQModule_Packet_Destory();
+		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
 #ifdef _WINDOWS
@@ -42,7 +43,7 @@ int main(int argc, char** argv)
 
 	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
-	memset(&st_ServiceCfg, '\0', sizeof(NETENGIEN_MQSERVICECFG));
+	memset(&st_ServiceCfg, '\0', sizeof(XENGINE_SERVERCONFIG));
 
 	st_XLogConfig.XLog_MaxBackupFile = 10;
 	st_XLogConfig.XLog_MaxSize = 1024000;
@@ -66,63 +67,76 @@ int main(int argc, char** argv)
 
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化日志系统成功"));
 
-	if (st_ServiceCfg.nDeamon)
+	if (st_ServiceCfg.bDeamon)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("初始化守护进程..."));
 	}
-
-	if (!NetCore_TCPXCore_StartEx(&xhTCPSocket, st_ServiceCfg.st_XMQ.nTCPPort))
-	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP网络服务器失败，错误：%lX"), NetCore_GetLastError());
-		goto NETSERVICEEXIT;
-	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP网络服务器成功,TCP端口:%d"), st_ServiceCfg.st_XMQ.nTCPPort);
-	NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
-
-	if (!NetCore_UDPXCore_StartEx(&xhUDPSocket, st_ServiceCfg.st_XMQ.nUDPPort))
-	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动UDP网络服务器失败，错误：%lX"), NetCore_GetLastError());
-		goto NETSERVICEEXIT;
-	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动UDP网络服务器成功,UDP端口:%d"), st_ServiceCfg.st_XMQ.nUDPPort);
-	NetCore_UDPXCore_RegisterCallBackEx(xhUDPSocket, MessageQueue_Callback_UDPRecv);
-
-	if (!HelpComponents_Datas_Init(&xhTCPPacket, 100000, 0, st_ServiceCfg.nThreadCount))
+	
+	if (!HelpComponents_Datas_Init(&xhTCPPacket, st_ServiceCfg.st_XMax.nMaxQueue, 0, st_ServiceCfg.st_XMax.nTCPThread))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP组包器失败，错误：%lX"), Packets_GetLastError());
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP组包器成功"));
-
-	if (!XMQService_Packet_Init(10000))
+	
+	if (!SessionModule_Client_Init())
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化消息队列服务失败，错误：%lX"), XMQService_GetLastError());
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化客户端会话管理器成功"));
+
+	if (!XMQModule_Packet_Init(st_ServiceCfg.tszTopic, st_ServiceCfg.st_XMax.nMaxQueue))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化消息队列服务失败，错误：%lX"), XMQModule_GetLastError());
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化消息队列服务成功"));
 
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListParam, st_ServiceCfg.nThreadCount, sizeof(THREADPOOL_PARAMENT));
-	for (int i = 0; i < st_ServiceCfg.nThreadCount; i++)
+	if (st_ServiceCfg.st_XTime.bHBTime)
+	{
+		if (!SocketOpt_HeartBeat_InitEx(&xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), XMQModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化TCP心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，TCP心跳服务被设置为不启用"));
+	}
+
+	if (!NetCore_TCPXCore_StartEx(&xhTCPSocket, st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP网络服务器失败，错误：%lX"), NetCore_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP网络服务器成功,TCP端口:%d,IO:%d"), st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nIOThread);
+	NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册网络事件成功"));
+
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
+	for (int i = 0; i < st_ServiceCfg.st_XMax.nTCPThread; i++)
 	{
 		int* pInt_Pos = new int;
 
-		*pInt_Pos = i + 1;
+		*pInt_Pos = i;
 		ppSt_ListParam[i]->lParam = pInt_Pos;
 		ppSt_ListParam[i]->fpCall_ThreadsTask = MessageQueue_TCPThread;
 	}
-	if (!ManagePool_Thread_NQCreate(&xhPool, &ppSt_ListParam, st_ServiceCfg.nThreadCount))
+	if (!ManagePool_Thread_NQCreate(&xhPool, &ppSt_ListParam, st_ServiceCfg.st_XMax.nTCPThread))
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动线程池服务失败，错误：%lX"), ManagePool_GetLastError());
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
 		goto NETSERVICEEXIT;
 	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动线程池服务成功,启动个数:%d"), st_ServiceCfg.nThreadCount);
-
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nTCPThread);
+	
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("所有服务成功启动，服务运行中。。。"));
-	while (TRUE)
+	while (bIsRun)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-
 NETSERVICEEXIT:
 
 	if (bIsRun)
@@ -130,11 +144,12 @@ NETSERVICEEXIT:
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("有服务启动失败，服务器退出..."));
 		bIsRun = FALSE;
 
-		HelpComponents_Datas_Destory(xhTCPPacket);
-		XMQService_Packet_Destory();
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
-		NetCore_UDPXCore_DestroyEx(xhUDPSocket);
-		ManagePool_Thread_Destroy(xhPool);
+		HelpComponents_Datas_Destory(xhTCPPacket);
+		ManagePool_Thread_NQDestroy(xhPool);
+		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		XMQModule_Packet_Destory();
+		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
 #ifdef _WINDOWS
