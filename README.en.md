@@ -11,15 +11,16 @@ the software mainly provides a message queue engine,support http and private pro
 
 ## Software features
 this software support following features  
-1.message serial  
-2.Permanent message(planning)  
-3.message timeout  
-4.topic Partition  
-5.message tracking(planning)  
-6.encrypt Communication(planning)  
-7.load balanc(planning)  
-8.message get time  
-9.Active delivery acquisition mode or passive subscription notification module  
+1. message serial  
+2. Permanent message(planning)  
+3. message timeout  
+4. topic Partition  
+5. message tracking(planning)  
+6. encrypt Communication(planning)  
+7. load balanc(planning)  
+8. message get time  
+9. message subcribe  
+10. Active delivery acquisition mode or passive subscription notification module  
 
 ## install
 
@@ -73,9 +74,10 @@ make FLAGS=CleanAll clear
 6.  use curl or postman test message post and get  
 
 ## directory struct
-- XEngine_Docment  docment directory
-- XEngine_Release  install directory
-- XEngine_Source   code    directory
+- XEngine_Docment  docment directory  
+- XEngine_Release  install directory  
+- XEngine_Source   code    directory  
+- XEngine_Apps     Client code directory  
 
 ## other problems   
 You can refer to the document under the docment directory. It contains API protocol and service description.  

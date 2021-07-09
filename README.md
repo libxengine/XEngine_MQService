@@ -10,15 +10,16 @@ c c++Message Queue Service
 此软件主要是提供了消息队列引擎,可用于用户消息操作的一个API服务器.支持HTTP和私有协议.  
 ## 软件特性
 此软件支持以下特性  
-1.消息序列  
-2.永久消息(planning)  
-3.消息超时  
-4.主题分区  
-5.消息回溯(planning)  
-6.加密通信(planning)  
-7.负载均衡(planning)  
-8.消息次数  
-9.主动投递获取模式或者被动订阅通知模块  
+1. 消息序列  
+2. 永久消息(planning)  
+3. 消息超时  
+4. 主题分区  
+5. 消息回溯(planning)  
+6. 加密通信(planning)  
+7. 负载均衡(planning)  
+8. 消息次数  
+9. 消息订阅  
+10. 主动投递获取模式或者被动订阅通知模块  
 
 ## 安装教程
 
@@ -73,7 +74,7 @@ make FLAGS=CleanAll 清理编译
 - XEngine_Docment  文档目录结构  
 - XEngine_Release  安装目录结构  
 - XEngine_Source   源代目录结构  
-  
+- XEngine_Apps     演示客户端目录  
 
 ## 其他问题  
 你可以参考docment目录下的文档.里面包含了API协议和服务说明.

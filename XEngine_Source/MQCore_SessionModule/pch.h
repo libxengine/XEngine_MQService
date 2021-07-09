@@ -15,6 +15,7 @@
 #endif //PCH_H
 #include <string.h>
 #include <memory>
+#include <list>
 #include <shared_mutex>
 #include <unordered_map>
 #include <XEngine_Include/XEngine_CommHdr.h>

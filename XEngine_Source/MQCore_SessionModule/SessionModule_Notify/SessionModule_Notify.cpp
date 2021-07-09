@@ -44,7 +44,6 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Create(LPCTSTR lpszTopicName)
 		return FALSE;
     }
 	XENGINE_SESSIONNOTIFY st_SessionNotify;
-	memset(&st_SessionNotify, '\0', sizeof(XENGINE_SESSIONNOTIFY));
 
 	st_SessionNotify.pStl_ListClient = new list<tstring>;
 	st_SessionNotify.st_Locker = make_shared<shared_mutex>();
