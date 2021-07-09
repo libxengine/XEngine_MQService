@@ -10,3 +10,9 @@ EXPORTS
 	SessionModule_Client_Get
 	SessionModule_Client_Set
 	SessionModule_Client_ADDSerial
+
+	SessionModule_Notify_Create
+	SessionModule_Notify_Destory
+	SessionModule_Notify_Insert
+	SessionModule_Notify_Delete
+	SessionModule_Notify_GetList
