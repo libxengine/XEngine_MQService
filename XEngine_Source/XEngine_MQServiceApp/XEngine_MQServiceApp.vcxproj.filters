@@ -27,6 +27,9 @@
     <ClCompile Include="MQService_TCPTask.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MQService_HttpTask.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MQService_Config.h">
@@ -39,6 +42,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MQService_TCPTask.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MQService_HttpTask.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

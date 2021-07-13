@@ -26,6 +26,25 @@ void __stdcall MessageQueue_Callback_TCPHeart(LPCSTR lpszClientAddr, SOCKET hSoc
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, TRUE);
 }
 //////////////////////////////////////////////////////////////////////////
+BOOL __stdcall MessageQueue_Callback_HttpLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+{
+    RfcComponents_HttpServer_CreateClientEx(xhHTTPPacket, lpszClientAddr, 0);
+    XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端连接，HTTP客户端地址：%s"), lpszClientAddr);
+    return TRUE;
+}
+void __stdcall MessageQueue_Callback_HttpRecv(LPCTSTR lpszClientAddr, SOCKET hSocket, LPCTSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+{
+	if (!RfcComponents_HttpServer_InserQueueEx(xhHTTPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("投递HTTP数据包到消息队列失败，错误：%lX"), HttpServer_GetLastError());
+		return;
+	}
+}
+void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+{
+    XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, FALSE);
+}
+//////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
 {
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
@@ -43,6 +62,12 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
         }
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
+    else
+    {
+		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
+        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
+    }
 }
 //////////////////////////////////////////////////////////////////////////
 BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, int nIPProto)
@@ -58,6 +83,11 @@ BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int 
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
+		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
+			return FALSE;
+		}
     }
     return TRUE;
 }

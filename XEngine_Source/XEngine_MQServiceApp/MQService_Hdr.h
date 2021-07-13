@@ -26,6 +26,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_HelpComponents/XLog_Error.h>
 #include <XEngine_Include/XEngine_HelpComponents/Packets_Define.h>
 #include <XEngine_Include/XEngine_HelpComponents/Packets_Error.h>
+#include <XEngine_Include/XEngine_RfcComponents/HttpServer_Define.h>
+#include <XEngine_Include/XEngine_RfcComponents/HttpServer_Error.h>
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
@@ -44,7 +46,10 @@ extern XLOG xhLog;
 extern XNETHANDLE xhTCPSocket;
 extern XNETHANDLE xhTCPPacket;
 extern XNETHANDLE xhTCPHeart;
-extern XNETHANDLE xhPool;
+extern XNETHANDLE xhHTTPSocket;
+extern XHANDLE xhHTTPPacket;
+extern XNETHANDLE xhTCPPool;
+extern XNETHANDLE xhHttpPool;
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 
 void ServiceApp_Stop(int signo);
@@ -52,7 +57,7 @@ void ServiceApp_Stop(int signo);
 #include "MQService_Config.h"
 #include "MQService_Net.h"
 #include "MQService_TCPTask.h"
-
+#include "MQService_HttpTask.h"
 
 #ifdef _WINDOWS
 #ifdef _DEBUG
@@ -65,6 +70,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
+#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
 #else
 #ifdef WIN64
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
@@ -76,6 +82,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"x64/XEngine_Core/XEngine_ManagePool.lib")
 #pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_XLog.lib")
 #pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_Packets.lib")
+#pragma comment(lib,"x64/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
@@ -86,6 +93,7 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
+#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
 #endif
 #endif
 #pragma comment(lib,"Ws2_32.lib")
