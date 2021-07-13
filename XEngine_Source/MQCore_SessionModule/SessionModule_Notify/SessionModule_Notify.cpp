@@ -229,6 +229,7 @@ BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, T
 	{
 		_tcscpy((*ppptszListClient)[i], stl_ListIterator->c_str());
 	}
+	*pInt_ListCount = stl_MapIterator->second.pStl_ListClient->size();
 	stl_MapIterator->second.st_Locker->unlock_shared();
 	st_Locker.unlock_shared();
 	return TRUE;

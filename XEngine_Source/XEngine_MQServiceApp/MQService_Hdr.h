@@ -26,6 +26,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_HelpComponents/XLog_Error.h>
 #include <XEngine_Include/XEngine_HelpComponents/Packets_Define.h>
 #include <XEngine_Include/XEngine_HelpComponents/Packets_Error.h>
+#include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
 #include "../MQCore_XMQModule/XMQModule_Define.h"
