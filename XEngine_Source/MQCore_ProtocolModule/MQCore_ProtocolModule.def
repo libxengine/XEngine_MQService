@@ -4,3 +4,6 @@ EXPORTS
 	Protocol_GetLastError
 
 	ProtocolModule_Packet_TCPCommon
+	ProtocolModule_Packet_HttpCommon
+
+	ProtocolModule_Parse_Http

@@ -11,6 +11,13 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 #include <tchar.h>
+#include <json/json.h>
+#else
+#ifdef _CENTOS
+#include <json/json.h>
+#else
+#include <jsoncpp/json/json.h>
+#endif
 #endif
 #endif //PCH_H
 #include <string.h>
