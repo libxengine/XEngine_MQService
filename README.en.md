@@ -20,7 +20,8 @@ this software support following features
 7. load balanc(planning)  
 8. message get time  
 9. message subcribe  
-10. Active delivery acquisition mode or passive subscription notification module  
+10. support Permission Validation(planning)  
+11. Active delivery acquisition mode or passive subscription notification module  
 
 ## install
 

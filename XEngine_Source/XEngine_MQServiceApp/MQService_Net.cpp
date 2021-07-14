@@ -63,9 +63,8 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
     else
-    {
+	{
 		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
 }
@@ -83,7 +82,19 @@ BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int 
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
-		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+        int nPKTLen = 8196;
+        TCHAR tszPKTBuffer[8196];
+        RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
+
+        memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+        memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+
+        st_HTTPHdr.nHttpCode = 200;
+        st_HTTPHdr.bIsClose = TRUE;
+        _tcscpy(st_HTTPHdr.tszMimeType, _T("json"));
+
+        RfcComponents_HttpServer_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
+		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, tszPKTBuffer, nPKTLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return FALSE;
