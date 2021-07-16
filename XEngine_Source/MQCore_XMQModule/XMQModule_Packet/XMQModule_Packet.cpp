@@ -245,6 +245,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Post(XENGINE_PROTOCOL_XMQ* pSt_MQProtoc
         st_Locker.unlock_shared();
         return FALSE;
 	}
+	pSt_MQProtocol->nSerial = st_MQPacket.st_XMQProtocol.nSerial;
 	st_Locker.unlock_shared();
     return TRUE;
 }

@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MQService_Config.cpp" />
+    <ClCompile Include="MQService_HttpTask.cpp" />
     <ClCompile Include="MQService_Net.cpp" />
     <ClCompile Include="MQService_TCPTask.cpp" />
     <ClCompile Include="XEngine_MQServiceApp.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="MQService_Config.h" />
     <ClInclude Include="MQService_Hdr.h" />
+    <ClInclude Include="MQService_HttpTask.h" />
     <ClInclude Include="MQService_Net.h" />
     <ClInclude Include="MQService_TCPTask.h" />
   </ItemGroup>

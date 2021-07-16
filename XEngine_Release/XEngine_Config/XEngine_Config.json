@@ -2,8 +2,8 @@
   "tszIPAddr": "127.0.0.1",
   "tszTopic": "XEngine_CommKey",
   "bDeamon": 0,
-  "nTCPPort": 5100,
-  "nHttpPort": 5101,
+  "nTCPPort": 5200,
+  "nHttpPort": 5201,
   "XMax": {
     "nMaxClient": 10000,
     "nMaxQueue": 10000,
@@ -37,6 +37,7 @@
   },
   "XVer": {
     "StorageVersion": [
+      "1.2.0.1001 Build20210716",
       "1.1.0.1001 Build20210702"
     ]
   }
