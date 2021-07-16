@@ -14,7 +14,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
-
+#include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 //g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
 
 SOCKET m_Socket;
@@ -202,7 +202,63 @@ void MQ_Delete()
 		return;
 	}
 }
-int main()
+//订阅
+void MQ_Subscribe()
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
+	TCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.wReserve = 1;            //1为请求订阅
+	st_ProtocolHdr.byIsReply = FALSE;       //不获取结果
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
+	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	while (TRUE)
+	{
+		nLen = 2048;
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
+		{
+			memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+			memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+			memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+			memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
+
+			if (0 == st_ProtocolHdr.wReserve)
+			{
+				printf("接受到数据,主题:%s,序列:%lld,长度：%d，内容：%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_ProtocolHdr.unPacketSize - sizeof(XENGINE_PROTOCOL_XMQ), tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ));
+			}
+			else
+			{
+				printf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
@@ -217,15 +273,23 @@ int main()
 	}
 	printf("连接成功！\n");
 
-	MQ_Create();
+	if (argc > 1)
+	{
+		MQ_Create();
+		MQ_Subscribe();
+	}
+	else
+	{
+		MQ_Create();
 
-	MQ_Post(lpszMsgBuffer);
-	MQ_Post(lpszMsgBuffer);
+		MQ_Post(lpszMsgBuffer);
+		MQ_Post(lpszMsgBuffer);
 
-	MQ_Get();
-	MQ_Get();
-	MQ_Get();
-	//MQ_Delete();
+		MQ_Get();
+		MQ_Get();
+		MQ_Get();
+		//MQ_Delete();
+	}
 
 	XClient_TCPSelect_Close(m_Socket);
 #ifdef _WINDOWS

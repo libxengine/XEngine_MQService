@@ -5,7 +5,10 @@ XLOG xhLog = NULL;
 XNETHANDLE xhTCPSocket = 0;
 XNETHANDLE xhTCPPacket = 0;
 XNETHANDLE xhTCPHeart = 0;
-XNETHANDLE xhPool = 0;
+XNETHANDLE xhHTTPSocket = 0;
+XHANDLE xhHTTPPacket = 0;
+XNETHANDLE xhTCPPool = 0;
+XNETHANDLE xhHttpPool = 0;
 XENGINE_SERVERCONFIG st_ServiceCfg;
 
 void ServiceApp_Stop(int signo)
@@ -15,10 +18,13 @@ void ServiceApp_Stop(int signo)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("服务器退出..."));
 		bIsRun = FALSE;
 
-		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		HelpComponents_Datas_Destory(xhTCPPacket);
-		ManagePool_Thread_NQDestroy(xhPool);
+		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
+		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
+		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		ManagePool_Thread_NQDestroy(xhTCPPool);
+		ManagePool_Thread_NQDestroy(xhHttpPool);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
@@ -36,10 +42,13 @@ int main(int argc, char** argv)
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	bIsRun = TRUE;
+	LPCTSTR lpszHTTPMime = _T("./XEngine_Config/HttpMime.types");
+	LPCTSTR lpszHTTPCode = _T("./XEngine_Config/HttpCode.types");
 	TCHAR tszStringMsg[2048];
 	LPCTSTR lpszLogFile = _T("./XEngine_Log/XEngine_MQServiceApp.Log");
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
-	THREADPOOL_PARAMENT** ppSt_ListParam;
+	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
+	THREADPOOL_PARAMENT** ppSt_ListHTTPParam;
 
 	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
@@ -78,6 +87,14 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP组包器成功"));
+
+	xhHTTPPacket = RfcComponents_HttpServer_InitEx(lpszHTTPCode, lpszHTTPMime, st_ServiceCfg.st_XMax.nHttpThread);
+	if (NULL == xhHTTPPacket)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化HTTP服务失败，错误：%lX"), HttpServer_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化HTTP服务成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
 	
 	if (!SessionModule_Client_Init())
 	{
@@ -114,23 +131,48 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP网络服务器成功,TCP端口:%d,IO:%d"), st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nIOThread);
 	NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册网络事件成功"));
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册TCP网络事件成功"));
 
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
+	if (!NetCore_TCPXCore_StartEx(&xhHTTPSocket, st_ServiceCfg.nHttpPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动HTTP网络服务器失败，错误：%lX"), NetCore_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动HTTP网络服务器成功,HTTP端口:%d,IO:%d"), st_ServiceCfg.nHttpPort, st_ServiceCfg.st_XMax.nIOThread);
+	NetCore_TCPXCore_RegisterCallBackEx(xhHTTPSocket, MessageQueue_Callback_HttpLogin, MessageQueue_Callback_HttpRecv, MessageQueue_Callback_HttpLeave);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册HTTP网络事件成功"));
+
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
 	for (int i = 0; i < st_ServiceCfg.st_XMax.nTCPThread; i++)
 	{
 		int* pInt_Pos = new int;
 
 		*pInt_Pos = i;
-		ppSt_ListParam[i]->lParam = pInt_Pos;
-		ppSt_ListParam[i]->fpCall_ThreadsTask = MessageQueue_TCPThread;
+		ppSt_ListTCPParam[i]->lParam = pInt_Pos;
+		ppSt_ListTCPParam[i]->fpCall_ThreadsTask = MessageQueue_TCPThread;
 	}
-	if (!ManagePool_Thread_NQCreate(&xhPool, &ppSt_ListParam, st_ServiceCfg.st_XMax.nTCPThread))
+	if (!ManagePool_Thread_NQCreate(&xhTCPPool, &ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nTCPThread);
+
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread, sizeof(THREADPOOL_PARAMENT));
+	for (int i = 0; i < st_ServiceCfg.st_XMax.nHttpThread; i++)
+	{
+		int* pInt_Pos = new int;
+
+		*pInt_Pos = i;
+		ppSt_ListHTTPParam[i]->lParam = pInt_Pos;
+		ppSt_ListHTTPParam[i]->fpCall_ThreadsTask = MessageQueue_HttpThread;
+	}
+	if (!ManagePool_Thread_NQCreate(&xhHttpPool, &ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动HTTP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动HTTP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
 	
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("所有服务成功启动，服务运行中。。。"));
 	while (bIsRun)
@@ -144,10 +186,13 @@ NETSERVICEEXIT:
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("有服务启动失败，服务器退出..."));
 		bIsRun = FALSE;
 
-		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		HelpComponents_Datas_Destory(xhTCPPacket);
-		ManagePool_Thread_NQDestroy(xhPool);
+		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
+		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
+		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		ManagePool_Thread_NQDestroy(xhTCPPool);
+		ManagePool_Thread_NQDestroy(xhHttpPool);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);

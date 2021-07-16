@@ -115,3 +115,96 @@ extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
 备注：
 *********************************************************************/
 extern "C" BOOL SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr);
+/************************************************************************/
+/*                        订阅                                          */
+/************************************************************************/
+/********************************************************************
+函数名称：SessionModule_Notify_Create
+函数功能：创建主题
+ 参数.一：lpszTopicName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入主题名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Notify_Create(LPCTSTR lpszTopicName);
+/********************************************************************
+函数名称：SessionModule_Notify_Destory
+函数功能：销毁一个主题
+ 参数.一：lpszTopicName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入主题名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Notify_Destory(LPCTSTR lpszTopicName);
+/************************************************************************
+函数名称：SessionModule_Notify_Insert
+函数功能：插入一个订阅客户端到指定主题
+ 参数.一：lpszTopicStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入主题名
+ 参数.二：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要插入的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+************************************************************************/
+extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
+/************************************************************************
+函数名称：SessionModule_Notify_Delete
+函数功能：从一个主题中删除一个订阅客户端
+ 参数.一：lpszTopicStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入主题名
+ 参数.二：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要删除的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+************************************************************************/
+extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
+/********************************************************************
+函数名称：SessionModule_Notify_GetList
+函数功能：获取主题对应的订阅列表
+ 参数.一：lpszTopicStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入主题名
+ 参数.二：ppptszListClient
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出客户端地址列表
+ 参数.三：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, TCHAR*** ppptszListClient, int* pInt_ListCount);
