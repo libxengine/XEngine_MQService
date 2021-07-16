@@ -21,7 +21,9 @@
 #endif
 #endif //PCH_H
 #include <string.h>
+#include <memory>
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include "Protocol_Define.h"
 #include "Protocol_Error.h"

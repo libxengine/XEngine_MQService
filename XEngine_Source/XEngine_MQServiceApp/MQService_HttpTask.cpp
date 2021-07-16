@@ -105,7 +105,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 			st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET;
 			if ((st_MQProtocol.nSerial <= 0))
 			{
-				st_ProtocolHdr.wReserve = 7031;
+				st_ProtocolHdr.wReserve = 721;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP消息端:%s,主题:%s,获取消息数据失败,序列号为0,无法继续"), lpszClientAddr, st_MQProtocol.tszMQKey);
@@ -113,7 +113,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 			}
 			if (!XMQModule_Packet_Get(&st_MQProtocol, tszMsgBuffer, &nMsgLen))
 			{
-				st_ProtocolHdr.wReserve = 7032;
+				st_ProtocolHdr.wReserve = 722;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP消息端:%s,主题:%s,序列:%lld,获取消息数据失败,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, XMQModule_GetLastError());
@@ -129,7 +129,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 			st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDEL;
 			if (!XMQModule_Packet_Del(&st_MQProtocol))
 			{
-				st_ProtocolHdr.wReserve = 705;
+				st_ProtocolHdr.wReserve = 741;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP消息端:%s,主题:%s,序列:%lld,删除消息队列中的数据失败，错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, XMQModule_GetLastError());
@@ -145,7 +145,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 			st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPCREATE;
 			if (!XMQModule_Packet_TopicCreate(st_MQProtocol.tszMQKey))
 			{
-				st_ProtocolHdr.wReserve = 708;
+				st_ProtocolHdr.wReserve = 761;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				DWORD dwRet = XMQModule_GetLastError();
@@ -170,7 +170,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 			st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE;
 			if (!XMQModule_Packet_TopicDelete(st_MQProtocol.tszMQKey))
 			{
-				st_ProtocolHdr.wReserve = 708;
+				st_ProtocolHdr.wReserve = 781;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP消息端:%s,删除主题失败,主题名称:%s,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, XMQModule_GetLastError());
