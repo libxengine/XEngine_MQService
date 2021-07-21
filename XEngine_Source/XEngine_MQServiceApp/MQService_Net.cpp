@@ -47,6 +47,7 @@ void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hS
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_WSLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
+    SessionModule_Client_Create(lpszClientAddr);
 	RfcComponents_WSPacket_Create(lpszClientAddr, 0);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端连接，Websocket客户端地址：%s"), lpszClientAddr);
 	return TRUE;
@@ -103,6 +104,8 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
 		RfcComponents_WSPacket_Delete(lpszClientAddr);
+        SessionModule_Client_Delete(lpszClientAddr);
+
 		if (bHeart)
 		{
 			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
