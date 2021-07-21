@@ -3,12 +3,18 @@
 BOOL bIsRun = FALSE;
 XLOG xhLog = NULL;
 XNETHANDLE xhTCPSocket = 0;
-XNETHANDLE xhTCPPacket = 0;
-XNETHANDLE xhTCPHeart = 0;
 XNETHANDLE xhHTTPSocket = 0;
+XNETHANDLE xhWSSocket = 0;
+
+XNETHANDLE xhTCPHeart = 0;
+XNETHANDLE xhWSHeart = 0;
+
+XNETHANDLE xhTCPPacket = 0;
 XHANDLE xhHTTPPacket = 0;
+
 XNETHANDLE xhTCPPool = 0;
 XNETHANDLE xhHttpPool = 0;
+XNETHANDLE xhWSPool = 0;
 XENGINE_SERVERCONFIG st_ServiceCfg;
 
 void ServiceApp_Stop(int signo)
@@ -20,11 +26,14 @@ void ServiceApp_Stop(int signo)
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
+		RfcComponents_WSPacket_Destory();
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
+		NetCore_TCPXCore_DestroyEx(xhWSSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
+		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
@@ -49,6 +58,7 @@ int main(int argc, char** argv)
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
 	THREADPOOL_PARAMENT** ppSt_ListHTTPParam;
+	THREADPOOL_PARAMENT** ppSt_ListWSParam;
 
 	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
@@ -91,10 +101,17 @@ int main(int argc, char** argv)
 	xhHTTPPacket = RfcComponents_HttpServer_InitEx(lpszHTTPCode, lpszHTTPMime, st_ServiceCfg.st_XMax.nHttpThread);
 	if (NULL == xhHTTPPacket)
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化HTTP服务失败，错误：%lX"), HttpServer_GetLastError());
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化HTTP组包失败，错误：%lX"), HttpServer_GetLastError());
 		goto NETSERVICEEXIT;
 	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化HTTP服务成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化HTTP组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
+	
+	if (!RfcComponents_WSPacket_Init(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化Websocket组包失败，错误：%lX"), WSFrame_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化Websocket组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nWSThread);
 	
 	if (!SessionModule_Client_Init())
 	{
@@ -142,6 +159,15 @@ int main(int argc, char** argv)
 	NetCore_TCPXCore_RegisterCallBackEx(xhHTTPSocket, MessageQueue_Callback_HttpLogin, MessageQueue_Callback_HttpRecv, MessageQueue_Callback_HttpLeave);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册HTTP网络事件成功"));
 
+	if (!NetCore_TCPXCore_StartEx(&xhWSSocket, st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动Websocket网络服务器失败，错误：%lX"), NetCore_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动Websocket网络服务器成功,Websocket端口:%d,IO:%d"), st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nIOThread);
+	NetCore_TCPXCore_RegisterCallBackEx(xhWSSocket, MessageQueue_Callback_WSLogin, MessageQueue_Callback_WSRecv, MessageQueue_Callback_WSLeave);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，注册Websocket网络事件成功"));
+
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
 	for (int i = 0; i < st_ServiceCfg.st_XMax.nTCPThread; i++)
 	{
@@ -173,6 +199,22 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动HTTP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
+
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread, sizeof(THREADPOOL_PARAMENT));
+	for (int i = 0; i < st_ServiceCfg.st_XMax.nWSThread; i++)
+	{
+		int* pInt_Pos = new int;
+
+		*pInt_Pos = i;
+		ppSt_ListWSParam[i]->lParam = pInt_Pos;
+		ppSt_ListWSParam[i]->fpCall_ThreadsTask = MessageQueue_WebsocketThread;
+	}
+	if (!ManagePool_Thread_NQCreate(&xhWSPool, &ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动Websocket线程池服务失败，错误：%lX"), ManagePool_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动Websocket线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nWSThread);
 	
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("所有服务成功启动，服务运行中。。。"));
 	while (bIsRun)
@@ -188,11 +230,14 @@ NETSERVICEEXIT:
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
+		RfcComponents_WSPacket_Destory();
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
+		NetCore_TCPXCore_DestroyEx(xhWSSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
+		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);

@@ -126,6 +126,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
     Json::Value st_JsonRoot;
     Json::Value st_JsonMQProtocol;
     Json::Value st_JsonPayload;
+	Json::StreamWriterBuilder st_JsonBuilder;
 
     st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
     st_JsonMQProtocol["nSerial"] = pSt_MQProtocol->nSerial;
@@ -145,9 +146,10 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
 
         st_JsonRoot["st_Payload"] = st_JsonPayload;
     }
+    st_JsonBuilder["emitUTF8"] = true;
 
-    *pInt_MsgLen = st_JsonRoot.toStyledString().length();
-    memcpy(ptszMsgBuffer, st_JsonRoot.toStyledString().c_str(), *pInt_MsgLen);
+    *pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+    memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 
     return TRUE;
 }

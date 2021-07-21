@@ -20,7 +20,8 @@ c c++Message Queue Service
 8. 消息次数  
 9. 消息订阅  
 10. 支持权限验证(planning)  
-11. 主动投递获取模式或者被动订阅通知模块  
+11. 支持多种协议(TCP,HTTP,WEBSOCKET)  
+12. 主动投递获取模式或者被动订阅通知模块  
 
 ## 安装教程
 
