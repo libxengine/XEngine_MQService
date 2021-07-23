@@ -31,6 +31,7 @@ void ServiceApp_Stop(int signo)
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
@@ -131,14 +132,21 @@ int main(int argc, char** argv)
 	{
 		if (!SocketOpt_HeartBeat_InitEx(&xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), XMQModule_GetLastError());
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), NetCore_GetLastError());
 			goto NETSERVICEEXIT;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化TCP心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
+
+		if (!SocketOpt_HeartBeat_InitEx(&xhWSHeart, st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_WSHeart))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化Websocket心跳服务失败，错误：%lX"), NetCore_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化Websocket心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，TCP心跳服务被设置为不启用"));
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，心跳服务被设置为不启用"));
 	}
 
 	if (!NetCore_TCPXCore_StartEx(&xhTCPSocket, st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
@@ -235,6 +243,7 @@ NETSERVICEEXIT:
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);

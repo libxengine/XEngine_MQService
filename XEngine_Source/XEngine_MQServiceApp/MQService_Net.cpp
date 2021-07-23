@@ -48,6 +48,7 @@ void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hS
 BOOL __stdcall MessageQueue_Callback_WSLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
     SessionModule_Client_Create(lpszClientAddr);
+    SocketOpt_HeartBeat_InsertAddrEx(xhWSHeart, lpszClientAddr);
 	RfcComponents_WSPacket_Create(lpszClientAddr, 0);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端连接，Websocket客户端地址：%s"), lpszClientAddr);
 	return TRUE;
@@ -61,7 +62,9 @@ void __stdcall MessageQueue_Callback_WSRecv(LPCTSTR lpszClientAddr, SOCKET hSock
 		if (!RfcComponents_WSPacket_Post(lpszClientAddr, lpszRecvMsg, nMsgLen))
 		{
             XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("投递Websocket数据包到消息队列失败，错误：%lX"), WSFrame_GetLastError());
+            return;
 		}
+        SocketOpt_HeartBeat_ActiveAddrEx(xhWSHeart, lpszClientAddr);
 	}
 	else
 	{
