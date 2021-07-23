@@ -68,8 +68,9 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->bDeamon = st_JsonRoot["bDeamon"].asInt();
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
+    pSt_ServerConfig->nWSPort = st_JsonRoot["nWSPort"].asInt();
 
-    if (st_JsonRoot["XMax"].empty() || (5 != st_JsonRoot["XMax"].size()))
+    if (st_JsonRoot["XMax"].empty() || (6 != st_JsonRoot["XMax"].size()))
     {
         Config_IsErrorOccur = TRUE;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMAX;
@@ -81,8 +82,9 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nIOThread = st_JsonXMax["nIOThread"].asInt();
     pSt_ServerConfig->st_XMax.nTCPThread = st_JsonXMax["nTCPThread"].asInt();
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
+    pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 
-    if (st_JsonRoot["XTime"].empty() || (5 != st_JsonRoot["XTime"].size()))
+    if (st_JsonRoot["XTime"].empty() || (6 != st_JsonRoot["XTime"].size()))
     {
         Config_IsErrorOccur = TRUE;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
@@ -94,6 +96,7 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XTime.nTimeCheck = st_JsonXTime["nTimeCheck"].asInt();
     pSt_ServerConfig->st_XTime.nTCPTimeOut = st_JsonXTime["nTCPTimeOut"].asInt();
     pSt_ServerConfig->st_XTime.nHttpTimeOut = st_JsonXTime["nHttpTimeOut"].asInt();
+    pSt_ServerConfig->st_XTime.nWSTimeOut = st_JsonXTime["nWSTimeOut"].asInt();
     
     if (st_JsonRoot["XLog"].empty() || (3 != st_JsonRoot["XLog"].size()))
     {

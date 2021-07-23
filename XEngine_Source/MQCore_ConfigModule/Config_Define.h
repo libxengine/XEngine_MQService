@@ -20,6 +20,7 @@ typedef struct tag_XEngine_ServerConfig
     BOOL bDeamon;
     int nTCPPort;
     int nHttpPort;
+    int nWSPort;
     struct
     {
         int nMaxClient;
@@ -27,6 +28,7 @@ typedef struct tag_XEngine_ServerConfig
         int nIOThread;
         int nTCPThread;
         int nHttpThread;
+        int nWSThread;
     }st_XMax;
     struct
     {
@@ -35,6 +37,7 @@ typedef struct tag_XEngine_ServerConfig
         int nTimeCheck;
         int nTCPTimeOut;
         int nHttpTimeOut;
+        int nWSTimeOut;
     }st_XTime;
     struct
     {

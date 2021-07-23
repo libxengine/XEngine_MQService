@@ -21,7 +21,8 @@ this software support following features
 8. message get time  
 9. message subcribe  
 10. support Permission Validation(planning)  
-11. Active delivery acquisition mode or passive subscription notification module  
+11. support multi protocol(TCP,HTTP,WEBSOCKET)  
+12. Active delivery acquisition mode or passive subscription notification module  
 
 ## install
 

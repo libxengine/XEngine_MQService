@@ -154,6 +154,7 @@
     <ClCompile Include="MQService_HttpTask.cpp" />
     <ClCompile Include="MQService_Net.cpp" />
     <ClCompile Include="MQService_TCPTask.cpp" />
+    <ClCompile Include="MQService_WSTask.cpp" />
     <ClCompile Include="XEngine_MQServiceApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="MQService_HttpTask.h" />
     <ClInclude Include="MQService_Net.h" />
     <ClInclude Include="MQService_TCPTask.h" />
+    <ClInclude Include="MQService_WSTask.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
