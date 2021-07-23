@@ -4,19 +4,22 @@
   "bDeamon": 0,
   "nTCPPort": 5200,
   "nHttpPort": 5201,
+  "nWSPort": 5202,
   "XMax": {
     "nMaxClient": 10000,
     "nMaxQueue": 10000,
     "nIOThread": 2,
     "nTCPThread": 2,
-    "nHttpThread": 2
+    "nHttpThread": 2,
+    "nWSThread": 2
   },
   "XTime": {
     "bHBTime": 0,
     "nDBMonth": 3,
     "nTimeCheck": 3,
     "nTCPTimeOut": 5,
-    "nHttpTimeOut": 5
+    "nHttpTimeOut": 5,
+    "nWSTimeOut": 5
   },
   "XLog": {
     "MaxSize": 1024000,

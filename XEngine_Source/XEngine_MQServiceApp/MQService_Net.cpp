@@ -45,6 +45,48 @@ void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hS
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, FALSE);
 }
 //////////////////////////////////////////////////////////////////////////
+BOOL __stdcall MessageQueue_Callback_WSLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+{
+    SessionModule_Client_Create(lpszClientAddr);
+    SocketOpt_HeartBeat_InsertAddrEx(xhWSHeart, lpszClientAddr);
+	RfcComponents_WSPacket_Create(lpszClientAddr, 0);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端连接，Websocket客户端地址：%s"), lpszClientAddr);
+	return TRUE;
+}
+void __stdcall MessageQueue_Callback_WSRecv(LPCTSTR lpszClientAddr, SOCKET hSocket, LPCTSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+{
+	BOOL bLogin = FALSE;
+	RfcComponents_WSPacket_GetLogin(lpszClientAddr, &bLogin);
+	if (bLogin)
+	{
+		if (!RfcComponents_WSPacket_Post(lpszClientAddr, lpszRecvMsg, nMsgLen))
+		{
+            XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("投递Websocket数据包到消息队列失败，错误：%lX"), WSFrame_GetLastError());
+            return;
+		}
+        SocketOpt_HeartBeat_ActiveAddrEx(xhWSHeart, lpszClientAddr);
+	}
+	else
+	{
+		int nSDLen = nMsgLen;
+		TCHAR tszHandsBuffer[1024];
+		memset(tszHandsBuffer, '\0', sizeof(tszHandsBuffer));
+
+		RfcComponents_WSConnector_HandShake(lpszRecvMsg, &nSDLen, tszHandsBuffer);
+		RfcComponents_WSPacket_SetLogin(lpszClientAddr);
+        NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszHandsBuffer, nSDLen);
+        XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("WEBSOCKET客户端:%s 与服务器握手成功"), lpszClientAddr);
+	}
+}
+void __stdcall MessageQueue_Callback_WSLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+{
+    XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, FALSE);
+}
+void __stdcall MessageQueue_Callback_WSHeart(LPCSTR lpszClientAddr, SOCKET hSocket, int nStatus, LPVOID lParam)
+{
+    XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, TRUE);
+}
+//////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
 {
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
@@ -61,6 +103,21 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
             SocketOpt_HeartBeat_DeleteAddrEx(xhTCPHeart, lpszClientAddr);
         }
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
+    }
+    else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
+    {
+		RfcComponents_WSPacket_Delete(lpszClientAddr);
+        SessionModule_Client_Delete(lpszClientAddr);
+
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
+		}
+		else
+		{
+            SocketOpt_HeartBeat_DeleteAddrEx(xhWSHeart, lpszClientAddr);
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
     }
     else
 	{
@@ -99,6 +156,19 @@ BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int 
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return FALSE;
 		}
+    }
+    else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
+    {
+		TCHAR tszPKTBuffer[8196];
+		memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+
+        RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, tszPKTBuffer, &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
+		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszPKTBuffer, nMsgLen))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
+			return FALSE;
+		}
+        SocketOpt_HeartBeat_ActiveAddrEx(xhWSHeart, lpszClientAddr);
     }
     return TRUE;
 }
