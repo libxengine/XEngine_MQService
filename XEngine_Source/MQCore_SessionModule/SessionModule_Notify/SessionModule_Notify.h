@@ -13,7 +13,7 @@
 typedef struct
 {
     shared_ptr<shared_mutex> st_Locker;
-    list<tstring>* pStl_ListClient;
+    list<SESSION_NOTIFYCLIENT>* pStl_ListClient;
 }XENGINE_SESSIONNOTIFY, * LPXENGINE_SESSIONNOTIFY;
 
 class CSessionModule_Notify
@@ -24,9 +24,9 @@ public:
 public:
     BOOL SessionModule_Notify_Create(LPCTSTR lpszTopicName);
     BOOL SessionModule_Notify_Destory(LPCTSTR lpszTopicName);
-    BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
-    BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
-    BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, TCHAR*** ppptszListClient, int* pInt_ListCount);
+    BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
+    BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
+    BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT*** pppSt_ListClient, int* pInt_ListCount);
 private:
     shared_mutex st_Locker;
 private:

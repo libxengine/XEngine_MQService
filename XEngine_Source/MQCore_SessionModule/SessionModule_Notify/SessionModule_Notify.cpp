@@ -45,7 +45,7 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Create(LPCTSTR lpszTopicName)
     }
 	XENGINE_SESSIONNOTIFY st_SessionNotify;
 
-	st_SessionNotify.pStl_ListClient = new list<tstring>;
+	st_SessionNotify.pStl_ListClient = new list<SESSION_NOTIFYCLIENT>;
 	st_SessionNotify.st_Locker = make_shared<shared_mutex>();
 
     st_Locker.lock();
@@ -99,12 +99,17 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Destory(LPCTSTR lpszTopicName)
   类型：常量字符指针
   可空：N
   意思：输入要插入的客户端
+ 参数.三：enClientType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：客户端类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Notify::SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr)
+BOOL CSessionModule_Notify::SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -123,8 +128,14 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LP
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
+	SESSION_NOTIFYCLIENT st_NotifyClient;
+	memset(&st_NotifyClient, '\0', sizeof(SESSION_NOTIFYCLIENT));
+
+	st_NotifyClient.enClientType = enClientType;
+	_tcscpy(st_NotifyClient.tszNotifyAddr, lpszClientAddr);
+
 	stl_MapIterator->second.st_Locker->lock();
-	stl_MapIterator->second.pStl_ListClient->push_back(lpszClientAddr);
+	stl_MapIterator->second.pStl_ListClient->push_back(st_NotifyClient);
 	stl_MapIterator->second.st_Locker->unlock();
 	st_Locker.unlock_shared();
     return TRUE;
@@ -142,12 +153,17 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LP
   类型：常量字符指针
   可空：N
   意思：输入要删除的客户端
+ 参数.三：enClientType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：客户端类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Notify::SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr)
+BOOL CSessionModule_Notify::SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -167,10 +183,10 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LP
 		return FALSE;
 	}
 	stl_MapIterator->second.st_Locker->lock();
-	list<tstring>::iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();
+	list<SESSION_NOTIFYCLIENT>::iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();
 	for (; stl_ListIterator != stl_MapIterator->second.pStl_ListClient->end(); stl_ListIterator++)
 	{
-		if (0 == _tcsnicmp(lpszClientAddr, stl_ListIterator->c_str(), _tcslen(lpszClientAddr)))
+		if ((0 == _tcsnicmp(lpszClientAddr, stl_ListIterator->tszNotifyAddr, _tcslen(lpszClientAddr))) && (enClientType == stl_ListIterator->enClientType))
 		{
 			stl_MapIterator->second.pStl_ListClient->erase(stl_ListIterator);
 			break;
@@ -188,7 +204,7 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LP
   类型：常量字符指针
   可空：N
   意思：输入主题名
- 参数.二：ppptszListClient
+ 参数.二：pppSt_ListClient
   In/Out：Out
   类型：三级指针
   可空：N
@@ -203,11 +219,11 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LP
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, TCHAR*** ppptszListClient, int* pInt_ListCount)
+BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT*** pppSt_ListClient, int* pInt_ListCount)
 {
 	Session_IsErrorOccur = FALSE;
 
-	if ((NULL == lpszTopicStr) || (NULL == ppptszListClient) || (NULL == pInt_ListCount))
+	if ((NULL == lpszTopicStr) || (NULL == pppSt_ListClient) || (NULL == pInt_ListCount))
 	{
 		Session_IsErrorOccur = TRUE;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
@@ -223,11 +239,11 @@ BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, T
 		return FALSE;
 	}
 	stl_MapIterator->second.st_Locker->lock_shared();
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)ppptszListClient, stl_MapIterator->second.pStl_ListClient->size(), MAX_PATH);
-	list<tstring>::iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_ListClient, stl_MapIterator->second.pStl_ListClient->size(), sizeof(SESSION_NOTIFYCLIENT));
+	list<SESSION_NOTIFYCLIENT>::iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();
 	for (int i = 0; stl_ListIterator != stl_MapIterator->second.pStl_ListClient->end(); stl_ListIterator++, i++)
 	{
-		_tcscpy((*ppptszListClient)[i], stl_ListIterator->c_str());
+		*(*pppSt_ListClient)[i] = *stl_ListIterator;
 	}
 	*pInt_ListCount = stl_MapIterator->second.pStl_ListClient->size();
 	stl_MapIterator->second.st_Locker->unlock_shared();
