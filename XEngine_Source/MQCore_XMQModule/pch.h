@@ -32,6 +32,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include "../XQueue_ProtocolHdr.h"
 #include "XMQModule_Define.h"
 #include "XMQModule_Error.h"
 /********************************************************************
