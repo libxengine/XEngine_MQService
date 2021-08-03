@@ -10,26 +10,25 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(LPVOID lParam)
 		{
 			continue;
 		}
-		int nMsgLen = 4096;
 		int nListCount = 0;
-		TCHAR tszMsgBuffer[4096];
 		RFCCOMPONENTS_WSPKT_CLIENT** ppSst_ListAddr;
-
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 		RfcComponents_WSPacket_GetPool(nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
 			{
+				int nMsgLen = 0;
+				TCHAR* ptszMsgBuffer = NULL;
 				ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
-				if (!RfcComponents_WSPacket_Get(ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &enOPCode))
+				if (!RfcComponents_WSPacket_GetMemory(ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &enOPCode))
 				{
 					DWORD dwRet = WSFrame_GetLastError();
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("Websocket服务器获取消息失败，获取数据包失败，错误：%lX"), dwRet);
 					continue;
 				}
-				MessageQueue_Websocket_Handle(ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, nMsgLen, enOPCode);
+				MessageQueue_Websocket_Handle(ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, enOPCode);
+				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
 			}
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);

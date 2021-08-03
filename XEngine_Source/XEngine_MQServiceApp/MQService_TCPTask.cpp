@@ -10,21 +10,20 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 		{
 			continue;
 		}
-		int nMsgLen = 4096;
 		int nListCount = 0;
-		TCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;;
 		HELPCOMPONENT_PACKET_CLIENT** ppSst_ListAddr;
 
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		
 		HelpComponents_Datas_GetPoolEx(xhTCPPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
 			{
-				if (!HelpComponents_Datas_GetEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
+				int nMsgLen = 0;
+				TCHAR* ptszMsgBuffer = NULL;
+				if (!HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
 					DWORD dwRet = Packets_GetLastError();
 					if (ERROR_HELPCOMPONENTS_PACKETS_PROTOCOL_GET_ISNULL == dwRet)
@@ -33,7 +32,8 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 					}
 					continue;
 				}
-				MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
+				MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen);
+				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
 			}
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
