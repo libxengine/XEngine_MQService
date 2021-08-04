@@ -48,3 +48,9 @@ using namespace std;
 *********************************************************************/
 extern BOOL MQX_IsErrorOccur;
 extern DWORD MQX_dwErrorCode;
+
+#ifdef _UNICODE
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif
