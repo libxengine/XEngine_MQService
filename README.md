@@ -90,6 +90,9 @@ make FLAGS=CleanAll 清理编译
 3.  提交代码
 4.  新建 Pull Request  
 
+## 关注我们
+如果你觉得这个软件对你有帮助,请你给我们一个START吧
+
 ## 提交问题
 
 如果你有问题,可以在issues中提交
