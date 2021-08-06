@@ -10,21 +10,20 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 		{
 			continue;
 		}
-		int nMsgLen = 4096;
 		int nListCount = 0;
-		TCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;;
 		HELPCOMPONENT_PACKET_CLIENT** ppSst_ListAddr;
 
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		
 		HelpComponents_Datas_GetPoolEx(xhTCPPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
 			{
-				if (!HelpComponents_Datas_GetEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
+				int nMsgLen = 0;
+				TCHAR* ptszMsgBuffer = NULL;
+				if (!HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
 					DWORD dwRet = Packets_GetLastError();
 					if (ERROR_HELPCOMPONENTS_PACKETS_PROTOCOL_GET_ISNULL == dwRet)
@@ -33,7 +32,8 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 					}
 					continue;
 				}
-				MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
+				MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen);
+				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
 			}
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
@@ -84,19 +84,34 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 			}
+
 			int nListCount = 0;
-			TCHAR** pptszListAddr;
-			if (SessionModule_Notify_GetList(st_MQProtocol.tszMQKey, &pptszListAddr, &nListCount))
+			SESSION_NOTIFYCLIENT** ppSt_ListAddr;
+			if (SessionModule_Notify_GetList(st_MQProtocol.tszMQKey, &ppSt_ListAddr, &nListCount))
 			{
-				nSDLen = sizeof(tszSDBuffer);
-				memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
+				int nTCPLen = 0;
+				int nWSLen = 0;
+				TCHAR tszTCPBuffer[4096];
+				TCHAR tszWSBuffer[4096];
+
+				memset(tszTCPBuffer, '\0', sizeof(tszTCPBuffer));
+				memset(tszWSBuffer, '\0', sizeof(tszWSBuffer));
+
 				pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszTCPBuffer, &nTCPLen, tszRVBuffer, nRVLen);
+				ProtocolModule_Packet_HttpCommon(pSt_ProtocolHdr, &st_MQProtocol, tszWSBuffer, &nWSLen, tszRVBuffer, nRVLen);
 				for (int i = 0; i < nListCount; i++)
 				{
-					XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+					if (ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP == ppSt_ListAddr[i]->enClientType)
+					{
+						XEngine_MQXService_Send(ppSt_ListAddr[i]->tszNotifyAddr, tszTCPBuffer, nTCPLen, XENGINE_MQAPP_NETTYPE_TCP);
+					}
+					else if (ENUM_MQCORE_SESSION_CLIENT_TYPE_WEBSOCKET == ppSt_ListAddr[i]->enClientType)
+					{
+						XEngine_MQXService_Send(ppSt_ListAddr[i]->tszNotifyAddr, tszWSBuffer, nWSLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
+					}
 				}
-				BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAddr, nListCount);
 			}
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, nListCount);
 		}
@@ -212,12 +227,12 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			if (0 == pSt_ProtocolHdr->wReserve)
 			{
-				SessionModule_Notify_Delete(st_MQProtocol.tszMQKey, lpszClientAddr);
+				SessionModule_Notify_Delete(st_MQProtocol.tszMQKey, lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,取消订阅成功,主题名称:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 			}
 			else
 			{
-				if (!SessionModule_Notify_Insert(st_MQProtocol.tszMQKey, lpszClientAddr))
+				if (!SessionModule_Notify_Insert(st_MQProtocol.tszMQKey, lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP))
 				{
 					if (pSt_ProtocolHdr->byIsReply)
 					{

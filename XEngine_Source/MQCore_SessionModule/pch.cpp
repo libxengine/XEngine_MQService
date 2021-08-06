@@ -70,15 +70,15 @@ extern "C" BOOL SessionModule_Notify_Destory(LPCTSTR lpszTopicName)
 {
 	return m_SessionNotify.SessionModule_Notify_Destory(lpszTopicName);
 }
-extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr)
+extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType)
 {
-	return m_SessionNotify.SessionModule_Notify_Insert(lpszTopicStr, lpszClientAddr);
+	return m_SessionNotify.SessionModule_Notify_Insert(lpszTopicStr, lpszClientAddr, enClientType);
 }
-extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr)
+extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType)
 {
-	return m_SessionNotify.SessionModule_Notify_Delete(lpszTopicStr, lpszClientAddr);
+	return m_SessionNotify.SessionModule_Notify_Delete(lpszTopicStr, lpszClientAddr, enClientType);
 }
-extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, TCHAR * **ppptszListClient, int* pInt_ListCount)
+extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT * **pppSt_ListClient, int* pInt_ListCount)
 {
-	return m_SessionNotify.SessionModule_Notify_GetList(lpszTopicStr, ppptszListClient, pInt_ListCount);
+	return m_SessionNotify.SessionModule_Notify_GetList(lpszTopicStr, pppSt_ListClient, pInt_ListCount);
 }
