@@ -15,6 +15,7 @@
 #endif //PCH_H
 #include <string.h>
 #include <memory>
+#include <string>
 #include <list>
 #include <shared_mutex>
 #include <unordered_map>
@@ -24,9 +25,16 @@
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+using namespace std;
+#ifdef _UNICODE
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif
+
+#include "../XQueue_ProtocolHdr.h"
 #include "Session_Define.h"
 #include "Session_Error.h"
-using namespace std;
 /********************************************************************
 //    Created:     2021/07/02  10:16:47
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_SessionModule\pch.h
@@ -42,7 +50,6 @@ extern BOOL Session_IsErrorOccur;
 extern DWORD Session_dwErrorCode;
 
 #ifdef _WINDOWS
-
 #ifdef _WIN64
 #pragma comment(lib,"x64/XEngine_BaseLib/XEngine_BaseLib")
 #else

@@ -93,6 +93,10 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	{
 		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
 	}
+	if (!st_JsonRoot["wReserve"].isNull())
+	{
+		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
+	}
 
 	Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
 	

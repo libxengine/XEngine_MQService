@@ -7,7 +7,7 @@ c c++Message Queue Service
 ## 软件架构
 此软件基于XEngine开发.采用C/C++作为开发语言  
 此软件是一款简易的高性能服务,统一的API接口,让用户几乎不需要二次开发就可以直接使用  
-此软件主要是提供了消息队列引擎,可用于用户消息操作的一个API服务器.支持HTTP和私有协议.  
+此软件主要是提供了消息队列引擎,可用于用户消息操作的一个API服务器.支持HTTP,WEBSOCKET和私有协议.  
 ## 软件特性
 此软件支持以下特性  
 1. 消息序列  
@@ -22,12 +22,14 @@ c c++Message Queue Service
 10. 支持权限验证(planning)  
 11. 支持多种协议(TCP,HTTP,WEBSOCKET)  
 12. 主动投递获取模式或者被动订阅通知模块  
+13. 倒序获取(planning)  
+14. 不限制负载的消息类型  
 
 ## 安装教程
 
 #### 版本需求
 支持WINDOWS 7SP1和LINUX(UBUNT20.04,CENTOS8)以上系统  
-XEngine版本需要V7.15或者以上版本  
+XEngine版本需要V7.18或者以上版本  
 vcpkg 需要2021.05.11以上版本  
 
 #### Windows
@@ -42,8 +44,8 @@ vcpkg 主要为了方便安装jsoncpp,如果你想自己配置jsoncpp的环境,�
 
 ##### XEngine环境
 XEngine可以直接下载,下载完毕后添加用户环境变量,需要下面两个  
-- XEngine_Include 头文件目录地址
-- XEngine_Library 库文件目录地址
+- XEngine_Include 指向头文件目录地址
+- XEngine_Library 指向库文件目录地址
 
 #### Linux
 Linux使用Makefile编译  
@@ -70,7 +72,7 @@ make FLAGS=CleanAll 清理编译
 3.  编译
 4.  安装
 5.  运行
-6.  通过curl或postman 等三方工具测试消息投递和获取
+6.  运行演示代码
 
 ## 目录结构
 - XEngine_Docment  文档目录结构  
@@ -87,6 +89,9 @@ make FLAGS=CleanAll 清理编译
 2.  新建 Feat_xxx 分支
 3.  提交代码
 4.  新建 Pull Request  
+
+## 关注我们
+如果你觉得这个软件对你有帮助,请你给我们一个START吧
 
 ## 提交问题
 

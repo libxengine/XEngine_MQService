@@ -15,7 +15,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
-//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
+//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -lXEngine_BaseLib -lXClient_Socket
 
 SOCKET m_Socket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题

@@ -7,7 +7,7 @@ c c++Message Queue Service
 #### Software Architecture
 the software developed based on xengine,using c/c++ development  
 the software is a simple and high performance server,Allow users to use it directly without secondary development  
-the software mainly provides a message queue engine,support http and private protocol api server  
+the software mainly provides a message queue engine,support http,WEBSOCKET and private protocol api server  
 
 ## Software features
 this software support following features  
@@ -23,12 +23,14 @@ this software support following features
 10. support Permission Validation(planning)  
 11. support multi protocol(TCP,HTTP,WEBSOCKET)  
 12. Active delivery acquisition mode or passive subscription notification module  
+13. get with Reverse order(planning)  
+14. Unlimited load message types  
 
 ## install
 
 #### Requirements  
 support system above windows 7sp1 and linux(ubuntu20.04,centos8)  
-XEngine need V7.14 or above  
+XEngine need V7.18 or above  
 vcpkg need 2021.05.11 or above  
 
 #### Windows
@@ -73,7 +75,7 @@ make FLAGS=CleanAll clear
 3.  complie
 4.  install
 5.  run
-6.  use curl or postman test message post and get  
+6.  run example code  
 
 ## directory struct
 - XEngine_Docment  docment directory  
@@ -90,6 +92,9 @@ You can refer to the document under the docment directory. It contains API proto
 2. Create new Feat_xxx branch
 3. Submit the code
 4. New Pull Request
+
+## Follow us
+If you think this software is helpful to you, please give us a START
 
 ## post issues
 

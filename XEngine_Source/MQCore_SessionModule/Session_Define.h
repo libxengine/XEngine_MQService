@@ -11,6 +11,24 @@
 //    History:
 *********************************************************************/
 //////////////////////////////////////////////////////////////////////////
+//                        导出枚举类型
+//////////////////////////////////////////////////////////////////////////
+typedef enum
+{
+	ENUM_MQCORE_SESSION_CLIENT_TYPE_UNKNOW = 0,
+	ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP = 1,
+	ENUM_MQCORE_SESSION_CLIENT_TYPE_WEBSOCKET = 2,
+	ENUM_MQCORE_SESSION_CLIENT_TYPE_HTTP = 3
+}ENUM_MQCORE_SESSION_CLIENT_TYPE;
+//////////////////////////////////////////////////////////////////////////
+//                        导出的数据结构
+//////////////////////////////////////////////////////////////////////////
+typedef struct
+{
+	TCHAR tszNotifyAddr[128];
+	ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType;
+}SESSION_NOTIFYCLIENT, * LPSESSION_NOTIFYCLIENT;
+//////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
 extern "C" DWORD SessionModule_GetLastError(int* pInt_SysError = NULL);
@@ -159,12 +177,17 @@ extern "C" BOOL SessionModule_Notify_Destory(LPCTSTR lpszTopicName);
   类型：常量字符指针
   可空：N
   意思：输入要插入的客户端
+ 参数.三：enClientType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：客户端类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
+extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
 /************************************************************************
 函数名称：SessionModule_Notify_Delete
 函数功能：从一个主题中删除一个订阅客户端
@@ -178,12 +201,17 @@ extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
   类型：常量字符指针
   可空：N
   意思：输入要删除的客户端
+ 参数.三：enClientType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：客户端类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr);
+extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
 /********************************************************************
 函数名称：SessionModule_Notify_GetList
 函数功能：获取主题对应的订阅列表
@@ -192,7 +220,7 @@ extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
   类型：常量字符指针
   可空：N
   意思：输入主题名
- 参数.二：ppptszListClient
+ 参数.二：pppSt_ListClient
   In/Out：Out
   类型：三级指针
   可空：N
@@ -207,4 +235,4 @@ extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, TCHAR*** ppptszListClient, int* pInt_ListCount);
+extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT *** pppSt_ListClient, int* pInt_ListCount);
