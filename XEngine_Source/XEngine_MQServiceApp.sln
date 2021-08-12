@@ -13,6 +13,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ProtocolModule", "MQ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_SessionModule", "MQCore_SessionModule\MQCore_SessionModule.vcxproj", "{77321E0D-15DB-4C6E-8872-115CBBE41F27}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MQCore_Hdr", "MQCore_Hdr", "{3A9FE48B-7FD1-4D02-8ED7-7521DC469765}"
+	ProjectSection(SolutionItems) = preProject
+		XQueue_ProtocolHdr.h = XQueue_ProtocolHdr.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

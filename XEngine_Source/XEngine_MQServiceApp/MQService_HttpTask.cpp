@@ -47,9 +47,11 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 {
 	int nSDLen = 2048;
 	int nRVLen = 2048;
+	int nJSLen = 0;
 	int nMsgType = 0;
 	TCHAR tszSDBuffer[2048];
 	TCHAR tszRVBuffer[2048];
+	TCHAR* ptszMsgBuffer = NULL;
 	LPCTSTR lpszMethod = _T("POST");
 
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
@@ -63,15 +65,16 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, &st_MQProtocol, tszRVBuffer, &nRVLen, &nMsgType);
+		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_MQProtocol, &st_ProtocolHdr, &ptszMsgBuffer, &nRVLen, &nMsgType);
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST == st_ProtocolHdr.unOperatorCode)
 		{
 			st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST;
-			if (!XMQModule_Packet_Post(&st_MQProtocol, tszRVBuffer, nRVLen))
+			if (!XMQModule_Packet_Post(&st_MQProtocol, ptszMsgBuffer, nJSLen))
 			{
 				st_ProtocolHdr.wReserve = 701;
 				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP消息端:%s,主题:%s,序列:%lld,投递数据报失败,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, XMQModule_GetLastError());
 				return FALSE;
 			}
@@ -92,8 +95,8 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 				memset(tszWSBuffer, '\0', sizeof(tszWSBuffer));
 
 				st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-				ProtocolModule_Packet_TCPCommon(&st_ProtocolHdr, &st_MQProtocol, tszTCPBuffer, &nTCPLen, tszRVBuffer, nRVLen);
-				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszWSBuffer, &nWSLen, tszRVBuffer, nRVLen);
+				ProtocolModule_Packet_TCPCommon(&st_ProtocolHdr, &st_MQProtocol, tszTCPBuffer, &nTCPLen, ptszMsgBuffer, nJSLen);
+				ProtocolModule_Packet_HttpCommon(&st_ProtocolHdr, &st_MQProtocol, tszWSBuffer, &nWSLen, ptszMsgBuffer, nJSLen);
 				for (int i = 0; i < nListCount; i++)
 				{
 					if (ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP == ppSt_ListAddr[i]->enClientType)
@@ -107,6 +110,7 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 				}
 				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAddr, nListCount);
 			}
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, nListCount);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET == st_ProtocolHdr.unOperatorCode)
