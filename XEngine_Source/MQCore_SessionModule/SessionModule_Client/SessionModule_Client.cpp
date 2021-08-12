@@ -74,6 +74,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr)
 	XENGINE_SESSIONINFO st_SessionInfo;
 	memset(&st_SessionInfo, '\0', sizeof(XENGINE_SESSIONINFO));
 
+	st_SessionInfo.bOrder = TRUE;
 	st_SessionInfo.nSerialPos = 1;
 	st_SessionInfo.nStartTime = time(NULL);
 
@@ -193,6 +194,54 @@ BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XEN
 	_tcscpy(stl_MapIterator->second.tszKeyStr, pSt_MQProtocol->tszMQKey);
     st_Locker.unlock_shared();
     return TRUE;
+}
+/********************************************************************
+函数名称：SessionModule_Client_SetOrder
+函数功能：设置客户端队列读取顺序
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要设置的客户端
+ 参数.二：bOrder
+  In/Out：In
+  类型：逻辑型
+  可空：N
+  意思：真为顺序读取,假为倒序
+ 参数.三：nMQSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：消息队列位置
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	//开始取出数据
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second.bOrder = bOrder;
+	stl_MapIterator->second.nSerialPos = nMQSerial;
+	st_Locker.unlock_shared();
+	return TRUE;
 }
 /********************************************************************
 函数名称：SessionModule_Client_ADDSerial

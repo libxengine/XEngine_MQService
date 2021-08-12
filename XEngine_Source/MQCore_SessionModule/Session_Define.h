@@ -120,6 +120,30 @@ extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
 /********************************************************************
+函数名称：SessionModule_Client_SetOrder
+函数功能：设置客户端队列读取顺序
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要设置的客户端
+ 参数.二：bOrder
+  In/Out：In
+  类型：逻辑型
+  可空：N
+  意思：真为顺序读取,假为倒序
+ 参数.三：nMQSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：消息队列位置
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial);
+/********************************************************************
 函数名称：SessionModule_Client_ADDSerial
 函数功能：序列号自加
  参数.一：lpszClientAddr

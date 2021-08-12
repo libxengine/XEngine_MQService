@@ -55,6 +55,10 @@ extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
 {
 	return m_SessionClient.SessionModule_Client_Set(lpszClientAddr, pSt_MQProtocol);
 }
+extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial)
+{
+	return m_SessionClient.SessionModule_Client_SetOrder(lpszClientAddr, bOrder, nMQSerial);
+}
 extern "C" BOOL SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_ADDSerial(lpszClientAddr);
