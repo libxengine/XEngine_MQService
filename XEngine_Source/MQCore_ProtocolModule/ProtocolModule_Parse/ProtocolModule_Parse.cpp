@@ -43,11 +43,11 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   类型：数据结构指针
   可空：N
   意思：输出消息协议
- 参数.五：ptszMsgBuffer
+ 参数.五：pptszMsgBuffer
   In/Out：Out
-  类型：字符指针
+  类型：二级指针
   可空：Y
-  意思：输出消息内容
+  意思：输出消息内容,需要释放内存
  参数.六：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
@@ -63,7 +63,7 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer /* = NULL */, int* pInt_MsgLen /* = NULL */, int* pInt_Type /* = NULL */)
+BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr /* = NULL */, TCHAR** pptszMsgBuffer /* = NULL */, int* pInt_MsgLen /* = NULL */, int* pInt_Type /* = NULL */)
 {
 	Protocol_IsErrorOccur = FALSE;
 
@@ -84,22 +84,23 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
 		return FALSE;
 	}
-
-	if (!st_JsonRoot["unOperatorType"].isNull())
-	{
-		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
-	}
-	if (!st_JsonRoot["unOperatorCode"].isNull())
-	{
-		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
-	}
-	if (!st_JsonRoot["wReserve"].isNull())
-	{
-		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
-	}
-
 	Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
-	
+
+	if (NULL != pSt_ProtocolHdr)
+	{
+		if (!st_JsonRoot["unOperatorType"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
+		}
+		if (!st_JsonRoot["unOperatorCode"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
+		}
+		if (!st_JsonRoot["wReserve"].isNull())
+		{
+			pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
+		}
+	}
 	_tcscpy(pSt_MQProtocol->tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 	pSt_MQProtocol->nSerial = st_JsonMQProtocol["nSerial"].asInt();
 	pSt_MQProtocol->nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
@@ -111,7 +112,15 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 
 		*pInt_Type = st_JsonPayLoad["nPayType"].asInt();
 		*pInt_MsgLen = st_JsonPayLoad["nPayLen"].asInt();
-		memcpy(ptszMsgBuffer, st_JsonPayLoad["tszPayData"].asCString(), *pInt_MsgLen);
+
+		*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
+		if (NULL != *pptszMsgBuffer)
+		{
+			Protocol_IsErrorOccur = TRUE;
+			Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
+			return FALSE;
+		}
+		memcpy(*pptszMsgBuffer, st_JsonPayLoad["tszPayData"].asCString(), *pInt_MsgLen);
 	}
 	return TRUE;
 }

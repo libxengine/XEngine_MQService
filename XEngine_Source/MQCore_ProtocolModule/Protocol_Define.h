@@ -116,21 +116,21 @@ extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_Protoc
   类型：整数型
   可空：N
   意思：输入缓冲区大小
- 参数.三：pSt_ProtocolHdr
-  In/Out：Out
-  类型：数据结构指针
-  可空：N
-  意思：输出解析到的头协议
- 参数.四：pSt_MQProtocol
+ 参数.三：pSt_MQProtocol
   In/Out：Out
   类型：数据结构指针
   可空：N
   意思：输出消息协议
- 参数.五：ptszMsgBuffer
+ 参数.四：pSt_ProtocolHdr
   In/Out：Out
-  类型：字符指针
+  类型：数据结构指针
   可空：Y
-  意思：输出消息内容
+  意思：输出解析到的头协议
+ 参数.五：pptszMsgBuffer
+  In/Out：Out
+  类型：二级指针
+  可空：Y
+  意思：输出消息内容,需要释放内存
  参数.六：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
@@ -146,4 +146,4 @@ extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_Protoc
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL, int* pInt_Type = NULL);
+extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, TCHAR * *pptszMsgBuffer = NULL, int* pInt_MsgLen = NULL, int* pInt_Type = NULL);

@@ -12,3 +12,4 @@
 *********************************************************************/
 #define ERROR_MQ_MODULE_PROTOCOL_PARAMENT 0x0030001
 #define ERROR_MQ_MODULE_PROTOCOL_PARSE 0x0030002
+#define ERROR_MQ_MODULE_PROTOCOL_MALLOC 0x0030003
