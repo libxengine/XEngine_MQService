@@ -254,8 +254,8 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQREVERSE == pSt_ProtocolHdr->unOperatorCode)
 		{
-			SessionModule_Client_SetOrder(lpszClientAddr, st_MQProtocol.nKeepTime, st_MQProtocol.nSerial);
 			pSt_ProtocolHdr->wReserve = 0;
+			SessionModule_Client_SetOrder(lpszClientAddr, st_MQProtocol.nKeepTime, st_MQProtocol.nSerial);
 			ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,请求设置序列号成功,主题名称:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);

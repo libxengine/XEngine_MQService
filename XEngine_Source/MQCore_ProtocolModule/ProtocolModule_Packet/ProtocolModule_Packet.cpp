@@ -53,12 +53,17 @@ CProtocolModule_Packet::~CProtocolModule_Packet()
   类型：整数型
   可空：Y
   意思：要封装数据的长度
+ 参数.七：enPayType
+  In/Out：In
+  类型：枚举型
+  可空：Y
+  意思：消息类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer, int nMsgLen)
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType /* = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING */)
 {
     Protocol_IsErrorOccur = FALSE;
 
@@ -68,14 +73,54 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR
         Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
         return FALSE;
     }
-    pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
-    memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-    memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-    if (nMsgLen)
+
+    if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
     {
-        memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
-	}
-    *pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		if (nMsgLen)
+		{
+			memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
+		}
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+    }
+    else
+    {
+		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		if (nMsgLen)
+		{
+			memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
+		}
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+
+		Json::Value st_JsonRoot;
+		Json::Value st_JsonPayload;
+		Json::StreamWriterBuilder st_JsonBuilder;
+
+		st_JsonRoot["tszMQKey"] = pSt_MQProtocol->tszMQKey;
+		st_JsonRoot["nSerial"] = pSt_MQProtocol->nSerial;
+		st_JsonRoot["nKeepTime"] = pSt_MQProtocol->nKeepTime;
+		st_JsonRoot["nGetTimer"] = pSt_MQProtocol->nGetTimer;
+		if (nMsgLen > 0)
+		{
+			st_JsonPayload["nPayType"] = (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE)enPayType;
+			st_JsonPayload["nPayLen"] = nMsgLen;
+			st_JsonPayload["tszPayData"] = lpszMsgBuffer;
+
+			st_JsonRoot["st_Payload"] = st_JsonPayload;
+		}
+		st_JsonBuilder["emitUTF8"] = true;
+
+		pSt_ProtocolHdr->unPacketSize = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), pSt_ProtocolHdr->unPacketSize);
+
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + pSt_ProtocolHdr->unPacketSize;
+    }
+   
     return TRUE;
 }
 /********************************************************************
@@ -111,17 +156,17 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR
   类型：整数型
   可空：Y
   意思：要封装数据的长度
- 参数.七：nMsgType
+ 参数.七：enPayType
   In/Out：In
-  类型：整数型
+  类型：枚举型
   可空：Y
-  意思：消息类型,0字符串
+  意思：消息类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */, int nMsgType /* = 0 */)
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType /* = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING */)
 {
     Json::Value st_JsonRoot;
     Json::Value st_JsonMQProtocol;
@@ -140,7 +185,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
     st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
     if (nMsgLen > 0)
     {
-        st_JsonPayload["nPayType"] = nMsgType;
+        st_JsonPayload["nPayType"] = (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE)enPayType;
         st_JsonPayload["nPayLen"] = nMsgLen;
         st_JsonPayload["tszPayData"] = lpszMsgBuffer;
 
