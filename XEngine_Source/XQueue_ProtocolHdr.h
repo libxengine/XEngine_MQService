@@ -45,4 +45,11 @@ typedef struct tag_XEngine_ProtocolXmq
 	int nKeepTime;                                                        //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，如果有多个永久存在的包nSerial必须有值
 	int nGetTimer;                                                        //可以获取的次数
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;
+typedef struct tag_XEngine_MQNumber
+{
+	TCHAR tszMQKey[256];                                                  //主题名		  
+	__int64x nCount;                                                      //总个数
+	__int64x nFirstNumber;                                                //起始编码
+	__int64x nLastNumber;                                                 //末尾编号
+}XENGINE_MQNUMBER, * LPXENGINE_MQNUMBER;
 #pragma pack(pop)

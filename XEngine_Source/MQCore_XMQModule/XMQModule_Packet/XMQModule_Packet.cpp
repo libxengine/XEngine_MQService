@@ -459,7 +459,7 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CXMQModule_Packet::XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, int* pInt_Count)
+BOOL CXMQModule_Packet::XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, __int64x* pInt_Count)
 {
 	MQX_IsErrorOccur = FALSE;
 

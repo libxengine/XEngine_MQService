@@ -128,17 +128,12 @@ extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_Protoc
   类型：整数型指针
   可空：N
   意思：输出缓冲区大小
- 参数.五：enPayType
-  In/Out：In
-  类型：枚举型
-  可空：Y
-  意思：消息类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
+extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/

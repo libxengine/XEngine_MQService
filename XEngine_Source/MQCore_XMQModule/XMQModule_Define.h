@@ -153,7 +153,7 @@ extern "C" BOOL XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, int* pInt_Count);
+extern "C" BOOL XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, __int64x * pInt_Count);
 /********************************************************************
 函数名称：XMQModule_Packet_GetSerial
 函数功能：获得开始和结尾序列编号
