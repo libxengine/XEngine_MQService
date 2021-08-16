@@ -42,6 +42,8 @@ public:
 	BOOL XMQModule_Packet_Post(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, LPCTSTR lpszMsgBuffer, int nMsgLen);
 	BOOL XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_Len);
     BOOL XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
+    BOOL XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, int* pInt_Count);
+    BOOL XMQModule_Packet_GetSerial(LPCTSTR lpszKeyStr, __int64x* pInt_FirstNumber = NULL, __int64x* pInt_LastNumber = NULL);
 protected:
     BOOL XMQModule_Packet_Push(XENGINE_MQXPACKET *pSt_MQPacket);
 protected:

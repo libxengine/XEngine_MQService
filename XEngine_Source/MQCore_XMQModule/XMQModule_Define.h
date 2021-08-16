@@ -135,3 +135,46 @@ extern "C" BOOL XMQModule_Packet_Get(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR
 备注：
 ************************************************************************/
 extern "C" BOOL XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
+/********************************************************************
+函数名称：XMQModule_Packet_GetCount
+函数功能：获取指定主题剩余包个数
+ 参数.一：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要获取的主题名
+ 参数.二：pInt_Count
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出总个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, int* pInt_Count);
+/********************************************************************
+函数名称：XMQModule_Packet_GetSerial
+函数功能：获得开始和结尾序列编号
+ 参数.一：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要获取的主题名
+ 参数.二：pInt_FirstNumber
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：导出头序列编号
+ 参数.三：pInt_LastNumber
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：导出尾序列编号
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL XMQModule_Packet_GetSerial(LPCTSTR lpszKeyStr, __int64x* pInt_FirstNumber = NULL, __int64x* pInt_LastNumber = NULL);
