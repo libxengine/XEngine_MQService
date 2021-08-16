@@ -105,6 +105,40 @@ extern "C" BOOL ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_Protoco
 备注：
 *********************************************************************/
 extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer = NULL, int nMsgLen = 0, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
+/********************************************************************
+函数名称：ProtocolModule_Packet_MQNumber
+函数功能：获取序列打包函数
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入协议头
+ 参数.二：pSt_MQNumber
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的序列号信息
+ 参数.三：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.四：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+ 参数.五：enPayType
+  In/Out：In
+  类型：枚举型
+  可空：Y
+  意思：消息类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/

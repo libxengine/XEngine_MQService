@@ -5,5 +5,6 @@ EXPORTS
 
 	ProtocolModule_Packet_TCPCommon
 	ProtocolModule_Packet_HttpCommon
+	ProtocolModule_Packet_MQNumber
 
 	ProtocolModule_Parse_Http
