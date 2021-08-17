@@ -203,12 +203,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XEN
   类型：常量字符指针
   可空：N
   意思：要设置的客户端
- 参数.二：bOrder
+ 参数.二：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要设置的客户端
+ 参数.三：bOrder
   In/Out：In
   类型：逻辑型
   可空：N
   意思：真为顺序读取,假为倒序
- 参数.三：nMQSerial
+ 参数.四：nMQSerial
   In/Out：In
   类型：整数型
   可空：N
@@ -218,7 +223,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XEN
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial)
+BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial)
 {
 	Session_IsErrorOccur = FALSE;
 
@@ -240,12 +245,13 @@ BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr
 	}
 	stl_MapIterator->second.bOrder = bOrder;
 	stl_MapIterator->second.nSerialPos = nMQSerial;
+	_tcscpy(stl_MapIterator->second.tszKeyStr, lpszKeyStr);
 	st_Locker.unlock_shared();
 	return TRUE;
 }
 /********************************************************************
-函数名称：SessionModule_Client_ADDSerial
-函数功能：序列号自加
+函数名称：SessionModule_Client_ADDDelSerial
+函数功能：序列号自加自减
  参数.一：lpszClientAddr
   In/Out：In
   类型：常量字符指针
@@ -256,7 +262,7 @@ BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr)
+BOOL CSessionModule_Client::SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr)
 {
 	Session_IsErrorOccur = FALSE;
 
@@ -276,7 +282,14 @@ BOOL CSessionModule_Client::SessionModule_Client_ADDSerial(LPCTSTR lpszClientAdd
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
-	stl_MapIterator->second.nSerialPos++;
+	if (stl_MapIterator->second.bOrder)
+	{
+		stl_MapIterator->second.nSerialPos++;
+	}
+	else
+	{
+		stl_MapIterator->second.nSerialPos--;
+	}
 	st_Locker.unlock_shared();
 	return TRUE;
 }

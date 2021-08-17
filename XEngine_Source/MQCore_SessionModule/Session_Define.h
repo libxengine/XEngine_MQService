@@ -127,12 +127,17 @@ extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
   类型：常量字符指针
   可空：N
   意思：要设置的客户端
- 参数.二：bOrder
+ 参数.二：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要设置的客户端
+ 参数.三：bOrder
   In/Out：In
   类型：逻辑型
   可空：N
   意思：真为顺序读取,假为倒序
- 参数.三：nMQSerial
+ 参数.四：nMQSerial
   In/Out：In
   类型：整数型
   可空：N
@@ -142,10 +147,10 @@ extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCO
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial);
+extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial);
 /********************************************************************
 函数名称：SessionModule_Client_ADDSerial
-函数功能：序列号自加
+函数功能：序列号自加自减
  参数.一：lpszClientAddr
   In/Out：In
   类型：常量字符指针
@@ -156,7 +161,7 @@ extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrde
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr);
+extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/

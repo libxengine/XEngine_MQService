@@ -166,7 +166,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			pSt_ProtocolHdr->wReserve = 0;
 			ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
-			SessionModule_Client_ADDSerial(lpszClientAddr);       //移动序列号
+			SessionModule_Client_ADDDelSerial(lpszClientAddr);       //移动序列号
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,主题:%s,序列:%lld,获取消息数据成功,消息大小:%d"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, nRVLen);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL == pSt_ProtocolHdr->unOperatorCode)
@@ -255,15 +255,29 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		{
 			pSt_ProtocolHdr->wReserve = 0;
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPSERIAL;
-			if (!SessionModule_Client_SetOrder(lpszClientAddr, st_MQProtocol.nKeepTime, st_MQProtocol.nSerial))
+
+			if (0 == st_MQProtocol.nSerial)
 			{
-				pSt_ProtocolHdr->wReserve = 710;
+				__int64x nFirstNumber = 0;
+				__int64x nLastNumber = 0;
+				if (!XMQModule_Packet_GetSerial(st_MQProtocol.tszMQKey, &nFirstNumber, &nLastNumber))
+				{
+					pSt_ProtocolHdr->wReserve = 712;
+					ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("TCP消息端:%s,获取主题序列编号失败,主题名称:%s,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, SessionModule_GetLastError());
+					return FALSE;
+				}
+				st_MQProtocol.nKeepTime == 1 ? st_MQProtocol.nSerial = nFirstNumber : st_MQProtocol.nSerial = nLastNumber;
+			}
+			if (!SessionModule_Client_SetOrder(lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime, st_MQProtocol.nSerial))
+			{
+				pSt_ProtocolHdr->wReserve = 712;
 				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("TCP消息端:%s,设置消息队列读取模式失败,主题名称:%s,读取模式:%s,序列号:%lld,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime == 1 ? "顺序" : "倒序", st_MQProtocol.nSerial, SessionModule_GetLastError());
 				return FALSE;
 			}
-			SessionModule_Client_SetOrder(lpszClientAddr, st_MQProtocol.nKeepTime, st_MQProtocol.nSerial);
 			ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,请求设置序列号成功,主题名称:%s,读取模式:%s,序列号:%lld"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime == 1 ? "顺序" : "倒序", st_MQProtocol.nSerial);
@@ -278,7 +292,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			_tcscpy(st_MQNumber.tszMQKey, st_MQProtocol.tszMQKey);
 			if (!XMQModule_Packet_GetSerial(st_MQNumber.tszMQKey, &st_MQNumber.nFirstNumber, &st_MQNumber.nLastNumber))
 			{
-				pSt_ProtocolHdr->wReserve = 710;
+				pSt_ProtocolHdr->wReserve = 714;
 				ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("TCP消息端:%s,获取主题序列编号失败,主题名称:%s,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, SessionModule_GetLastError());
@@ -287,7 +301,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			XMQModule_Packet_GetCount(st_MQNumber.tszMQKey, &st_MQNumber.nCount);
 			ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, &st_MQNumber, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,获取主题序列编号成功,主题名称:%s,队列个数:%d,开始编号:%lld,结尾编号:%lld"), lpszClientAddr, st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP消息端:%s,获取主题序列编号成功,主题名称:%s,队列个数:%lld,开始编号:%lld,结尾编号:%lld"), lpszClientAddr, st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
 		}
 		else
 		{

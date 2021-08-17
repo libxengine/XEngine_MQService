@@ -30,8 +30,8 @@ public:
     BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
     BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
     BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
-    BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, BOOL bOrder, __int64x nMQSerial);
-    BOOL SessionModule_Client_ADDSerial(LPCTSTR lpszClientAddr);
+    BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial);
+    BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
 private:
     shared_mutex st_Locker;
 private:
