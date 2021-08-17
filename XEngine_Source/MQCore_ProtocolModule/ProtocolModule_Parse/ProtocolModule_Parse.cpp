@@ -100,6 +100,10 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		{
 			pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
 		}
+		if (!st_JsonRoot["byVersion"].isNull())
+		{
+			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
+		}
 	}
 	_tcscpy(pSt_MQProtocol->tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 	pSt_MQProtocol->nSerial = st_JsonMQProtocol["nSerial"].asInt();
