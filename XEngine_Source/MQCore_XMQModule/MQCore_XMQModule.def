@@ -10,3 +10,5 @@ EXPORTS
 	XMQModule_Packet_Post
 	XMQModule_Packet_Get
 	XMQModule_Packet_Del
+	XMQModule_Packet_GetCount
+	XMQModule_Packet_GetSerial

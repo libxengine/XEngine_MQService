@@ -441,6 +441,108 @@ BOOL CXMQModule_Packet::XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ* pSt_MQProtoco
 	}
 	return TRUE;
 }
+/********************************************************************
+函数名称：XMQModule_Packet_GetCount
+函数功能：获取指定主题剩余包个数
+ 参数.一：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要获取的主题名
+ 参数.二：pInt_Count
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出总个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CXMQModule_Packet::XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, __int64x* pInt_Count)
+{
+	MQX_IsErrorOccur = FALSE;
+
+	if (NULL == lpszKeyStr)
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_PARAMENT;
+		return FALSE;
+	}
+	//查找指定KEY数据
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_PACKETINFO*>::iterator stl_MapIterator = stl_MapMQPacket.find(lpszKeyStr);
+	if (stl_MapIterator == stl_MapMQPacket.end())
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second->st_Locker.lock_shared();
+	*pInt_Count = stl_MapIterator->second->pStl_ListPacket->size();
+	stl_MapIterator->second->st_Locker.unlock_shared();
+	st_Locker.unlock_shared();
+
+	return TRUE;
+}
+/********************************************************************
+函数名称：XMQModule_Packet_GetSerial
+函数功能：获得开始和结尾序列编号
+ 参数.一：lpszKeyStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要获取的主题名
+ 参数.二：pInt_FirstNumber
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：导出头序列编号
+ 参数.三：pInt_LastNumber
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：导出尾序列编号
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CXMQModule_Packet::XMQModule_Packet_GetSerial(LPCTSTR lpszKeyStr, __int64x* pInt_FirstNumber /* = NULL */, __int64x* pInt_LastNumber /* = NULL */)
+{
+	MQX_IsErrorOccur = FALSE;
+
+	if (NULL == lpszKeyStr)
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_PARAMENT;
+		return FALSE;
+	}
+	//查找指定KEY数据
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_PACKETINFO*>::iterator stl_MapIterator = stl_MapMQPacket.find(lpszKeyStr);
+	if (stl_MapIterator == stl_MapMQPacket.end())
+	{
+		MQX_IsErrorOccur = TRUE;
+		MQX_dwErrorCode = ERROR_MQ_MODULE_PACKET_GET_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second->st_Locker.lock_shared();
+	if (NULL != pInt_FirstNumber)
+	{
+		*pInt_FirstNumber = stl_MapIterator->second->pStl_ListPacket->front().st_XMQProtocol.nSerial;
+	}
+	if (NULL != pInt_LastNumber)
+	{
+		*pInt_LastNumber = stl_MapIterator->second->pStl_ListPacket->back().st_XMQProtocol.nSerial;
+	}
+	stl_MapIterator->second->st_Locker.unlock_shared();
+	st_Locker.unlock_shared();
+
+	return TRUE;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //                      保护函数
 ///////////////////////////////////////////////////////////////////////////////

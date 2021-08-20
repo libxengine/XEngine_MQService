@@ -9,7 +9,8 @@ EXPORTS
 	SessionModule_Client_Delete
 	SessionModule_Client_Get
 	SessionModule_Client_Set
-	SessionModule_Client_ADDSerial
+	SessionModule_Client_SetOrder
+	SessionModule_Client_ADDDelSerial
 
 	SessionModule_Notify_Create
 	SessionModule_Notify_Destory
