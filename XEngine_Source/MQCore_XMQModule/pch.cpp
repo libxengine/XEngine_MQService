@@ -57,3 +57,11 @@ extern "C" BOOL XMQModule_Packet_Del(XENGINE_PROTOCOL_XMQ * pSt_MQProtocol)
 {
     return m_MQXPacket.XMQModule_Packet_Del(pSt_MQProtocol);
 }
+extern "C" BOOL XMQModule_Packet_GetCount(LPCTSTR lpszKeyStr, __int64x * pInt_Count)
+{
+    return m_MQXPacket.XMQModule_Packet_GetCount(lpszKeyStr, pInt_Count);
+}
+extern "C" BOOL XMQModule_Packet_GetSerial(LPCTSTR lpszKeyStr, __int64x * pInt_FirstNumber, __int64x * pInt_LastNumber)
+{
+    return m_MQXPacket.XMQModule_Packet_GetSerial(lpszKeyStr, pInt_FirstNumber, pInt_LastNumber);
+}

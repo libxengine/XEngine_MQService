@@ -31,18 +31,22 @@ extern "C" DWORD Protocol_GetLastError(int* pInt_SysError)
 /************************************************************************/
 /*                        封装类函数                                    */
 /************************************************************************/
-extern "C" BOOL ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer, int nMsgLen)
+extern "C" BOOL ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
+	return m_ProtocolPacket.ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen, enPayType);
 }
-extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer, int nMsgLen, int nMsgType)
+extern "C" BOOL ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_HttpCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen, nMsgType);
+	return m_ProtocolPacket.ProtocolModule_Packet_HttpCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen, enPayType);
+}
+extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_MQNUMBER * pSt_MQNumber, TCHAR * ptszMsgBuffer, int* pInt_MsgLen)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, pSt_MQNumber, ptszMsgBuffer, pInt_MsgLen);
 }
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
-extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, int* pInt_Type)
+extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, TCHAR * *pptszMsgBuffer, int* pInt_MsgLen, int* pInt_Type)
 {
-	return m_ProtocolParse.ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, pInt_Type);
+	return m_ProtocolParse.ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, pSt_MQProtocol, pSt_ProtocolHdr, pptszMsgBuffer, pInt_MsgLen, pInt_Type);
 }

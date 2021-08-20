@@ -73,6 +73,7 @@ void MQ_Create()
 	Json::Value st_JsonMQProtocol;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQCREATE;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;
@@ -110,6 +111,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理
@@ -140,6 +142,79 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	}
 	printf("MQ_Post:%s\n", tszMsgBuffer);
 }
+
+
+void MQ_GetOrder()
+{
+	int nLen = 0;
+	TCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonMQProtocol;
+	Json::Value st_JsonPayload;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQSERIAL;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+
+	st_JsonMQProtocol["tszMQKey"] = lpszKey;
+	st_JsonMQProtocol["nKeepTime"] = 0;
+	st_JsonMQProtocol["nSerial"] = 1;
+
+	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+
+	nLen = st_JsonRoot.toStyledString().length();
+	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
+
+	if (!MQ_SendPacket(tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	printf("MQ_GetOrder:%s\n", tszMsgBuffer);
+}
+
+void MQ_GetSerial()
+{
+	int nLen = 0;
+	TCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonMQProtocol;
+	Json::Value st_JsonPayload;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+
+	st_JsonMQProtocol["tszMQKey"] = lpszKey;
+
+	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+
+	nLen = st_JsonRoot.toStyledString().length();
+	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
+
+	if (!MQ_SendPacket(tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	printf("MQ_GetSerial:%s\n", tszMsgBuffer);
+}
 void MQ_Get()
 {
 	int nLen = 0;
@@ -151,6 +226,7 @@ void MQ_Get()
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;      
@@ -186,6 +262,7 @@ void MQ_Delete()
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 1;
@@ -221,6 +298,7 @@ void MQ_Subscribe()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY;
 	st_JsonRoot["wReserve"] = 1;       //1为请求订阅
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 
@@ -295,6 +373,8 @@ int main()
 	
 	MQ_Create();
 	MQ_Post("123hello");
+	MQ_GetSerial();
+	MQ_GetOrder();
 	MQ_Get();
 	MQ_Delete();
 	MQ_Subscribe();

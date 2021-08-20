@@ -1,4 +1,6 @@
+[中文](README.md) ||  [English](README.en.md)  
 # XEngine_MQService
+本仓库有开发和主分支,如果要使用,请使用master分支下的代码  
 
 ## 介绍
 c c++消息队列服务 消息队列中间件  
@@ -22,7 +24,7 @@ c c++Message Queue Service
 10. 支持权限验证(planning)  
 11. 支持多种协议(TCP,HTTP,WEBSOCKET)  
 12. 主动投递获取模式或者被动订阅通知模块  
-13. 倒序获取(planning)  
+13. 获取顺序与开始序列号设置  
 14. 不限制负载的消息类型  
 
 ## 安装教程

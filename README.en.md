@@ -1,4 +1,6 @@
+[中文](README.md) ||  [English](README.en.md)  
 # XEngine_MQService
+This repository has a development and master branch. If you want to use it, please use the master branch  
 
 #### Description
 c c++消息队列服务 消息队列中间件
@@ -23,7 +25,7 @@ this software support following features
 10. support Permission Validation(planning)  
 11. support multi protocol(TCP,HTTP,WEBSOCKET)  
 12. Active delivery acquisition mode or passive subscription notification module  
-13. get with Reverse order(planning)  
+13. get order and start serial pos setting  
 14. Unlimited load message types  
 
 ## install
