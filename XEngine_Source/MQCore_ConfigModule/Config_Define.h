@@ -21,7 +21,8 @@ typedef struct tag_XEngine_ServerConfig
     int nTCPPort;
     int nHttpPort;
     int nWSPort;
-    int nBroadPort;
+    int nBroadRVPort;
+    int nBroadSDPort;
     struct
     {
         int nMaxClient;
