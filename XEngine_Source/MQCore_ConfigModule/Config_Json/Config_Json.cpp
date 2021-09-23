@@ -69,6 +69,7 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
     pSt_ServerConfig->nWSPort = st_JsonRoot["nWSPort"].asInt();
+    pSt_ServerConfig->nBroadPort = st_JsonRoot["nBroadPort"].asInt();
 
     if (st_JsonRoot["XMax"].empty() || (6 != st_JsonRoot["XMax"].size()))
     {
@@ -120,18 +121,6 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLAddr,st_JsonXSql["SQLAddr"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
-
-    if (st_JsonRoot["XDDSConfig"].empty() || (4 != st_JsonRoot["XDDSConfig"].size()))
-    {
-        Config_IsErrorOccur = TRUE;
-        Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XDDS;
-        return FALSE;
-    }
-    Json::Value st_JsonXDDSConfig = st_JsonRoot["XDDSConfig"];
-	pSt_ServerConfig->st_XDDSConfig.nMixPort = st_JsonXDDSConfig["nMixPort"].asInt();
-    pSt_ServerConfig->st_XDDSConfig.nMaxPort = st_JsonXDDSConfig["nMaxPort"].asInt();
-    pSt_ServerConfig->st_XDDSConfig.nBroadPort = st_JsonXDDSConfig["nBroadPort"].asInt();
-	_tcscpy(pSt_ServerConfig->st_XDDSConfig.tszMultiCastAddr, st_JsonXDDSConfig["tszMultiCastAddr"].asCString());
 
 	if (st_JsonRoot["XVer"].empty())
 	{
