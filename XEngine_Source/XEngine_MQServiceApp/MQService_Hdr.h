@@ -41,6 +41,8 @@ typedef std::string tstring;
 #include "../MQCore_ConfigModule/Config_Error.h"
 #include "../MQCore_XMQModule/XMQModule_Define.h"
 #include "../MQCore_XMQModule/XMQModule_Error.h"
+#include "../MQCore_DDSMessage/DDSMessage_Define.h"
+#include "../MQCore_DDSMessage/DDSMessage_Error.h"
 #include "../MQCore_ProtocolModule/Protocol_Define.h"
 #include "../MQCore_ProtocolModule/Protocol_Error.h"
 #include "../MQCore_SessionModule/Session_Define.h"
@@ -66,7 +68,12 @@ extern XNETHANDLE xhTCPPool;
 extern XNETHANDLE xhHttpPool;
 extern XNETHANDLE xhWSPool;
 
+extern SOCKET hSDSocket;
+extern SOCKET hRVSocket;
+
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
+
+extern shared_ptr<std::thread> pSTDThread;
 
 void ServiceApp_Stop(int signo);
 
@@ -75,46 +82,36 @@ void ServiceApp_Stop(int signo);
 #include "MQService_TCPTask.h"
 #include "MQService_HttpTask.h"
 #include "MQService_WSTask.h"
+#include "MQService_DDSTask.h"
 
 #ifdef _WINDOWS
 #ifdef _DEBUG
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
+#pragma comment(lib,"../Debug/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../Debug/MQCore_XMQModule.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"x86/XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
-#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
-#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
-#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
-#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #else
 #ifdef WIN64
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
+#pragma comment(lib,"../x64/Release/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../x64/Release/MQCore_XMQModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
-#pragma comment(lib,"x64/XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"x64/XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"x64/XEngine_Core/XEngine_ManagePool.lib")
-#pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_XLog.lib")
-#pragma comment(lib,"x64/XEngine_HelpComponents/HelpComponents_Packets.lib")
-#pragma comment(lib,"x64/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
-#pragma comment(lib,"x64/XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
+#pragma comment(lib,"../Release/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../Release/MQCore_XMQModule.lib")
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"x86/XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"x86/XEngine_Core/XEngine_ManagePool.lib")
-#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_XLog.lib")
-#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Packets.lib")
-#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_HttpServer.lib")
-#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #endif
 #endif
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_ManagePool.lib")
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_XLog.lib")
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpServer.lib")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #pragma comment(lib,"Ws2_32.lib")
 #endif

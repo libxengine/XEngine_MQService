@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(XEngine_Include);$(IncludePath)</IncludePath>
-    <LibraryPath>$(XEngine_Library);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(XEngine_Lib32);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MQService_Config.cpp" />
+    <ClCompile Include="MQService_DDSTask.cpp" />
     <ClCompile Include="MQService_HttpTask.cpp" />
     <ClCompile Include="MQService_Net.cpp" />
     <ClCompile Include="MQService_TCPTask.cpp" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MQService_Config.h" />
+    <ClInclude Include="MQService_DDSTask.h" />
     <ClInclude Include="MQService_Hdr.h" />
     <ClInclude Include="MQService_HttpTask.h" />
     <ClInclude Include="MQService_Net.h" />

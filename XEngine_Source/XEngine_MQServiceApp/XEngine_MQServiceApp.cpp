@@ -15,7 +15,13 @@ XHANDLE xhHTTPPacket = 0;
 XNETHANDLE xhTCPPool = 0;
 XNETHANDLE xhHttpPool = 0;
 XNETHANDLE xhWSPool = 0;
+
+SOCKET hSDSocket = 0;
+SOCKET hRVSocket = 0;
+
 XENGINE_SERVERCONFIG st_ServiceCfg;
+
+shared_ptr<std::thread> pSTDThread = NULL;
 
 void ServiceApp_Stop(int signo)
 {
@@ -23,6 +29,13 @@ void ServiceApp_Stop(int signo)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("服务器退出..."));
 		bIsRun = FALSE;
+
+		if (NULL != pSTDThread)
+		{
+			pSTDThread->join();
+		}
+		NetCore_BroadCast_Close(hSDSocket);
+		NetCore_BroadCast_Close(hSDSocket);
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
@@ -252,6 +265,34 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，Websocket消息服务没有被启用"));
 	}
+
+	if (st_ServiceCfg.nBroadRVPort > 0)
+	{
+		//初始化广播接受者
+		if (!NetCore_BroadCast_RecvInit(&hRVSocket, st_ServiceCfg.nBroadRVPort))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播接受服务器失败，错误：%lX"), NetCore_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		//初始化广播发送服务
+		if (!NetCore_BroadCast_SendInit(&hSDSocket, st_ServiceCfg.nBroadSDPort, st_ServiceCfg.tszIPAddr))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播发送服务器失败，错误：%lX"), NetCore_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+
+		pSTDThread = make_shared<std::thread>(MessageQueue_DDSMessage_ThreadDomain);
+		if (NULL == pSTDThread)
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动消息分发线程处理程序失败"));
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动数据分发服务成功,接受端口:%d,发送端口:%d"), st_ServiceCfg.nBroadRVPort, st_ServiceCfg.nBroadSDPort);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，数据分发服务没有被启用"));
+	}
 	
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("所有服务成功启动，服务运行中。。。"));
 	while (bIsRun)
@@ -264,6 +305,13 @@ NETSERVICEEXIT:
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("有服务启动失败，服务器退出..."));
 		bIsRun = FALSE;
+
+		if (NULL != pSTDThread)
+		{
+			pSTDThread->join();
+		}
+		NetCore_BroadCast_Close(hSDSocket);
+		NetCore_BroadCast_Close(hSDSocket);
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
