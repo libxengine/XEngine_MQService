@@ -1,0 +1,10 @@
+LIBRARY
+
+EXPORTS
+	DDSMessage_GetLastError
+
+	DDSMessage_CommApi_Init
+	DDSMessage_CommApi_Destory
+	DDSMessage_CommApi_TopicCreate
+	DDSMessage_CommApi_TopicDelete
+	DDSMessage_CommApi_TopicGet

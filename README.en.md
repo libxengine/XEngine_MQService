@@ -3,13 +3,13 @@
 This repository has a development and master branch. If you want to use it, please use the master branch  
 
 #### Description
-c c++消息队列服务 消息队列中间件
+c c++消息服务 消息中间件
 c c++Message Queue Service
 
 #### Software Architecture
 the software developed based on xengine,using c/c++ development  
 the software is a simple and high performance server,Allow users to use it directly without secondary development  
-the software mainly provides a message queue engine,support http,WEBSOCKET and private protocol api server  
+the software mainly provides a message queue and dds engine,support http,WEBSOCKET and private protocol api server  
 
 ## Software features
 this software support following features  
@@ -27,6 +27,7 @@ this software support following features
 12. Active delivery acquisition mode or passive subscription notification module  
 13. get order and start serial pos setting  
 14. Unlimited load message types  
+15. data distribution service(DDS),Support WAN and LAN
 
 ## install
 

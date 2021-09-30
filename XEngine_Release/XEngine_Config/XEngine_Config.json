@@ -1,10 +1,12 @@
 {
-  "tszIPAddr": "127.0.0.1",
+  "tszIPAddr": "192.168.1.12",
   "tszTopic": "XEngine_CommKey",
   "bDeamon": 0,
   "nTCPPort": 5200,
   "nHttpPort": 5201,
   "nWSPort": 5202,
+  "nBroadRVPort": 5210,
+  "nBroadSDPort": 5211,
   "XMax": {
     "nMaxClient": 10000,
     "nMaxQueue": 10000,
@@ -32,15 +34,9 @@
     "SQLUser": "root",
     "SQLPass": "123123Ruiyue"
   },
-  "XDDSConfig": {
-    "nMixPort": 30000,
-    "nMaxPort": 50000,
-    "nBroadPort": 50901,
-    "tszMultiCastAddr": "224.0.2.100"
-  },
   "XVer": {
     "StorageVersion": [
-      "1.5.0.1001 Build20210820",
+      "2.0.0.1001 Build20210930",
       "1.4.0.1001 Build20210806",
       "1.3.0.1001 Build20210723",
       "1.2.0.1001 Build20210716",

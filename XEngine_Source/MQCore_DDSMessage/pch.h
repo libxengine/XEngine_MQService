@@ -11,6 +11,8 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 #include <tchar.h>
+#include <time.h>
+#include <WinSock2.h>
 #include <json/json.h>
 #else
 #ifdef _CENTOS
@@ -20,20 +22,26 @@
 #endif
 #endif
 #endif //PCH_H
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <memory>
+#include <errno.h>
+#include <list>
+#include <shared_mutex>
+#include <unordered_map>
+using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include "../XQueue_ProtocolHdr.h"
-#include "Protocol_Define.h"
-#include "Protocol_Error.h"
+#include "DDSMessage_Define.h"
+#include "DDSMessage_Error.h"
 /********************************************************************
-//    Created:     2021/07/01  15:44:55
-//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_ProtocolModule\pch.h
-//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_ProtocolModule
+//    Created:     2021/09/22  13:19:56
+//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_DDSMessage\pch.h
+//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_DDSMessage
 //    File Base:   pch
 //    File Ext:    h
 //    Project:     XEngine(网络通信引擎)
@@ -41,9 +49,14 @@
 //    Purpose:     公用头文件
 //    History:
 *********************************************************************/
-extern BOOL Protocol_IsErrorOccur;
-extern DWORD Protocol_dwErrorCode;
+extern BOOL XDDS_IsErrorOccur;
+extern DWORD XDDS_dwErrorCode;
 
+#ifdef _UNICODE
+typedef std::wstring tstring;
+#else
+typedef std::string tstring;
+#endif
 
 #ifdef _WINDOWS
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
