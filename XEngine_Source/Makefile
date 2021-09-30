@@ -5,12 +5,13 @@ FLAGS = RELEASE=$(RELEASE)
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_MQCORE_PATH = ./MQCore_XMQModule
+BASE_DDSMESSAGE_PATH = ./MQCore_DDSMessage
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
 BASE_SESSION_PATH = ./MQCore_SessionModule
 
 APP_SERVICE_PATH = ./XEngine_MQServiceApp
 
-NETENGINE_LIB = libMQCore_ConfigModule.so libMQCore_XMQModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so             \
+NETENGINE_LIB = libMQCore_ConfigModule.so libMQCore_XMQModule.so libMQCore_DDSMessage.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so      \
 		 XEngine_MQServiceApp.exe 
 
 .PHONY:MakeAll 
@@ -20,6 +21,8 @@ libMQCore_ConfigModule.so:
 	make -C $(BASE_CONFIG_PATH) $(FLAGS)
 libMQCore_XMQModule.so:
 	make -C $(BASE_MQCORE_PATH) $(FLAGS)
+libMQCore_DDSMessage.so:
+	make -C $(BASE_DDSMESSAGE_PATH) $(FLAGS)
 libMQCore_ProtocolModule.so:
 	make -C $(BASE_PROTOCOL_PATH) $(FLAGS)
 libMQCore_SessionModule.so:

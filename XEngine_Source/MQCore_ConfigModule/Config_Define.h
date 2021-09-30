@@ -21,6 +21,8 @@ typedef struct tag_XEngine_ServerConfig
     int nTCPPort;
     int nHttpPort;
     int nWSPort;
+    int nBroadRVPort;
+    int nBroadSDPort;
     struct
     {
         int nMaxClient;
@@ -53,13 +55,6 @@ typedef struct tag_XEngine_ServerConfig
         TCHAR tszDBName[128];                                                
         int nSQLPort;
     }st_XSql;
-    struct  
-	{
-        int nMixPort;
-        int nMaxPort;
-        int nBroadPort;
-        TCHAR tszMultiCastAddr[128];
-    }st_XDDSConfig;
     struct
     {
         list<tstring> *pStl_ListStorage;

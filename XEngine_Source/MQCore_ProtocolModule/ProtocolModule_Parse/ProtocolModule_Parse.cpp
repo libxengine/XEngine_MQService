@@ -128,3 +128,67 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	}
 	return TRUE;
 }
+/********************************************************************
+函数名称：ProtocolModule_Parse_DDSQuery
+函数功能：DDS查询解析协议
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要解析的内容
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入解析的大小
+ 参数.三：pppSt_DDSProtocol
+  In/Out：In/Out
+  类型：三级指针
+  可空：N
+  意思：输出DDS信息列表,此内存需要释放
+ 参数.四：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CProtocolModule_Parse::ProtocolModule_Parse_DDSQuery(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XDDS*** pppSt_DDSProtocol, int* pInt_ListCount)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	if ((NULL == lpszMsgBuffer) || (NULL == pppSt_DDSProtocol))
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return FALSE;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return FALSE;
+	}
+	*pInt_ListCount = st_JsonRoot["ListCount"].asInt();
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DDSProtocol, st_JsonRoot["ListCount"].asInt(), sizeof(XENGINE_PROTOCOL_XDDS));
+
+	Json::Value st_JsonArray = st_JsonRoot["ListArray"];
+	for (int i = 0; i < st_JsonRoot["ListCount"].asInt(); i++)
+	{
+		(*pppSt_DDSProtocol)[i]->bCreater = st_JsonArray[i]["bCreater"].asInt();
+		(*pppSt_DDSProtocol)[i]->bTcp = st_JsonArray[i]["bTcp"].asInt();
+		(*pppSt_DDSProtocol)[i]->nPort = st_JsonArray[i]["nPort"].asInt();
+		_tcscpy((*pppSt_DDSProtocol)[i]->tszTopic, st_JsonArray[i]["tszTopic"].asCString());
+		_tcscpy((*pppSt_DDSProtocol)[i]->tszDDSAddr, st_JsonArray[i]["tszDDSAddr"].asCString());
+	}
+	
+	return TRUE;
+}
