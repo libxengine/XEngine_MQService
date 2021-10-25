@@ -63,6 +63,7 @@ extern XNETHANDLE xhWSHeart;
 
 extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
+extern XHANDLE xhWSPacket;
 
 extern XNETHANDLE xhTCPPool;
 extern XNETHANDLE xhHttpPool;

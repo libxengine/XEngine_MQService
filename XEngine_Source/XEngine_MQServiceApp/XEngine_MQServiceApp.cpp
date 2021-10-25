@@ -9,8 +9,9 @@ XNETHANDLE xhWSSocket = 0;
 XNETHANDLE xhTCPHeart = 0;
 XNETHANDLE xhWSHeart = 0;
 
-XHANDLE xhTCPPacket = 0;
-XHANDLE xhHTTPPacket = 0;
+XHANDLE xhTCPPacket = NULL;
+XHANDLE xhHTTPPacket = NULL;
+XHANDLE xhWSPacket = NULL;
 
 XNETHANDLE xhTCPPool = 0;
 XNETHANDLE xhHttpPool = 0;
@@ -39,7 +40,7 @@ void ServiceApp_Stop(int signo)
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
-		RfcComponents_WSPacket_Destory();
+		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
@@ -216,7 +217,8 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.nWSPort > 0)
 	{
-		if (!RfcComponents_WSPacket_Init(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread))
+		xhWSPacket = RfcComponents_WSPacket_InitEx(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread);
+		if (NULL == xhWSPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化Websocket组包失败，错误：%lX"), WSFrame_GetLastError());
 			goto NETSERVICEEXIT;
@@ -316,7 +318,7 @@ NETSERVICEEXIT:
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
-		RfcComponents_WSPacket_Destory();
+		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
