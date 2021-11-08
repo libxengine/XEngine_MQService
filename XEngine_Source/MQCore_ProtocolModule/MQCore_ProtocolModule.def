@@ -3,8 +3,7 @@ LIBRARY
 EXPORTS
 	Protocol_GetLastError
 
-	ProtocolModule_Packet_TCPCommon
-	ProtocolModule_Packet_HttpCommon
+	ProtocolModule_Packet_Common
 	ProtocolModule_Packet_MQNumber
 	ProtocolModule_Packet_DDSTopic
 	ProtocolModule_Packet_DDSQuery
