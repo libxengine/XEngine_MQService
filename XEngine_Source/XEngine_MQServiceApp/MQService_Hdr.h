@@ -48,10 +48,6 @@ typedef std::string tstring;
 #include "../MQCore_SessionModule/Session_Define.h"
 #include "../MQCore_SessionModule/Session_Error.h"
 
-#define XENGINE_MQAPP_NETTYPE_TCP 1
-#define XENGINE_MQAPP_NETTYPE_HTTP 2
-#define XENGINE_MQAPP_NETTYPE_WEBSOCKET 3
-
 extern BOOL bIsRun;
 extern XLOG xhLog;
 extern XNETHANDLE xhTCPSocket;
