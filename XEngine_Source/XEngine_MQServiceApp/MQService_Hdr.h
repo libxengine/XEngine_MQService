@@ -69,7 +69,6 @@ extern SOCKET hSDSocket;
 extern SOCKET hRVSocket;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
-
 extern shared_ptr<std::thread> pSTDThread;
 
 void ServiceApp_Stop(int signo);
