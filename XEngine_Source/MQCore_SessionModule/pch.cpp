@@ -39,17 +39,17 @@ extern "C" BOOL SessionModule_Client_Destory()
 {
 	return m_SessionClient.SessionModule_Client_Destory();
 }
-extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr)
+extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType)
 {
-	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr);
+	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, nNetType);
 }
 extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
-extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol)
+extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, int* pInt_NetType)
 {
-	return m_SessionClient.SessionModule_Client_Get(lpszClientAddr, pSt_MQProtocol);
+	return m_SessionClient.SessionModule_Client_Get(lpszClientAddr, pSt_MQProtocol, pInt_NetType);
 }
 extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol)
 {

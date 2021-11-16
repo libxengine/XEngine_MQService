@@ -56,12 +56,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
   类型：常量字符指针
   可空：N
   意思：输入用户名
+ 参数.二：nNetType
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：客户端的网络连接类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr)
+BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -76,6 +81,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr)
 
 	st_SessionInfo.bOrder = TRUE;
 	st_SessionInfo.nSerialPos = 1;
+	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nStartTime = time(NULL);
 
     st_Locker.lock();
@@ -123,12 +129,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
   类型：数据结构指针
   可空：N
   意思：输出消息内容
+ 参数.三：pInt_NetType
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：输出客户端网络类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol)
+BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, int* pInt_NetType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -147,6 +158,11 @@ BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XEN
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
+	if (NULL != pInt_NetType)
+	{
+		*pInt_NetType = stl_MapIterator->second.nNetType;
+	}
+	
 	pSt_MQProtocol->nSerial = stl_MapIterator->second.nSerialPos;
 	_tcscpy(pSt_MQProtocol->tszMQKey, stl_MapIterator->second.tszKeyStr);
 	st_Locker.unlock_shared();

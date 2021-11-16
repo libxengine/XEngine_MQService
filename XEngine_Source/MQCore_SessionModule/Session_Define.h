@@ -61,12 +61,17 @@ extern "C" BOOL SessionModule_Client_Destory();
   类型：常量字符指针
   可空：N
   意思：输入用户名
+ 参数.二：nNetType
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：客户端的网络连接类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr);
+extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType);
 /********************************************************************
 函数名称：SessionModule_Client_Delete
 函数功能：删除一个用户
@@ -94,12 +99,17 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
   类型：数据结构指针
   可空：N
   意思：输出消息内容
+ 参数.三：pInt_NetType
+  In/Out：Out
+  类型：整数型指针
+  可空：Y
+  意思：输出客户端网络类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
+extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, int* pInt_NetType = NULL);
 /************************************************************************
 函数名称：SessionModule_Client_Set
 函数功能：设置客户端信息
