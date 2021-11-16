@@ -65,7 +65,6 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		lpszClientType = _T("WEBSOCKET");
 	}
 
-
 	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)
 	{
 		XENGINE_PROTOCOL_XMQ st_MQProtocol;
@@ -114,27 +113,35 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET;
-			if ((XENGINE_MQAPP_NETTYPE_HTTP == nNetType) && (st_MQProtocol.nSerial <= 0))
+			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 			{
-				pSt_ProtocolHdr->wReserve = 721;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,获取消息数据失败,HTTP必须设置消息序列"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
-				return FALSE;
-			}
-			if ((st_MQProtocol.nSerial > 0) || (0 != _tcsnicmp(st_MQClient.tszMQKey, st_MQProtocol.tszMQKey, _tcslen(st_MQProtocol.tszMQKey))))
-			{
-				//如果序列号和主题有修改
-				if (0 == st_MQProtocol.nSerial)
+				//HTTP不能有为0的情况
+				if (st_MQProtocol.nSerial <= 0)
 				{
-					st_MQProtocol.nSerial = 1; //不能以0为序列号
+					pSt_ProtocolHdr->wReserve = 721;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,获取消息数据失败,HTTP必须设置消息序列"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
+					return FALSE;
 				}
-				SessionModule_Client_Set(lpszClientAddr, &st_MQProtocol);
 			}
 			else
 			{
-				st_MQProtocol.nSerial = st_MQClient.nSerial;
+				if ((st_MQProtocol.nSerial > 0) || (0 != _tcsnicmp(st_MQClient.tszMQKey, st_MQProtocol.tszMQKey, _tcslen(st_MQProtocol.tszMQKey))))
+				{
+					//如果序列号和主题有修改
+					if (0 == st_MQProtocol.nSerial)
+					{
+						st_MQProtocol.nSerial = 1; //不能以0为序列号
+					}
+					SessionModule_Client_Set(lpszClientAddr, &st_MQProtocol);
+				}
+				else
+				{
+					st_MQProtocol.nSerial = st_MQClient.nSerial;
+				}
 			}
+			//得到消息
 			if (!XMQModule_Packet_Get(&st_MQProtocol, tszRVBuffer, &nRVLen))
 			{
 				pSt_ProtocolHdr->wReserve = 722;
@@ -210,6 +217,15 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPNOTIFY;
+
+			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+			{
+				pSt_ProtocolHdr->wReserve = 711;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,订阅失败,HTTP不支持消息订阅"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
+				return FALSE;
+			}
 			if (0 == pSt_ProtocolHdr->wReserve)
 			{
 				SessionModule_Notify_Delete(st_MQProtocol.tszMQKey, lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP);
