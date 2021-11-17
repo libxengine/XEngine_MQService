@@ -50,6 +50,7 @@ void ServiceApp_Stop(int signo)
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
@@ -119,6 +120,24 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化消息队列服务成功"));
+
+	if (0 == st_ServiceCfg.st_XAuth.nAuth)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，用户验证没有启用"));
+	}
+	else if (1 == st_ServiceCfg.st_XAuth.nAuth)
+	{
+		if (!SessionModule_Auth_Init(st_ServiceCfg.st_XAuth.tszAuthUser))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中,本地用户验证启动失败,错误：%lX"), SessionModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，本地验证启动成功,用户列表地址:%s"), st_ServiceCfg.st_XAuth.tszAuthUser);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，网络验证启动成功,HTTP网络地址:%s"), st_ServiceCfg.st_XAuth.tszAuthHttp);
+	}
 
 	if (st_ServiceCfg.nTCPPort > 0)
 	{
@@ -328,6 +347,7 @@ NETSERVICEEXIT:
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}

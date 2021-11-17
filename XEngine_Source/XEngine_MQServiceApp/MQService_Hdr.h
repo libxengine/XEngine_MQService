@@ -31,6 +31,9 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/HttpServer_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
+
 #ifdef _UNICODE
 typedef std::wstring tstring;
 #else
@@ -109,5 +112,6 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpServer.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
+#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIHelp.lib")
 #pragma comment(lib,"Ws2_32.lib")
 #endif

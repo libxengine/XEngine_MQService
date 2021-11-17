@@ -45,18 +45,7 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(LPVOID lParam)
 }
 BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, TCHAR** pptszListHdr, int nHdrCount)
 {
-	int nSDLen = 2048;
-	int nRVLen = 2048;
-	int nJSLen = 0;
-	int nMsgType = 0;
-	TCHAR tszSDBuffer[2048];
-	TCHAR tszRVBuffer[2048];
-	TCHAR* ptszMsgBuffer = NULL;
 	LPCTSTR lpszMethod = _T("POST");
-
-	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
-
 	if (0 == _tcsnicmp(lpszMethod, pSt_HTTPParam->tszHttpMethod, _tcslen(lpszMethod)))
 	{
 		int nPLen = 0;
