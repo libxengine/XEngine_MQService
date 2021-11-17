@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "SessionModule_Client/SessionModule_Client.h"
 #include "SessionModule_Notify/SessionModule_Notify.h"
+#include "SessionModule_Auth/SessionModule_Auth.h"
 /********************************************************************
 //    Created:     2021/07/02  10:39:24
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_SessionModule\pch.cpp
@@ -17,6 +18,7 @@ DWORD Session_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////////
 CSessionModule_Client m_SessionClient;
 CSessionModule_Notify m_SessionNotify;
+CSessionModule_Auth m_SessionAuth;
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数实现
 //////////////////////////////////////////////////////////////////////////
@@ -47,9 +49,9 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
-extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, int* pInt_NetType)
+extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, BOOL * pbAuth)
 {
-	return m_SessionClient.SessionModule_Client_Get(lpszClientAddr, pSt_MQProtocol, pInt_NetType);
+	return m_SessionClient.SessionModule_Client_Get(lpszClientAddr, pSt_MQProtocol, pbAuth);
 }
 extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol)
 {
@@ -62,6 +64,10 @@ extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lp
 extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_ADDDelSerial(lpszClientAddr);
+}
+extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth)
+{
+	return m_SessionClient.SessionModule_Client_SetAuth(lpszClientAddr, bAuth);
 }
 /************************************************************************/
 /*                        订阅                                          */
@@ -85,4 +91,19 @@ extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
 extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT * **pppSt_ListClient, int* pInt_ListCount)
 {
 	return m_SessionNotify.SessionModule_Notify_GetList(lpszTopicStr, pppSt_ListClient, pInt_ListCount);
+}
+/************************************************************************/
+/*                        验证                                          */
+/************************************************************************/
+extern "C" BOOL SessionModule_Auth_Init(LPCTSTR lpszAuthFile)
+{
+	return m_SessionAuth.SessionModule_Auth_Init(lpszAuthFile);
+}
+extern "C" BOOL SessionModule_Auth_Destory()
+{
+	return m_SessionAuth.SessionModule_Auth_Destory();
+}
+extern "C" BOOL SessionModule_Auth_Exist(LPCTSTR lpszUser, LPCTSTR lpszPass)
+{
+	return m_SessionAuth.SessionModule_Auth_Exist(lpszUser, lpszPass);
 }

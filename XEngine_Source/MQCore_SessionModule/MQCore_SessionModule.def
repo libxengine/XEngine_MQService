@@ -11,9 +11,14 @@ EXPORTS
 	SessionModule_Client_Set
 	SessionModule_Client_SetOrder
 	SessionModule_Client_ADDDelSerial
+	SessionModule_Client_SetAuth
 
 	SessionModule_Notify_Create
 	SessionModule_Notify_Destory
 	SessionModule_Notify_Insert
 	SessionModule_Notify_Delete
 	SessionModule_Notify_GetList
+
+	SessionModule_Auth_Init
+	SessionModule_Auth_Destory
+	SessionModule_Auth_Exist

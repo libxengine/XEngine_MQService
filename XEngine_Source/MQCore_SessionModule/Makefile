@@ -6,7 +6,7 @@ LOADBIN =
 LIB = 
 LIBEX = -static-libgcc -lrt -ldl -lpthread
 LOADSO = -Wl,-rpath=
-LIBINCLUDE = SessionModule_Client.o SessionModule_Notify.o pch.o
+LIBINCLUDE = SessionModule_Client.o SessionModule_Notify.o SessionModule_Auth.o pch.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c -O2 
@@ -30,7 +30,9 @@ SessionModule_Client.o:./SessionModule_Client/SessionModule_Client.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Client/SessionModule_Client.cpp 
 SessionModule_Notify.o:./SessionModule_Notify/SessionModule_Notify.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Notify/SessionModule_Notify.cpp
-								              
+SessionModule_Auth.o:./SessionModule_Auth/SessionModule_Auth.cpp             
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Auth/SessionModule_Auth.cpp
+
 pch.o:./pch.cpp                 		       	    
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./pch.cpp
 
