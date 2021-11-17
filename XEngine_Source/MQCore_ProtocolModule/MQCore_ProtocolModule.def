@@ -5,6 +5,7 @@ EXPORTS
 
 	ProtocolModule_Packet_Common
 	ProtocolModule_Packet_MQNumber
+	ProtocolModule_Packet_PassAuth
 	ProtocolModule_Packet_DDSTopic
 	ProtocolModule_Packet_DDSQuery
 

@@ -39,6 +39,10 @@ extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR * pSt_Protoco
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, pSt_MQNumber, ptszMsgBuffer, pInt_MsgLen, nNetType);
 }
+extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH * pSt_ProtocolAuth, TCHAR * ptszMsgBuffer, int* pInt_MsgLen)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_PassAuth(pSt_ProtocolAuth, ptszMsgBuffer, pInt_MsgLen);
+}
 extern "C" BOOL ProtocolModule_Packet_DDSTopic(XENGINE_PROTOCOL_XDDS * pSt_DDSProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, DWORD dwOPeratorCode)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_DDSTopic(pSt_DDSProtocol, ptszMsgBuffer, pInt_MsgLen, dwOPeratorCode);

@@ -125,14 +125,26 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR
         Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
         return FALSE;
     }
-	pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
-	memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-	if (NULL != lpszMsgBuffer)
+	
+	if (NULL == pSt_MQProtocol)
 	{
-		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
+		pSt_ProtocolHdr->unPacketSize = nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + nMsgLen;
 	}
-	*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+	else
+	{
+		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		if (NULL != lpszMsgBuffer)
+		{
+			memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
+		}
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+	}
    
     return TRUE;
 }
@@ -181,16 +193,20 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
     Json::Value st_JsonPayload;
 	Json::StreamWriterBuilder st_JsonBuilder;
 
-    st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
-    st_JsonMQProtocol["nSerial"] = pSt_MQProtocol->nSerial;
-    st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
-    st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
-
 	st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
 	st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
 	st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
 
-    st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+	if (NULL != pSt_MQProtocol)
+	{
+		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
+		st_JsonMQProtocol["nSerial"] = pSt_MQProtocol->nSerial;
+		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
+		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
+
+		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+	}
+	
     if (nMsgLen > 0)
     {
         st_JsonPayload["nPayType"] = (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE)pSt_ProtocolHdr->byVersion;
@@ -279,6 +295,52 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR*
 		*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
 		memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_PassAuth
+函数功能：HTTP代理打包函数
+ 参数.一：pSt_ProtocolAuth
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的内容
+ 参数.二：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.三：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	if ((NULL == pSt_ProtocolAuth) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return FALSE;
+	}
+	Json::Value st_JsonRoot;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonRoot["tszUserName"] = pSt_ProtocolAuth->tszUserName;
+	st_JsonRoot["tszUserPass"] = pSt_ProtocolAuth->tszUserPass;
+	st_JsonRoot["enClientType"] = pSt_ProtocolAuth->enClientType;
+	st_JsonRoot["enDeviceType"] = pSt_ProtocolAuth->enDeviceType;
+	st_JsonBuilder["emitUTF8"] = true;
+
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	return TRUE;
 }
 /********************************************************************
