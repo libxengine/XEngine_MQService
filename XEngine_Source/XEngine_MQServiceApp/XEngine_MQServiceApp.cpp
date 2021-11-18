@@ -290,26 +290,27 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.nBroadRVPort > 0)
 	{
-		//初始化广播接受者
-		if (!NetCore_BroadCast_RecvInit(&hRVSocket, st_ServiceCfg.nBroadRVPort))
-		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播接受服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
-		}
 		//初始化广播发送服务
-		if (!NetCore_BroadCast_SendInit(&hSDSocket, st_ServiceCfg.nBroadSDPort, st_ServiceCfg.tszIPAddr))
+		if (NetCore_BroadCast_SendInit(&hSDSocket, st_ServiceCfg.nBroadSDPort, st_ServiceCfg.tszIPAddr))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播发送服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			//初始化广播接受者
+			if (!NetCore_BroadCast_RecvInit(&hRVSocket, st_ServiceCfg.nBroadRVPort))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播接受服务器失败，错误：%lX"), NetCore_GetLastError());
+				goto NETSERVICEEXIT;
+			}
+			pSTDThread = make_shared<std::thread>(MessageQueue_DDSMessage_ThreadDomain);
+			if (NULL == pSTDThread)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动消息分发线程处理程序失败"));
+				goto NETSERVICEEXIT;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动数据分发服务成功,接受端口:%d,发送端口:%d"), st_ServiceCfg.nBroadRVPort, st_ServiceCfg.nBroadSDPort);
 		}
-
-		pSTDThread = make_shared<std::thread>(MessageQueue_DDSMessage_ThreadDomain);
-		if (NULL == pSTDThread)
+		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动消息分发线程处理程序失败"));
-			goto NETSERVICEEXIT;
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中.启动广播发送服务器失败,可能配置文件本地IP地址:%s 不正确,已经关闭，错误：%lX"), st_ServiceCfg.tszIPAddr, NetCore_GetLastError());
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动数据分发服务成功,接受端口:%d,发送端口:%d"), st_ServiceCfg.nBroadRVPort, st_ServiceCfg.nBroadSDPort);
 	}
 	else
 	{
