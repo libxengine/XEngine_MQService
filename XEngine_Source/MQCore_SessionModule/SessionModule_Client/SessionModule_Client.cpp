@@ -158,7 +158,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XEN
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
-	*pbAuth = stl_MapIterator->second.nNetType;
+	*pbAuth = stl_MapIterator->second.bAuth;
 	pSt_MQProtocol->nSerial = stl_MapIterator->second.nSerialPos;
 	_tcscpy(pSt_MQProtocol->tszMQKey, stl_MapIterator->second.tszKeyStr);
 	st_Locker.unlock_shared();

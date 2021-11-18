@@ -112,11 +112,17 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	if (!st_JsonRoot["st_Auth"].isNull())
 	{
 		Json::Value st_JsonAuth = st_JsonRoot["st_Auth"];
-		st_ProtocolAuth.enClientType = (ENUM_PROTOCOLCLIENT_TYPE)st_JsonAuth["enClientType"].asInt();
-		st_ProtocolAuth.enDeviceType = (ENUM_PROTOCOLDEVICE_TYPE)st_JsonAuth["enDeviceType"].asInt();
 		_tcscpy(st_ProtocolAuth.tszUserName, st_JsonAuth["tszUserName"].asCString());
 		_tcscpy(st_ProtocolAuth.tszUserPass, st_JsonAuth["tszUserPass"].asCString());
 
+		if (!st_JsonAuth["enClientType"].isNull())
+		{
+			st_ProtocolAuth.enClientType = (ENUM_PROTOCOLCLIENT_TYPE)st_JsonAuth["enClientType"].asInt();
+		}
+		if (!st_JsonAuth["enDeviceType"].isNull())
+		{
+			st_ProtocolAuth.enDeviceType = (ENUM_PROTOCOLDEVICE_TYPE)st_JsonAuth["enDeviceType"].asInt();
+		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERAUTH);
 	}
 	//或者包含附加内容
@@ -127,7 +133,7 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	}
 
 	*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
-	if (NULL != *pptszMsgBuffer)
+	if (NULL == *pptszMsgBuffer)
 	{
 		Protocol_IsErrorOccur = TRUE;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
