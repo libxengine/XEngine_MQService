@@ -11,3 +11,5 @@ copy /y "D:\XEngine\XEngine_SourceCode\Debug\HelpComponents_XLog.dll" "./"
 
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\RfcComponents_HttpServer.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\RfcComponents_WSProtocol.dll" "./"
+
+copy /y "D:\XEngine\XEngine_SourceCode\Debug\NetHelp_APIHelp.dll" "./"

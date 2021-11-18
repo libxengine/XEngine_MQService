@@ -1,46 +1,53 @@
 {
-  "tszIPAddr": "192.168.1.12",
-  "tszTopic": "XEngine_CommKey",
-  "bDeamon": 0,
-  "nTCPPort": 5200,
-  "nHttpPort": 5201,
-  "nWSPort": 5202,
-  "nBroadRVPort": 5210,
-  "nBroadSDPort": 5211,
-  "XMax": {
-    "nMaxClient": 10000,
-    "nMaxQueue": 10000,
-    "nIOThread": 2,
-    "nTCPThread": 2,
-    "nHttpThread": 2,
-    "nWSThread": 2
+  "tszIPAddr":"192.168.1.12",
+  "tszTopic":"XEngine_CommKey",
+  "bDeamon":0,
+  "nTCPPort":5200,
+  "nHttpPort":5201,
+  "nWSPort":5202,
+  "nRPCPort":5203,
+  "nBroadRVPort":5210,
+  "nBroadSDPort":5211,
+  "XMax":{
+      "nMaxClient":10000,
+      "nMaxQueue":10000,
+      "nIOThread":2,
+      "nTCPThread":2,
+      "nHttpThread":2,
+      "nWSThread":2
   },
-  "XTime": {
-    "bHBTime": 0,
-    "nDBMonth": 3,
-    "nTimeCheck": 3,
-    "nTCPTimeOut": 5,
-    "nHttpTimeOut": 5,
-    "nWSTimeOut": 5
+  "XTime":{
+      "bHBTime":0,
+      "nDBMonth":3,
+      "nTimeCheck":3,
+      "nTCPTimeOut":5,
+      "nHttpTimeOut":5,
+      "nWSTimeOut":5
   },
-  "XLog": {
-    "MaxSize": 1024000,
-    "MaxCount": 10,
-    "LogLeave": 32
+  "XLog":{
+      "MaxSize":1024000,
+      "MaxCount":10,
+      "LogLeave":32
   },
-  "XSql": {
-    "SQLAddr": "192.168.1.9",
-    "SQLPort": 3306,
-    "SQLUser": "root",
-    "SQLPass": "123123Ruiyue"
+  "XSql":{
+      "SQLAddr":"192.168.1.9",
+      "SQLPort":3306,
+      "SQLUser":"root",
+      "SQLPass":"123123Ruiyue"
   },
-  "XVer": {
-    "StorageVersion": [
-      "2.0.0.1001 Build20210930",
-      "1.4.0.1001 Build20210806",
-      "1.3.0.1001 Build20210723",
-      "1.2.0.1001 Build20210716",
-      "1.1.0.1001 Build20210702"
-    ]
+  "XAuth":{
+      "nAuth":1,
+      "AuthUser":"./XEngine_Config/UserList.txt",
+      "AuthHttp":"http://app.xyry.org:5500/api/pass/auth"
+  },
+  "XVer":{
+      "StorageVersion":[
+          "2.1.0.1001 Build20211119",
+          "2.0.0.1001 Build20210930",
+          "1.4.0.1001 Build20210806",
+          "1.3.0.1001 Build20210723",
+          "1.2.0.1001 Build20210716",
+          "1.1.0.1001 Build20210702"
+      ]
   }
 }
