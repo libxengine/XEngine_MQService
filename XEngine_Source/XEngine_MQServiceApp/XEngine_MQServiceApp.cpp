@@ -60,6 +60,37 @@ void ServiceApp_Stop(int signo)
 	exit(0);
 }
 
+static int ServiceApp_Deamon(int wait)
+{
+#ifndef _WINDOWS
+	pid_t pid = 0;
+	int status;
+	pid = fork();
+	if (pid > 0)
+	{
+		exit(0);
+	}
+
+	close(2);
+	while (1)
+	{
+
+		pid = fork();
+		if (pid < 0)
+			exit(1);
+		if (pid == 0)
+		{
+			return 0;
+		}
+		waitpid(pid, &status, 0);
+
+		if (wait > 0)
+			sleep(wait);
+	}
+#endif
+	return 0;
+}
+
 int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
@@ -105,6 +136,7 @@ int main(int argc, char** argv)
 	if (st_ServiceCfg.bDeamon)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("初始化守护进程..."));
+		ServiceApp_Deamon(1);
 	}
 
 	if (!SessionModule_Client_Init())
