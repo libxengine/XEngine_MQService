@@ -3,6 +3,10 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <io.h>
+#else
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
