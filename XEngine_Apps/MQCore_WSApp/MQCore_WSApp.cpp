@@ -63,6 +63,42 @@ BOOL MQ_RecvPacket(TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 	*pInt_MsgLen = nRVLen;
 	return TRUE;
 }
+
+void MQ_Authorize()
+{
+	int nLen = 0;
+	TCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonAuth;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQLOGIN;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+
+	st_JsonAuth["tszUserName"] = "123123aa";
+	st_JsonAuth["tszUserPass"] = "123123";
+
+	st_JsonRoot["st_Auth"] = st_JsonAuth;
+
+	nLen = st_JsonRoot.toStyledString().length();
+	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
+
+	if (!MQ_SendPacket(tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	printf("MQ_Authorize:%s\n", tszMsgBuffer);
+}
+
 void MQ_Create()
 {
 	int nLen = 0;
@@ -341,7 +377,7 @@ int main()
 		printf("RfcComponents_WSConnector_Connect:%lX", WSFrame_GetLastError());
 		return -1;
 	}
-	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.7"), 5202))
+	if (!XClient_TCPSelect_Create(&m_Socket, _T("127.0.0.1"), 5202))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -370,7 +406,7 @@ int main()
 	{
 		printf("%s\n", tszMsgBuffer + nPos);
 	}
-	
+	MQ_Authorize();
 	MQ_Create();
 	MQ_Post("123hello");
 	MQ_GetSerial();

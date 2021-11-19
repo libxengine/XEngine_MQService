@@ -123,6 +123,17 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
 
+	if (st_JsonRoot["XSql"].empty() || (3 != st_JsonRoot["XAuth"].size()))
+	{
+		Config_IsErrorOccur = TRUE;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTH;
+		return FALSE;
+	}
+	Json::Value st_JsonXAuth = st_JsonRoot["XAuth"];
+	pSt_ServerConfig->st_XAuth.nAuth = st_JsonXAuth["nAuth"].asInt();
+	_tcscpy(pSt_ServerConfig->st_XAuth.tszAuthUser, st_JsonXAuth["AuthUser"].asCString());
+	_tcscpy(pSt_ServerConfig->st_XAuth.tszAuthHttp, st_JsonXAuth["AuthHttp"].asCString());
+
 	if (st_JsonRoot["XVer"].empty())
 	{
 		Config_IsErrorOccur = TRUE;

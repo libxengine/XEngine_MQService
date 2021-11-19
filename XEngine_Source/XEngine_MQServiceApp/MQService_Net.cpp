@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_TCPLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
-    SessionModule_Client_Create(lpszClientAddr);
+    SessionModule_Client_Create(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP);
     SocketOpt_HeartBeat_InsertAddrEx(xhTCPHeart, lpszClientAddr);
 	HelpComponents_Datas_CreateEx(xhTCPPacket, lpszClientAddr, 0);
     XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO,_T("TCP客户端连接，TCP客户端地址：%s"),lpszClientAddr);
@@ -28,6 +28,7 @@ void __stdcall MessageQueue_Callback_TCPHeart(LPCSTR lpszClientAddr, SOCKET hSoc
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_HttpLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
+    SessionModule_Client_Create(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP);
     RfcComponents_HttpServer_CreateClientEx(xhHTTPPacket, lpszClientAddr, 0);
     XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端连接，HTTP客户端地址：%s"), lpszClientAddr);
     return TRUE;
@@ -47,19 +48,19 @@ void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hS
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_WSLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
-    SessionModule_Client_Create(lpszClientAddr);
+    SessionModule_Client_Create(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
     SocketOpt_HeartBeat_InsertAddrEx(xhWSHeart, lpszClientAddr);
-	RfcComponents_WSPacket_Create(lpszClientAddr, 0);
+    RfcComponents_WSPacket_CreateEx(xhWSPacket, lpszClientAddr, 0);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端连接，Websocket客户端地址：%s"), lpszClientAddr);
 	return TRUE;
 }
 void __stdcall MessageQueue_Callback_WSRecv(LPCTSTR lpszClientAddr, SOCKET hSocket, LPCTSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
 	BOOL bLogin = FALSE;
-	RfcComponents_WSPacket_GetLogin(lpszClientAddr, &bLogin);
+	RfcComponents_WSPacket_GetLoginEx(xhWSPacket, lpszClientAddr, &bLogin);
 	if (bLogin)
 	{
-		if (!RfcComponents_WSPacket_Post(lpszClientAddr, lpszRecvMsg, nMsgLen))
+		if (!RfcComponents_WSPacket_PostEx(xhWSPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
 		{
             XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("投递Websocket数据包到消息队列失败，错误：%lX"), WSFrame_GetLastError());
             return;
@@ -73,7 +74,7 @@ void __stdcall MessageQueue_Callback_WSRecv(LPCTSTR lpszClientAddr, SOCKET hSock
 		memset(tszHandsBuffer, '\0', sizeof(tszHandsBuffer));
 
 		RfcComponents_WSConnector_HandShake(lpszRecvMsg, &nSDLen, tszHandsBuffer);
-		RfcComponents_WSPacket_SetLogin(lpszClientAddr);
+		RfcComponents_WSPacket_SetLoginEx(xhWSPacket, lpszClientAddr);
         NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszHandsBuffer, nSDLen);
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("WEBSOCKET客户端:%s 与服务器握手成功"), lpszClientAddr);
 	}
@@ -92,7 +93,6 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
     {
         HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
-        SessionModule_Client_Delete(lpszClientAddr);
         
         if (bHeart)
         {
@@ -106,8 +106,7 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
-		RfcComponents_WSPacket_Delete(lpszClientAddr);
-        SessionModule_Client_Delete(lpszClientAddr);
+        RfcComponents_WSPacket_DeleteEx(xhWSPacket, lpszClientAddr);
 
 		if (bHeart)
 		{
@@ -124,6 +123,7 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
 		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
+    SessionModule_Client_Delete(lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////
 BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, int nIPProto)

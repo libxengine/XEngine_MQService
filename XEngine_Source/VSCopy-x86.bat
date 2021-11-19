@@ -12,5 +12,9 @@ copy /y "%XEngine_Library%\x86\XEngine_HelpComponents\HelpComponents_XLog.dll" "
 copy /y "%XEngine_Library%\x86\XEngine_RfcComponents\RfcComponents_HttpServer.dll" "./"
 copy /y "%XEngine_Library%\x86\XEngine_RfcComponents\RfcComponents_WSProtocol.dll" "./"
 
+copy /y "%XEngine_Library%\x86\XEngine_NetHelp\NetHelp_APIHelp.dll" "./"
+
 copy /y "%XEngine_Library%\x86\XEngine_LibEx\libcrypto-1_1.dll" "./"
 copy /y "%XEngine_Library%\x86\XEngine_LibEx\libssl-1_1.dll" "./"
+copy /y "%XEngine_Library%\x86\XEngine_LibEx\libcurl.dll" "./"
+copy /y "%XEngine_Library%\x86\XEngine_HelpComponents\zlib1.dll" "./"

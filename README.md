@@ -21,7 +21,7 @@ c c++Message Service
 7. 负载均衡(planning)  
 8. 消息次数  
 9. 消息订阅  
-10. 支持权限验证(planning)  
+10. 支持权限验证  
 11. 支持多种协议(TCP,HTTP,WEBSOCKET)  
 12. 主动投递获取模式或者被动订阅通知模块  
 13. 获取顺序与开始序列号设置  
@@ -32,7 +32,7 @@ c c++Message Service
 
 #### 版本需求
 支持WINDOWS 7SP1和LINUX(UBUNT20.04,CENTOS8)以上系统  
-XEngine版本需要V7.18或者以上版本  
+XEngine版本需要V7.23或者以上版本  
 vcpkg 需要2021.05.11以上版本  
 
 #### Windows
@@ -45,11 +45,6 @@ vcpkg 需要2021.05.11以上版本
 集成VS环境: vcpkg integrate install  
 vcpkg 主要为了方便安装jsoncpp,如果你想自己配置jsoncpp的环境,可以不使用vcpkg...  
 
-##### XEngine环境
-XEngine可以直接下载,下载完毕后添加用户环境变量,需要下面两个  
-- XEngine_Include 指向头文件目录地址
-- XEngine_Library 指向库文件目录地址
-
 #### Linux
 Linux使用Makefile编译  
 UBUNTU20.04 x64或者CENTOS8 x64均可  
@@ -60,13 +55,16 @@ sudo apt install libjsoncpp-devel
 Centos8.x  
 sudo dnf install jsoncpp-devel  
 
-##### XEngine环境
-XEngine可以通过脚本文件安装sudo XEngine_RunEnv.sh -i 3
 ##### 编译命令
 在XEngine_Source目录下执行命令
 make 编译  
 make FLAGS=InstallAll 安装库程序  
 make FLAGS=CleanAll 清理编译  
+
+#### XEngine环境
+安装XEngine可以参考其Readme文档  
+GITEE:https://gitee.com/xyry/libxengine  
+GITHUB:https://github.com/libxengine/xengine  
 
 #### 使用说明
 
@@ -85,6 +83,10 @@ make FLAGS=CleanAll 清理编译
 
 ## 其他问题  
 你可以参考docment目录下的文档.里面包含了API协议和服务说明.
+
+## 测试服务器
+地址:app.xyry.org 或者 159.75.200.173  
+端口:TCP 5200,HTTP 5201,WEBSOCKET 5202  
 
 ## 参与贡献
 

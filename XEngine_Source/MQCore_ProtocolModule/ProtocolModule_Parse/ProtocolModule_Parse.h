@@ -17,7 +17,7 @@ public:
     CProtocolModule_Parse();
     ~CProtocolModule_Parse();
 public:
-    BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr = NULL, TCHAR** pptszMsgBuffer = NULL, int* pInt_MsgLen = NULL, int* pInt_Type = NULL);
+    BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR** pptszMsgBuffer, int* pInt_MsgLen);
     BOOL ProtocolModule_Parse_DDSQuery(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XDDS*** pppSt_DDSProtocol, int* pInt_ListCount);
 protected:
 private:

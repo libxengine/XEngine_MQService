@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SessionModule_Auth\SessionModule_Auth.h" />
     <ClInclude Include="SessionModule_Client\SessionModule_Client.h" />
     <ClInclude Include="SessionModule_Notify\SessionModule_Notify.h" />
     <ClInclude Include="Session_Define.h" />
@@ -181,6 +182,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SessionModule_Auth\SessionModule_Auth.cpp" />
     <ClCompile Include="SessionModule_Client\SessionModule_Client.cpp" />
     <ClCompile Include="SessionModule_Notify\SessionModule_Notify.cpp" />
   </ItemGroup>

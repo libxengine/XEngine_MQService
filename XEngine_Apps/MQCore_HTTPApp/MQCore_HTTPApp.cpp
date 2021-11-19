@@ -27,7 +27,37 @@
 
 SOCKET m_Socket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
-LPCTSTR lpszPostUrl = _T("http://192.168.1.7:5201");
+LPCTSTR lpszPostUrl = _T("http://127.0.0.1:5201");
+
+void MQ_Authorize()
+{
+	int nLen = 0;
+	TCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonAuth;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQLOGIN;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+
+	st_JsonAuth["tszUserName"] = "123123aa";
+	st_JsonAuth["tszUserPass"] = "123123";
+
+	st_JsonRoot["st_Auth"] = st_JsonAuth;
+
+	nLen = st_JsonRoot.toStyledString().length();
+	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
+
+	TCHAR* ptszMsgBody = NULL;
+	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	printf("MQ_Authorize:%s\n", ptszMsgBody);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
+}
 
 void MQ_Create()
 {
@@ -198,6 +228,7 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
+	MQ_Authorize();
 	MQ_Create();
 	MQ_Post("123hello");
 	MQ_GetNumber();

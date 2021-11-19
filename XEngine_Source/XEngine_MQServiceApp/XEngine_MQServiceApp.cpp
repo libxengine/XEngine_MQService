@@ -9,8 +9,9 @@ XNETHANDLE xhWSSocket = 0;
 XNETHANDLE xhTCPHeart = 0;
 XNETHANDLE xhWSHeart = 0;
 
-XNETHANDLE xhTCPPacket = 0;
-XHANDLE xhHTTPPacket = 0;
+XHANDLE xhTCPPacket = NULL;
+XHANDLE xhHTTPPacket = NULL;
+XHANDLE xhWSPacket = NULL;
 
 XNETHANDLE xhTCPPool = 0;
 XNETHANDLE xhHttpPool = 0;
@@ -39,7 +40,7 @@ void ServiceApp_Stop(int signo)
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
-		RfcComponents_WSPacket_Destory();
+		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
@@ -49,6 +50,7 @@ void ServiceApp_Stop(int signo)
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
@@ -56,6 +58,37 @@ void ServiceApp_Stop(int signo)
 	WSACleanup();
 #endif
 	exit(0);
+}
+
+static int ServiceApp_Deamon(int wait)
+{
+#ifndef _WINDOWS
+	pid_t pid = 0;
+	int status;
+	pid = fork();
+	if (pid > 0)
+	{
+		exit(0);
+	}
+
+	close(2);
+	while (1)
+	{
+
+		pid = fork();
+		if (pid < 0)
+			exit(1);
+		if (pid == 0)
+		{
+			return 0;
+		}
+		waitpid(pid, &status, 0);
+
+		if (wait > 0)
+			sleep(wait);
+	}
+#endif
+	return 0;
 }
 
 int main(int argc, char** argv)
@@ -103,6 +136,7 @@ int main(int argc, char** argv)
 	if (st_ServiceCfg.bDeamon)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("初始化守护进程..."));
+		ServiceApp_Deamon(1);
 	}
 
 	if (!SessionModule_Client_Init())
@@ -119,10 +153,29 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化消息队列服务成功"));
 
+	if (0 == st_ServiceCfg.st_XAuth.nAuth)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，用户验证没有启用"));
+	}
+	else if (1 == st_ServiceCfg.st_XAuth.nAuth)
+	{
+		if (!SessionModule_Auth_Init(st_ServiceCfg.st_XAuth.tszAuthUser))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中,本地用户验证启动失败,错误：%lX"), SessionModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，本地验证启动成功,用户列表地址:%s"), st_ServiceCfg.st_XAuth.tszAuthUser);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，网络验证启动成功,HTTP网络地址:%s"), st_ServiceCfg.st_XAuth.tszAuthHttp);
+	}
+
 	if (st_ServiceCfg.nTCPPort > 0)
 	{
 		//组包器
-		if (!HelpComponents_Datas_Init(&xhTCPPacket, st_ServiceCfg.st_XMax.nMaxQueue, 0, st_ServiceCfg.st_XMax.nTCPThread))
+		xhTCPPacket = HelpComponents_Datas_Init(st_ServiceCfg.st_XMax.nMaxQueue, 0, st_ServiceCfg.st_XMax.nTCPThread);
+		if (NULL == xhTCPPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP组包器失败，错误：%lX"), Packets_GetLastError());
 			goto NETSERVICEEXIT;
@@ -215,7 +268,8 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.nWSPort > 0)
 	{
-		if (!RfcComponents_WSPacket_Init(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread))
+		xhWSPacket = RfcComponents_WSPacket_InitEx(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread);
+		if (NULL == xhWSPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务器中，初始化Websocket组包失败，错误：%lX"), WSFrame_GetLastError());
 			goto NETSERVICEEXIT;
@@ -268,26 +322,27 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.nBroadRVPort > 0)
 	{
-		//初始化广播接受者
-		if (!NetCore_BroadCast_RecvInit(&hRVSocket, st_ServiceCfg.nBroadRVPort))
-		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播接受服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
-		}
 		//初始化广播发送服务
-		if (!NetCore_BroadCast_SendInit(&hSDSocket, st_ServiceCfg.nBroadSDPort, st_ServiceCfg.tszIPAddr))
+		if (NetCore_BroadCast_SendInit(&hSDSocket, st_ServiceCfg.nBroadSDPort, st_ServiceCfg.tszIPAddr))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播发送服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			//初始化广播接受者
+			if (!NetCore_BroadCast_RecvInit(&hRVSocket, st_ServiceCfg.nBroadRVPort))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动广播接受服务器失败，错误：%lX"), NetCore_GetLastError());
+				goto NETSERVICEEXIT;
+			}
+			pSTDThread = make_shared<std::thread>(MessageQueue_DDSMessage_ThreadDomain);
+			if (NULL == pSTDThread)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动消息分发线程处理程序失败"));
+				goto NETSERVICEEXIT;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动数据分发服务成功,接受端口:%d,发送端口:%d"), st_ServiceCfg.nBroadRVPort, st_ServiceCfg.nBroadSDPort);
 		}
-
-		pSTDThread = make_shared<std::thread>(MessageQueue_DDSMessage_ThreadDomain);
-		if (NULL == pSTDThread)
+		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中.启动消息分发线程处理程序失败"));
-			goto NETSERVICEEXIT;
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中.启动广播发送服务器失败,可能配置文件本地IP地址:%s 不正确,已经关闭，错误：%lX"), st_ServiceCfg.tszIPAddr, NetCore_GetLastError());
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动数据分发服务成功,接受端口:%d,发送端口:%d"), st_ServiceCfg.nBroadRVPort, st_ServiceCfg.nBroadSDPort);
 	}
 	else
 	{
@@ -315,7 +370,7 @@ NETSERVICEEXIT:
 
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
-		RfcComponents_WSPacket_Destory();
+		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
@@ -325,6 +380,7 @@ NETSERVICEEXIT:
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		XMQModule_Packet_Destory();
+		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
