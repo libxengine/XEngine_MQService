@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
+#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"x86/XEngine_Client/XClient_Socket.lib")
 #else
 #include <stdio.h>
@@ -12,6 +13,8 @@
 using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/Algorithm_Error.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
@@ -20,6 +23,53 @@ using namespace std;
 SOCKET m_Socket;
 __int64x nLastNumber = 0;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
+
+void MQ_Authorize()
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
+	TCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQLOGIN;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byIsReply = TRUE;           //获得处理返回结果
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	_tcscpy(st_ProtocolAuth.tszUserName, "123123aa");
+	_tcscpy(st_ProtocolAuth.tszUserPass, "123123");
+
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERAUTH);
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 0;
+	TCHAR* ptszMsgBuffer;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	printf("%d\n", st_ProtocolHdr.wReserve);
+	if (nLen > 0)
+	{
+		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	}
+}
 
 void MQ_Create()
 {
@@ -434,6 +484,7 @@ int main(int argc, char** argv)
 	}
 	printf("连接成功！\n");
 
+	//MQ_Authorize();
 	if (argc > 1)
 	{
 		MQ_Create();

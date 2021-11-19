@@ -56,12 +56,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
   类型：常量字符指针
   可空：N
   意思：输入用户名
+ 参数.二：nNetType
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：客户端的网络连接类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr)
+BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -76,6 +81,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr)
 
 	st_SessionInfo.bOrder = TRUE;
 	st_SessionInfo.nSerialPos = 1;
+	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nStartTime = time(NULL);
 
     st_Locker.lock();
@@ -123,12 +129,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
   类型：数据结构指针
   可空：N
   意思：输出消息内容
+ 参数.三：pbAuth
+  In/Out：Out
+  类型：逻辑型
+  可空：N
+  意思：输出是否通过了验证
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol)
+BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, BOOL* pbAuth)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -147,6 +158,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XEN
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
+	*pbAuth = stl_MapIterator->second.bAuth;
 	pSt_MQProtocol->nSerial = stl_MapIterator->second.nSerialPos;
 	_tcscpy(pSt_MQProtocol->tszMQKey, stl_MapIterator->second.tszKeyStr);
 	st_Locker.unlock_shared();
@@ -290,6 +302,48 @@ BOOL CSessionModule_Client::SessionModule_Client_ADDDelSerial(LPCTSTR lpszClient
 	{
 		stl_MapIterator->second.nSerialPos--;
 	}
+	st_Locker.unlock_shared();
+	return TRUE;
+}
+/********************************************************************
+函数名称：SessionModule_Client_SetAuth
+函数功能：设置会话验证信息
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+ 参数.二：bAuth
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：验证结果
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth /* = TRUE */)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second.bAuth = bAuth;
 	st_Locker.unlock_shared();
 	return TRUE;
 }

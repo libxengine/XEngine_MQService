@@ -10,6 +10,8 @@
 //    Purpose:     消息队列服务
 //    History:
 *********************************************************************/
+#define XENGINE_INT64X_MAX_VALUE 102400000
+
 typedef struct
 {
     XENGINE_PROTOCOL_XMQ st_XMQProtocol;                                //XMQ子协议

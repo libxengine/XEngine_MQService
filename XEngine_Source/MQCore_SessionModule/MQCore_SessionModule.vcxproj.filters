@@ -25,6 +25,12 @@
     <Filter Include="头文件\SessionModule_Notify">
       <UniqueIdentifier>{0d02b2a6-4fc5-4c48-afeb-28053ac7e1df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\SessionModule_Auth">
+      <UniqueIdentifier>{626b0ed9-1642-412d-b656-537734ef930c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\SessionModule_Auth">
+      <UniqueIdentifier>{a44c921b-25c4-4a88-abe7-bce77c590314}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -45,6 +51,9 @@
     <ClInclude Include="SessionModule_Notify\SessionModule_Notify.h">
       <Filter>头文件\SessionModule_Notify</Filter>
     </ClInclude>
+    <ClInclude Include="SessionModule_Auth\SessionModule_Auth.h">
+      <Filter>头文件\SessionModule_Auth</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -58,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="SessionModule_Notify\SessionModule_Notify.cpp">
       <Filter>源文件\SessionModule_Notify</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionModule_Auth\SessionModule_Auth.cpp">
+      <Filter>源文件\SessionModule_Auth</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

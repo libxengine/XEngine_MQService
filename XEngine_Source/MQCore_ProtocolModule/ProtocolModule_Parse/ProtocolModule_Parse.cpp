@@ -36,38 +36,28 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
  参数.三：pSt_ProtocolHdr
   In/Out：Out
   类型：数据结构指针
-  可空：N
+  可空：Y
   意思：输出解析到的头协议
- 参数.四：pSt_MQProtocol
-  In/Out：Out
-  类型：数据结构指针
-  可空：N
-  意思：输出消息协议
- 参数.五：pptszMsgBuffer
+ 参数.四：pptszMsgBuffer
   In/Out：Out
   类型：二级指针
   可空：Y
   意思：输出消息内容,需要释放内存
- 参数.六：pInt_MsgLen
+ 参数.五：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
   可空：Y
   意思：输出内容大小
- 参数.七：pInt_Type
-  In/Out：Out
-  类型：整数型指针
-  可空：Y
-  意思：输出负载类型
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr /* = NULL */, TCHAR** pptszMsgBuffer /* = NULL */, int* pInt_MsgLen /* = NULL */, int* pInt_Type /* = NULL */)
+BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR** pptszMsgBuffer, int* pInt_MsgLen)
 {
 	Protocol_IsErrorOccur = FALSE;
 
-	if ((NULL == lpszMsgBuffer) || (NULL == pSt_MQProtocol))
+	if (NULL == lpszMsgBuffer)
 	{
 		Protocol_IsErrorOccur = TRUE;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
@@ -86,45 +76,83 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	}
 	Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
 
-	if (NULL != pSt_ProtocolHdr)
+	if (!st_JsonRoot["unOperatorType"].isNull())
 	{
-		if (!st_JsonRoot["unOperatorType"].isNull())
-		{
-			pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
-		}
-		if (!st_JsonRoot["unOperatorCode"].isNull())
-		{
-			pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
-		}
-		if (!st_JsonRoot["wReserve"].isNull())
-		{
-			pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
-		}
-		if (!st_JsonRoot["byVersion"].isNull())
-		{
-			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
-		}
+		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
 	}
-	_tcscpy(pSt_MQProtocol->tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
-	pSt_MQProtocol->nSerial = st_JsonMQProtocol["nSerial"].asInt();
-	pSt_MQProtocol->nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
-	pSt_MQProtocol->nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
+	if (!st_JsonRoot["unOperatorCode"].isNull())
+	{
+		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
+	}
+	if (!st_JsonRoot["wReserve"].isNull())
+	{
+		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
+	}
+	if (!st_JsonRoot["byVersion"].isNull())
+	{
+		pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
+	}
+	*pInt_MsgLen = 0;
+	XENGINE_PROTOCOL_XMQ st_MQProtocol;
+	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
 
+	memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+	memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+	//如果负载的是消息
+	if (!st_JsonRoot["st_MQProtocol"].isNull())
+	{
+		_tcscpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
+		st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
+		st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
+		st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
+
+		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
+	}
+	//后者负载的是验证协议
+	if (!st_JsonRoot["st_Auth"].isNull())
+	{
+		Json::Value st_JsonAuth = st_JsonRoot["st_Auth"];
+		_tcscpy(st_ProtocolAuth.tszUserName, st_JsonAuth["tszUserName"].asCString());
+		_tcscpy(st_ProtocolAuth.tszUserPass, st_JsonAuth["tszUserPass"].asCString());
+
+		if (!st_JsonAuth["enClientType"].isNull())
+		{
+			st_ProtocolAuth.enClientType = (ENUM_PROTOCOLCLIENT_TYPE)st_JsonAuth["enClientType"].asInt();
+		}
+		if (!st_JsonAuth["enDeviceType"].isNull())
+		{
+			st_ProtocolAuth.enDeviceType = (ENUM_PROTOCOLDEVICE_TYPE)st_JsonAuth["enDeviceType"].asInt();
+		}
+		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERAUTH);
+	}
+	//或者包含附加内容
 	if (!st_JsonRoot["st_Payload"].isNull())
 	{
 		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
+		*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
+	}
 
-		*pInt_Type = st_JsonPayLoad["nPayType"].asInt();
-		*pInt_MsgLen = st_JsonPayLoad["nPayLen"].asInt();
+	*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
+	if (NULL == *pptszMsgBuffer)
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
+		return FALSE;
+	}
+	memset(*pptszMsgBuffer, '\0', *pInt_MsgLen);
 
-		*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
-		if (NULL != *pptszMsgBuffer)
+	if (st_JsonRoot["st_MQProtocol"].isNull())
+	{
+		memcpy(*pptszMsgBuffer, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+	}
+	else
+	{
+		memcpy(*pptszMsgBuffer, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		if (!st_JsonRoot["st_Payload"].isNull())
 		{
-			Protocol_IsErrorOccur = TRUE;
-			Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
-			return FALSE;
+			Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
+			memcpy(*pptszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
 		}
-		memcpy(*pptszMsgBuffer, st_JsonPayLoad["tszPayData"].asCString(), *pInt_MsgLen);
 	}
 	return TRUE;
 }

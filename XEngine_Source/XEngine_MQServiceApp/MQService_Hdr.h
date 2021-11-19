@@ -3,6 +3,10 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <io.h>
+#else
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +35,9 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/HttpServer_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
+
 #ifdef _UNICODE
 typedef std::wstring tstring;
 #else
@@ -48,10 +55,6 @@ typedef std::string tstring;
 #include "../MQCore_SessionModule/Session_Define.h"
 #include "../MQCore_SessionModule/Session_Error.h"
 
-#define XENGINE_MQAPP_NETTYPE_TCP 1
-#define XENGINE_MQAPP_NETTYPE_HTTP 2
-#define XENGINE_MQAPP_NETTYPE_WEBSOCKET 3
-
 extern BOOL bIsRun;
 extern XLOG xhLog;
 extern XNETHANDLE xhTCPSocket;
@@ -61,8 +64,9 @@ extern XNETHANDLE xhWSSocket;
 extern XNETHANDLE xhTCPHeart;
 extern XNETHANDLE xhWSHeart;
 
-extern XNETHANDLE xhTCPPacket;
+extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
+extern XHANDLE xhWSPacket;
 
 extern XNETHANDLE xhTCPPool;
 extern XNETHANDLE xhHttpPool;
@@ -72,7 +76,6 @@ extern SOCKET hSDSocket;
 extern SOCKET hRVSocket;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
-
 extern shared_ptr<std::thread> pSTDThread;
 
 void ServiceApp_Stop(int signo);
@@ -113,5 +116,6 @@ void ServiceApp_Stop(int signo);
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpServer.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
+#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIHelp.lib")
 #pragma comment(lib,"Ws2_32.lib")
 #endif
