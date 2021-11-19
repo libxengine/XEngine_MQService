@@ -36,7 +36,7 @@
       "SQLPass":"123123Ruiyue"
   },
   "XAuth":{
-      "nAuth":1,
+      "nAuth":0,
       "AuthUser":"./XEngine_Config/UserList.txt",
       "AuthHttp":"http://app.xyry.org:5500/api/pass/auth"
   },

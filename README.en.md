@@ -22,7 +22,7 @@ this software support following features
 7. load balanc(planning)  
 8. message get time  
 9. message subcribe  
-10. support Permission Validation(planning)  
+10. support Permission Validation  
 11. support multi protocol(TCP,HTTP,WEBSOCKET)  
 12. Active delivery acquisition mode or passive subscription notification module  
 13. get order and start serial pos setting  
@@ -33,7 +33,7 @@ this software support following features
 
 #### Requirements  
 support system above windows 7sp1 and linux(ubuntu20.04,centos8)  
-XEngine need V7.18 or above  
+XEngine need V7.23 or above  
 vcpkg need 2021.05.11 or above  
 
 #### Windows
@@ -45,11 +45,6 @@ vcpkg:https://github.com/microsoft/vcpkg
 vcpkg.exe install jsoncpp  
 vcpkg integrate install  
 you can not use vcpkg and config jsoncpp development for youself   
-
-##### XEngine
-XEngine can be download with mine repository,whe you downloaded xengine,you have to add value to you user environment  
-- XEngine_Include header file path
-- XEngine_Library library file path
 
 #### Linux
 Linux use Makefile to complie  
@@ -71,6 +66,11 @@ make complie
 make FLAGS=InstallAll install  
 make FLAGS=CleanAll clear  
 
+#### XEngine Env
+install XEngine can be refer to xengine Readme docment  
+GITEE:https://gitee.com/xyry/libxengine  
+GITHUB:https://github.com/libxengine/xengine  
+
 #### use
 
 1.  Switch to the MASTER branch
@@ -88,6 +88,10 @@ make FLAGS=CleanAll clear
 
 ## other problems   
 You can refer to the document under the docment directory. It contains API protocol and service description.  
+
+## Test Server Address
+Address:app.xyry.org or 159.75.200.173  
+Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
 
 ## Participate in contribution
 
