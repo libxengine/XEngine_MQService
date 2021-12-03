@@ -16,6 +16,7 @@ void __stdcall MessageQueue_Callback_TCPRecv(LPCTSTR lpszClientAddr, SOCKET hSoc
         return;
     }
     SocketOpt_HeartBeat_ActiveAddrEx(xhTCPHeart, lpszClientAddr);
+    XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("投递TCP数据包到消息队列成功,%d"), nMsgLen);
 }
 void __stdcall MessageQueue_Callback_TCPLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
