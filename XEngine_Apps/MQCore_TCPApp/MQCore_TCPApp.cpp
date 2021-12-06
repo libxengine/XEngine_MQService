@@ -151,17 +151,17 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 		return;
 	}
 	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen, FALSE))
+	TCHAR* ptszMsgBuffer;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 	{
 		printf("接受数据失败！\n");
 		return;
 	}
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
+	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 void MQ_Get()
 {
@@ -475,7 +475,7 @@ int main(int argc, char** argv)
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	LPCTSTR lpszServiceAddr = _T("127.0.0.1");
+	LPCTSTR lpszServiceAddr = _T("192.168.1.12");
 	LPCTSTR lpszMsgBuffer = _T("123456789aaa");
 	if (!XClient_TCPSelect_Create(&m_Socket, lpszServiceAddr, 5200))
 	{
@@ -493,10 +493,11 @@ int main(int argc, char** argv)
 	else
 	{
 		MQ_Create();
-
-		MQ_Post(lpszMsgBuffer);
-		MQ_Post(lpszMsgBuffer);
-
+		for (int i = 0; i < 1000000; i++)
+		{
+			MQ_Post(lpszMsgBuffer);
+		}
+		getchar();
 		MQ_GetNumber();
 		MQ_GetOrder();
 		MQ_Get();
