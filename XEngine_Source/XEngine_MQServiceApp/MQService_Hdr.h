@@ -78,8 +78,6 @@ extern SOCKET hRVSocket;
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 extern shared_ptr<std::thread> pSTDThread;
 
-void ServiceApp_Stop(int signo);
-
 #include "MQService_Config.h"
 #include "MQService_Net.h"
 #include "MQService_TCPTask.h"
