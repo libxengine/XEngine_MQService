@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /********************************************************************
 //    Created:     2021/11/16  15:30:48
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_SessionModule\SessionModule_Auth\SessionModule_Auth.h

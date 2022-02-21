@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /********************************************************************
 //    Created:     2021/06/30  10:05:48
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_XMQModule\XMQModule_Define.h
