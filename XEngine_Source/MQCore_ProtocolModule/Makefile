@@ -1,11 +1,11 @@
 CC = g++ -Wall -std=c++17 -fPIC
 RELEASE = 0
 UNICODE = 0
-INCLUDE = -I ./
-LOADBIN = 
+INCLUDE = -I ./ -I ../XEngine_ThirdPart/jsoncpp
+LOADBIN = -L ../XEngine_ThirdPart/jsoncpp
 LIB = -ljsoncpp
 LIBEX = -static-libgcc -lrt -ldl -lpthread
-LOADSO = -Wl,-rpath=
+LOADSO = -Wl,-rpath=./,--disable-new-dtags
 LIBINCLUDE = ProtocolModule_Packet.o ProtocolModule_Parse.o pch.o
 
 ifeq ($(RELEASE),1)
