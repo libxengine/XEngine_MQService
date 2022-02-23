@@ -13,13 +13,6 @@
 #include <tchar.h>
 #include <time.h>
 #include <WinSock2.h>
-#include <json/json.h>
-#else
-#ifdef _CENTOS
-#include <json/json.h>
-#else
-#include <jsoncpp/json/json.h>
-#endif
 #endif
 #endif //PCH_H
 #include <stdio.h>
@@ -29,6 +22,7 @@
 #include <list>
 #include <shared_mutex>
 #include <unordered_map>
+#include <json/json.h>
 using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
@@ -58,6 +52,19 @@ typedef std::wstring tstring;
 typedef std::string tstring;
 #endif
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
+#ifdef _DEBUG
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Debug/jsoncpp")
+#else
+#pragma comment(lib,"../Debug/jsoncpp")
+#endif
+#else
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Release/jsoncpp")
+#else
+#pragma comment(lib,"../Release/jsoncpp")
+#endif
+#endif
 #endif

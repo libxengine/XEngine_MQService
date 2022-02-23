@@ -1,5 +1,5 @@
 ﻿#pragma once
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -85,15 +85,32 @@ extern shared_ptr<std::thread> pSTDThread;
 #include "MQService_WSTask.h"
 #include "MQService_DDSTask.h"
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_ManagePool.lib")
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_XLog.lib")
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpServer.lib")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
+#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIHelp.lib")
+#pragma comment(lib,"Ws2_32.lib")
 #ifdef _DEBUG
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Debug/MQCore_ConfigModule.lib")
+#pragma comment(lib,"../x64/Debug/MQCore_ProtocolModule.lib")
+#pragma comment(lib,"../x64/Debug/MQCore_DDSMessage.lib")
+#pragma comment(lib,"../x64/Debug/MQCore_XMQModule.lib")
+#pragma comment(lib,"../x64/Debug/MQCore_SessionModule.lib")
+#else
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../Debug/MQCore_XMQModule.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
+#endif
 #else
-#ifdef WIN64
+#ifdef _WIN64
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DDSMessage.lib")
@@ -107,13 +124,4 @@ extern shared_ptr<std::thread> pSTDThread;
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
 #endif
 #endif
-#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"XEngine_Core/XEngine_ManagePool.lib")
-#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_XLog.lib")
-#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
-#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpServer.lib")
-#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
-#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIHelp.lib")
-#pragma comment(lib,"Ws2_32.lib")
 #endif

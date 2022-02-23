@@ -62,7 +62,7 @@ void ServiceApp_Stop(int signo)
 
 static int ServiceApp_Deamon(int wait)
 {
-#ifndef _WINDOWS
+#ifndef _MSC_BUILD
 	pid_t pid = 0;
 	int status;
 	pid = fork();

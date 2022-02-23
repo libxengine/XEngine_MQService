@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31410.357
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_MQServiceApp", "XEngine_MQServiceApp\XEngine_MQServiceApp.vcxproj", "{34C9695F-7097-412F-ACC2-A3979A91D776}"
 EndProject
@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MQCore_Hdr", "MQCore_Hdr", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_DDSMessage", "MQCore_DDSMessage\MQCore_DDSMessage.vcxproj", "{A02A61BE-4CB1-478D-ACA5-71368158BF4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XEngine_ThirdPart", "XEngine_ThirdPart", "{3A071C4D-036B-47DF-AC77-4DD1521F51FD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "XEngine_ThirdPart\jsoncpp\jsoncpp.vcxproj", "{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,9 +80,20 @@ Global
 		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x64.Build.0 = Release|x64
 		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x86.ActiveCfg = Release|Win32
 		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x86.Build.0 = Release|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.ActiveCfg = Debug|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.Build.0 = Debug|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.ActiveCfg = Debug|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.Build.0 = Debug|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.ActiveCfg = Release|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.Build.0 = Release|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.ActiveCfg = Release|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {3A071C4D-036B-47DF-AC77-4DD1521F51FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFADBBBD-43B1-4B9B-9DD8-04415EBEFDA7}
