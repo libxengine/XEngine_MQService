@@ -1,0 +1,12 @@
+LIBRARY
+
+EXPORTS
+	DBModule_GetLastError
+
+	DBModule_MessageQueue_Init
+	DBModule_MessageQueue_Destory
+	DBModule_MessageQueue_Insert
+	DBModule_MessageQueue_CreateTable
+
+	DBModule_DDSMessage_Init
+	DBModule_DDSMessage_Destory
