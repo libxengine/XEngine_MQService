@@ -12,12 +12,14 @@
 *********************************************************************/
 typedef struct  
 {
+	TCHAR tszMsgBuffer[8192];                                             //消息内容
 	TCHAR tszQueueName[256];                                              //此消息的KEY
 	TCHAR tszQueueLeftTime[64];                                           //过期时间
 	TCHAR tszQueuePublishTime[64];                                        //发布时间
 	TCHAR tszQueueCreateTime[64];                                         //创建时间
 	__int64x nQueueSerial;                                                //包序列号
 	__int64x nQueueGetTime;                                               //可以获取的次数
+	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
@@ -62,7 +64,7 @@ extern "C" BOOL DBModule_MessageQueue_Destory();
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBManage);
+extern "C" BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MessageQueue_CreateTable
 函数功能：创建表

@@ -100,7 +100,7 @@ BOOL CDBModule_MessageQueue::DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE
     TCHAR tszSQLStatement[2048];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-    _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+    _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->tszQueuePublishTime);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -131,15 +131,15 @@ BOOL CDBModule_MessageQueue::DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueue
 
     _stprintf_s(tszSQLQuery, _T("CREATE TABLE IF NOT EXISTS `%s` ("
         "`ID` int NOT NULL AUTO_INCREMENT,"
-        "`tszQueueName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属队列',"
-        "`nQueueSerial` bigint NULL DEFAULT NULL COMMENT '消息序列',"
-        "`nQueueGetTime` bigint NULL DEFAULT NULL COMMENT '获取次数',"
-        "`tszQueueLeftTime` datetime NULL DEFAULT NULL COMMENT '过期时间',"
-        "`tszQueuePublishTime` datetime NULL DEFAULT NULL COMMENT '发布时间',"
+        "`tszQueueName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所属队列',"
+        "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
+        "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
+        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '过期时间',"
+        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
+        "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
         "PRIMARY KEY (`ID`) USING BTREE"
         ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
-        "SET FOREIGN_KEY_CHECKS = 1;"
     ), lpszQueueName);
 
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))

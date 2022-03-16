@@ -177,7 +177,9 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 				st_DBQueue.nQueueSerial = st_MQProtocol.nSerial;
 				st_DBQueue.nQueueGetTime = st_MQProtocol.nGetTimer;
+				st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
 				_tcscpy(st_DBQueue.tszQueueName, st_MQProtocol.tszMQKey);
+				memcpy(st_DBQueue.tszMsgBuffer, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_DBQueue.nMsgLen);
 				if (st_MQProtocol.nPubTime > 0)
 				{
 					XENGINE_LIBTIMER st_LibTimer;

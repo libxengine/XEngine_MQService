@@ -19,7 +19,7 @@ public:
 public:
 	BOOL DBModule_MessageQueue_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
 	BOOL DBModule_MessageQueue_Destory();
-	BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBManage);
+	BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	BOOL DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueueName);
 private:
 	XHDATA xhDBSQL;
