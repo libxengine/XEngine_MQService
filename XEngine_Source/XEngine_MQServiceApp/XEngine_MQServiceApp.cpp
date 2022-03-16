@@ -41,15 +41,22 @@ void ServiceApp_Stop(int signo)
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
+
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
+
 		XMQModule_Packet_Destory();
+		DBModule_MessageQueue_Destory();
+		DBModule_DDSMessage_Destory();
+
 		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
@@ -137,6 +144,29 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("初始化守护进程..."));
 		ServiceApp_Deamon(1);
+	}
+
+	if (st_ServiceCfg.st_XSql.bEnable)
+	{
+		DATABASE_MYSQL_CONNECTINFO st_MYSql;
+		memset(&st_MYSql, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
+
+		memcpy(&st_MYSql, &st_ServiceCfg.st_XSql, sizeof(DATABASE_MYSQL_CONNECTINFO));
+		if (!DBModule_MessageQueue_Init(&st_MYSql))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息队列数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		if (!DBModule_DDSMessage_Init(&st_MYSql))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息分发数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化数据库服务成功"));
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，没有启用数据库"));
 	}
 
 	if (!SessionModule_Client_Init())
@@ -371,15 +401,21 @@ NETSERVICEEXIT:
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+		
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
+		
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
+		
 		XMQModule_Packet_Destory();
+		DBModule_MessageQueue_Destory();
+		DBModule_DDSMessage_Destory();
 		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
