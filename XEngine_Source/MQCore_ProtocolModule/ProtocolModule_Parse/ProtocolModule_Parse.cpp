@@ -103,9 +103,9 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	{
 		_tcscpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
-		st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
 		st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
-
+		st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
+		st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
 	//后者负载的是验证协议
