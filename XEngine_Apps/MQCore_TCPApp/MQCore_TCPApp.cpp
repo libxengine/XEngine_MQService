@@ -22,7 +22,7 @@ using namespace std;
 
 SOCKET m_Socket;
 __int64x nLastNumber = 0;
-LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
+LPCTSTR lpszKey = _T("XEngine_NotifyKey");  //主题
 
 void MQ_Authorize()
 {
@@ -475,7 +475,7 @@ int main(int argc, char** argv)
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	LPCTSTR lpszServiceAddr = _T("192.168.1.12");
+	LPCTSTR lpszServiceAddr = _T("192.168.1.8");
 	LPCTSTR lpszMsgBuffer = _T("123456789aaa");
 	if (!XClient_TCPSelect_Create(&m_Socket, lpszServiceAddr, 5200))
 	{
@@ -484,7 +484,7 @@ int main(int argc, char** argv)
 	}
 	printf("连接成功！\n");
 
-	//MQ_Authorize();
+	MQ_Authorize();
 	if (argc > 1)
 	{
 		MQ_Create();
