@@ -21,6 +21,7 @@ public:
 	BOOL DBModule_MessageQueue_Destory();
 	BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	BOOL DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueueName);
+	BOOL DBModule_MessageQueue_DeleteTable(LPCTSTR lpszQueueName);
 private:
 	XHDATA xhDBSQL;
 };

@@ -238,6 +238,13 @@ BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, S
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
+	if (stl_MapIterator->second.pStl_ListClient->size() <= 0)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_EMPTY;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
 	stl_MapIterator->second.st_Locker->lock_shared();
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_ListClient, stl_MapIterator->second.pStl_ListClient->size(), sizeof(SESSION_NOTIFYCLIENT));
 	list<SESSION_NOTIFYCLIENT>::iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();

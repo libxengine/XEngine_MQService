@@ -47,6 +47,10 @@ extern "C" BOOL DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueueName)
 {
 	return m_MessageQueue.DBModule_MessageQueue_CreateTable(lpszQueueName);
 }
+extern "C" BOOL DBModule_MessageQueue_DeleteTable(LPCTSTR lpszQueueName)
+{
+	return m_MessageQueue.DBModule_MessageQueue_DeleteTable(lpszQueueName);
+}
 /*************************************************************************
 						消息分发导出函数
 **************************************************************************/

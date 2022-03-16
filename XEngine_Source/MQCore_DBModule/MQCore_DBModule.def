@@ -7,6 +7,7 @@ EXPORTS
 	DBModule_MessageQueue_Destory
 	DBModule_MessageQueue_Insert
 	DBModule_MessageQueue_CreateTable
+	DBModule_MessageQueue_DeleteTable
 
 	DBModule_DDSMessage_Init
 	DBModule_DDSMessage_Destory

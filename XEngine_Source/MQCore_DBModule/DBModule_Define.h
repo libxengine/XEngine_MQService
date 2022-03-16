@@ -79,6 +79,20 @@ extern "C" BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueueName);
+/********************************************************************
+函数名称：DBModule_MessageQueue_DeleteTable
+函数功能：删除表
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MessageQueue_DeleteTable(LPCTSTR lpszQueueName);
 /*************************************************************************
 						消息分发导出函数
 **************************************************************************/

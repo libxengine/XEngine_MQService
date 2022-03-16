@@ -493,7 +493,7 @@ int main(int argc, char** argv)
 	else
 	{
 		MQ_Create();
-		for (int i = 0; i < 1000000; i++)
+		for (int i = 0; i < 10000; i++)
 		{
 			MQ_Post(lpszMsgBuffer);
 		}

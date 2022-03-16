@@ -317,6 +317,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				return FALSE;
 			}
 			pSt_ProtocolHdr->wReserve = 0;
+			DBModule_MessageQueue_DeleteTable(st_MQProtocol.tszMQKey);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			SessionModule_Notify_Destory(st_MQProtocol.tszMQKey);

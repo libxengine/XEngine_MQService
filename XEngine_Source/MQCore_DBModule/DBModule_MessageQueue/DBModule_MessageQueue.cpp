@@ -100,7 +100,7 @@ BOOL CDBModule_MessageQueue::DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE
     TCHAR tszSQLStatement[2048];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-    _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->tszQueuePublishTime);
+    _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -149,4 +149,34 @@ BOOL CDBModule_MessageQueue::DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueue
         return FALSE;
     }
     return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MessageQueue_DeleteTable
+函数功能：删除表
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MessageQueue::DBModule_MessageQueue_DeleteTable(LPCTSTR lpszQueueName)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+    _stprintf_s(tszSQLQuery, _T("DROP TABLE IF EXISTS `%s`"), lpszQueueName);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
 }
