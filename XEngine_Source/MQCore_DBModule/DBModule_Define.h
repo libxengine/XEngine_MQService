@@ -10,6 +10,7 @@
 //    Purpose:     导出的函数
 //    History:
 *********************************************************************/
+//消息队列
 typedef struct  
 {
 	TCHAR tszMsgBuffer[8192];                                             //消息内容
@@ -21,6 +22,14 @@ typedef struct
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
+//用户信息
+typedef struct  
+{
+	XENGINE_PROTOCOL_USERINFO st_UserInfo;
+	int nMQKey;
+}XENGINE_DBUSERINFO;
+//用户消息
+
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////

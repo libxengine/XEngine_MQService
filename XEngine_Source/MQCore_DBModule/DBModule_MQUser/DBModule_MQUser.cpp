@@ -51,7 +51,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
     LPCTSTR lpszStrCharset = _T("utf8");
 #endif
     //连接数据库
-    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MessageQueue"));
+    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQUser"));
     if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -72,5 +72,28 @@ BOOL CDBModule_MQUser::DBModule_MQUser_Destory()
 {
     DBModule_IsErrorOccur = FALSE;
     DataBase_MySQL_Close(xhDBSQL);
+    return TRUE;
+}
+BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_DBUSERINFO* pSt_UserInfo)
+{
+    DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserInfo)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[2048];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+    _stprintf(tszSQLStatement, _T("INSERT INTO `UserInfo` (tszUserName,tszUserPass,tszEMailAddr,nPhoneNumber,nIDNumber,nMQKey,nUserState,nUserLevel,tszLoginTime,tszCreateTime) VALUES('%s','%s','%s',%lld,%lld,%d,%d,%d,'%s',now())"), pSt_UserInfo->st_UserInfo.tszUserName, pSt_UserInfo->st_UserInfo.tszUserPass, pSt_UserInfo->st_UserInfo.tszEMailAddr, pSt_UserInfo->st_UserInfo.nPhoneNumber, pSt_UserInfo->st_UserInfo.nIDNumber, pSt_UserInfo->nMQKey, pSt_UserInfo->st_UserInfo.nUserState, pSt_UserInfo->st_UserInfo.nUserLevel, pSt_UserInfo->st_UserInfo.tszLoginTime);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
     return TRUE;
 }

@@ -54,8 +54,8 @@ void ServiceApp_Stop(int signo)
 		ManagePool_Thread_NQDestroy(xhWSPool);
 
 		XMQModule_Packet_Destory();
-		DBModule_MessageQueue_Destory();
-		DBModule_DDSMessage_Destory();
+		DBModule_MQData_Destory();
+		DBModule_MQUser_Destory();
 
 		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
@@ -152,14 +152,14 @@ int main(int argc, char** argv)
 		memset(&st_MYSql, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
 
 		memcpy(&st_MYSql, &st_ServiceCfg.st_XSql, sizeof(DATABASE_MYSQL_CONNECTINFO));
-		if (!DBModule_MessageQueue_Init(&st_MYSql))
+		if (!DBModule_MQData_Init(&st_MYSql))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息队列数据库失败，错误：%lX"), DBModule_GetLastError());
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
 			goto NETSERVICEEXIT;
 		}
-		if (!DBModule_DDSMessage_Init(&st_MYSql))
+		if (!DBModule_MQUser_Init(&st_MYSql))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息分发数据库失败，错误：%lX"), DBModule_GetLastError());
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
 			goto NETSERVICEEXIT;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化数据库服务成功"));
@@ -414,8 +414,9 @@ NETSERVICEEXIT:
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		
 		XMQModule_Packet_Destory();
-		DBModule_MessageQueue_Destory();
-		DBModule_DDSMessage_Destory();
+		DBModule_MQData_Destory();
+		DBModule_MQUser_Destory();
+
 		SessionModule_Auth_Destory();
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);

@@ -51,7 +51,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
     LPCTSTR lpszStrCharset = _T("utf8");
 #endif
     //连接数据库
-    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MessageQueue"));
+    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQData"));
     if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
     {
         DBModule_IsErrorOccur = TRUE;
