@@ -3,11 +3,12 @@ LIBRARY
 EXPORTS
 	DBModule_GetLastError
 
-	DBModule_MessageQueue_Init
-	DBModule_MessageQueue_Destory
-	DBModule_MessageQueue_Insert
-	DBModule_MessageQueue_CreateTable
-	DBModule_MessageQueue_DeleteTable
+	DBModule_MQData_Init
+	DBModule_MQData_Destory
+	DBModule_MQData_Insert
+	DBModule_MQData_Query
+	DBModule_MQData_CreateTable
+	DBModule_MQData_DeleteTable
 
-	DBModule_DDSMessage_Init
-	DBModule_DDSMessage_Destory
+	DBModule_MQUser_Init
+	DBModule_MQUser_Destory

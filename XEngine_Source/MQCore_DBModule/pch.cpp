@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
-#include "DBModule_DDSMessage/DBModule_DDSMessage.h"
-#include "DBModule_MessageQueue/DBModule_MessageQueue.h"
+#include "DBModule_MQData/DBModule_MQData.h"
+#include "DBModule_MQUser/DBModule_MQUser.h"
 /********************************************************************
 //    Created:     2022/03/15  16:00:31
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule\pch.cpp
@@ -15,8 +15,8 @@
 BOOL DBModule_IsErrorOccur = FALSE;
 DWORD DBModule_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////////
-CDBModule_DDSMessage m_DDService;
-CDBModule_MessageQueue m_MessageQueue;
+CDBModule_MQData m_DBData;
+CDBModule_MQUser m_DBUser;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
@@ -31,34 +31,38 @@ extern "C" DWORD DBModule_GetLastError(int* pInt_SysError)
 /*************************************************************************
 						消息队列导出函数
 **************************************************************************/
-extern "C" BOOL DBModule_MessageQueue_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
+extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
 {
-	return m_MessageQueue.DBModule_MessageQueue_Init(pSt_DBConnector);
+	return m_DBData.DBModule_MQData_Init(pSt_DBConnector);
 }
-extern "C" BOOL DBModule_MessageQueue_Destory()
+extern "C" BOOL DBModule_MQData_Destory()
 {
-	return m_MessageQueue.DBModule_MessageQueue_Destory();
+	return m_DBData.DBModule_MQData_Destory();
 }
-extern "C" BOOL DBModule_MessageQueue_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBManage)
+extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBManage)
 {
-	return m_MessageQueue.DBModule_MessageQueue_Insert(pSt_DBManage);
+	return m_DBData.DBModule_MQData_Insert(pSt_DBManage);
 }
-extern "C" BOOL DBModule_MessageQueue_CreateTable(LPCTSTR lpszQueueName)
+extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
-	return m_MessageQueue.DBModule_MessageQueue_CreateTable(lpszQueueName);
+	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
 }
-extern "C" BOOL DBModule_MessageQueue_DeleteTable(LPCTSTR lpszQueueName)
+extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
 {
-	return m_MessageQueue.DBModule_MessageQueue_DeleteTable(lpszQueueName);
+	return m_DBData.DBModule_MQData_CreateTable(lpszQueueName);
+}
+extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
+{
+	return m_DBData.DBModule_MQData_DeleteTable(lpszQueueName);
 }
 /*************************************************************************
 						消息分发导出函数
 **************************************************************************/
-extern "C" BOOL DBModule_DDSMessage_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
+extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
 {
-	return m_DDService.DBModule_DDSMessage_Init(pSt_DBConnector);
+	return m_DBUser.DBModule_MQUser_Init(pSt_DBConnector);
 }
-extern "C" BOOL DBModule_DDSMessage_Destory()
+extern "C" BOOL DBModule_MQUser_Destory()
 {
-	return m_DDService.DBModule_DDSMessage_Destory();
+	return m_DBUser.DBModule_MQUser_Destory();
 }

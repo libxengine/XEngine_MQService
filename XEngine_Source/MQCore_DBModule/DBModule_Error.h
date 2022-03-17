@@ -14,3 +14,4 @@
 //                       导出的错误
 //////////////////////////////////////////////////////////////////////////
 #define ERROR_XENGINE_MQCORE_DATABASE_PARAMENT 0xF0001              //参数错误
+#define ERROR_XENGINE_MQCORE_DATABASE_EMPTY 0xF0002                 //数据为空

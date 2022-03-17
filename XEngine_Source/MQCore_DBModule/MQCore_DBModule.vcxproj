@@ -157,16 +157,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DBModule_DDSMessage\DBModule_DDSMessage.h" />
     <ClInclude Include="DBModule_Define.h" />
     <ClInclude Include="DBModule_Error.h" />
-    <ClInclude Include="DBModule_MessageQueue\DBModule_MessageQueue.h" />
+    <ClInclude Include="DBModule_MQData\DBModule_MQData.h" />
+    <ClInclude Include="DBModule_MQUser\DBModule_MQUser.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DBModule_DDSMessage\DBModule_DDSMessage.cpp" />
-    <ClCompile Include="DBModule_MessageQueue\DBModule_MessageQueue.cpp" />
+    <ClCompile Include="DBModule_MQData\DBModule_MQData.cpp" />
+    <ClCompile Include="DBModule_MQUser\DBModule_MQUser.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

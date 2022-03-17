@@ -13,17 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\DBModule_DDSMessage">
+    <Filter Include="头文件\DBModule_MQData">
       <UniqueIdentifier>{f93fa061-cb95-4f14-bbe0-1da61eef130f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\DBModule_DDSMessage">
-      <UniqueIdentifier>{02756d00-e929-49c4-9f7e-0e725a1bc180}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\DBModule_MessageQueue">
+    <Filter Include="头文件\DBModule_MQUser">
       <UniqueIdentifier>{969e6fdf-1c7c-4cd9-b838-0441fcd457ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\DBModule_MessageQueue">
+    <Filter Include="源文件\DBModule_MQUser">
       <UniqueIdentifier>{2d0b149d-9ced-43bd-a045-b486a4988b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\DBModule_MQData">
+      <UniqueIdentifier>{02756d00-e929-49c4-9f7e-0e725a1bc180}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,17 +33,17 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DBModule_DDSMessage\DBModule_DDSMessage.h">
-      <Filter>头文件\DBModule_DDSMessage</Filter>
-    </ClInclude>
     <ClInclude Include="DBModule_Define.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="DBModule_Error.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DBModule_MessageQueue\DBModule_MessageQueue.h">
-      <Filter>头文件\DBModule_MessageQueue</Filter>
+    <ClInclude Include="DBModule_MQData\DBModule_MQData.h">
+      <Filter>头文件\DBModule_MQData</Filter>
+    </ClInclude>
+    <ClInclude Include="DBModule_MQUser\DBModule_MQUser.h">
+      <Filter>头文件\DBModule_MQUser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,11 +53,11 @@
     <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="DBModule_DDSMessage\DBModule_DDSMessage.cpp">
-      <Filter>源文件\DBModule_DDSMessage</Filter>
+    <ClCompile Include="DBModule_MQData\DBModule_MQData.cpp">
+      <Filter>源文件\DBModule_MQData</Filter>
     </ClCompile>
-    <ClCompile Include="DBModule_MessageQueue\DBModule_MessageQueue.cpp">
-      <Filter>源文件\DBModule_MessageQueue</Filter>
+    <ClCompile Include="DBModule_MQUser\DBModule_MQUser.cpp">
+      <Filter>源文件\DBModule_MQUser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
