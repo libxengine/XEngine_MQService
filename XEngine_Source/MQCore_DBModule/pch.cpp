@@ -56,7 +56,7 @@ extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 	return m_DBData.DBModule_MQData_DeleteTable(lpszQueueName);
 }
 /*************************************************************************
-						消息分发导出函数
+						消息用户导出函数
 **************************************************************************/
 extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
 {
@@ -65,4 +65,16 @@ extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnecto
 extern "C" BOOL DBModule_MQUser_Destory()
 {
 	return m_DBUser.DBModule_MQUser_Destory();
+}
+extern "C" BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
+{
+	return m_DBUser.DBModule_MQUser_UserInsert(pSt_UserInfo);
+}
+extern "C" BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
+{
+	return m_DBUser.DBModule_MQUser_UserQuery(pSt_UserInfo);
+}
+extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
+{
+	return m_DBUser.DBModule_MQUser_UserDelete(pSt_UserInfo);
 }

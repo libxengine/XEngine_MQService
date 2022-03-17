@@ -12,3 +12,6 @@ EXPORTS
 
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory
+	DBModule_MQUser_UserInsert
+	DBModule_MQUser_UserQuery
+	DBModule_MQUser_UserDelete

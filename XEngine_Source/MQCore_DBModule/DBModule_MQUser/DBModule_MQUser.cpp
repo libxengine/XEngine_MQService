@@ -74,7 +74,20 @@ BOOL CDBModule_MQUser::DBModule_MQUser_Destory()
     DataBase_MySQL_Close(xhDBSQL);
     return TRUE;
 }
-BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_DBUSERINFO* pSt_UserInfo)
+/********************************************************************
+函数名称：DBModule_MQUser_UserInsert
+函数功能：插入用户
+ 参数.一：pSt_UserInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要插入的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
 {
     DBModule_IsErrorOccur = FALSE;
 
@@ -87,7 +100,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_DBUSERINFO* pSt_UserIn
 	TCHAR tszSQLStatement[2048];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-    _stprintf(tszSQLStatement, _T("INSERT INTO `UserInfo` (tszUserName,tszUserPass,tszEMailAddr,nPhoneNumber,nIDNumber,nMQKey,nUserState,nUserLevel,tszLoginTime,tszCreateTime) VALUES('%s','%s','%s',%lld,%lld,%d,%d,%d,'%s',now())"), pSt_UserInfo->st_UserInfo.tszUserName, pSt_UserInfo->st_UserInfo.tszUserPass, pSt_UserInfo->st_UserInfo.tszEMailAddr, pSt_UserInfo->st_UserInfo.nPhoneNumber, pSt_UserInfo->st_UserInfo.nIDNumber, pSt_UserInfo->nMQKey, pSt_UserInfo->st_UserInfo.nUserState, pSt_UserInfo->st_UserInfo.nUserLevel, pSt_UserInfo->st_UserInfo.tszLoginTime);
+    _stprintf(tszSQLStatement, _T("INSERT INTO `UserInfo` (tszUserName,tszUserPass,tszEMailAddr,nPhoneNumber,nIDNumber,nUserState,nUserLevel,tszLoginTime,tszCreateTime) VALUES('%s','%s','%s',%lld,%lld,%d,%d,'%s',now())"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass, pSt_UserInfo->tszEMailAddr, pSt_UserInfo->nPhoneNumber, pSt_UserInfo->nIDNumber, pSt_UserInfo->nUserState, pSt_UserInfo->nUserLevel, pSt_UserInfo->tszLoginTime);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -96,4 +109,116 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_DBUSERINFO* pSt_UserIn
 	}
 
     return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_UserQuery
+函数功能：查询用户
+ 参数.一：pSt_UserInfo
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要查询的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserInfo)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserName = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[3])
+	{
+		_tcscpy(pSt_UserInfo->tszEMailAddr, pptszResult[3]);
+	}
+	if (NULL != pptszResult[4])
+	{
+		pSt_UserInfo->nPhoneNumber = _ttoi64(pptszResult[4]);
+	}
+	if (NULL != pptszResult[5])
+	{
+		pSt_UserInfo->nIDNumber = _ttoi64(pptszResult[5]);
+	}
+	if (NULL != pptszResult[6])
+	{
+		pSt_UserInfo->nUserState = _ttoi(pptszResult[6]);
+	}
+	if (NULL != pptszResult[7])
+	{
+		pSt_UserInfo->nUserLevel = _ttoi(pptszResult[7]);
+	}
+	if (NULL != pptszResult[8])
+	{
+		_tcscpy(pSt_UserInfo->tszLoginTime, pptszResult[8]);
+	}
+	if (NULL != pptszResult[9])
+	{
+		_tcscpy(pSt_UserInfo->tszCreateTime, pptszResult[9]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_UserDelete
+函数功能：删除用户
+ 参数.一：pSt_UserInfo
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserInfo)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf_s(tszSQLStatement, _T("DELETE * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserName = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	
+	return TRUE;
 }

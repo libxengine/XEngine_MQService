@@ -19,7 +19,9 @@ public:
 public:
 	BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
 	BOOL DBModule_MQUser_Destory();
-	BOOL DBModule_MQUser_UserInsert(XENGINE_DBUSERINFO* pSt_UserInfo);
+	BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+	BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+	BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 private:
 	XHDATA xhDBSQL;
 };

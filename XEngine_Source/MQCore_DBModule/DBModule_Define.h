@@ -22,12 +22,6 @@ typedef struct
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
-//用户信息
-typedef struct  
-{
-	XENGINE_PROTOCOL_USERINFO st_UserInfo;
-	int nMQKey;
-}XENGINE_DBUSERINFO;
 //用户消息
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,7 +111,7 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
 /*************************************************************************
-						消息分发导出函数
+						消息用户导出函数
 **************************************************************************/
 /********************************************************************
 函数名称：DBModule_MQUser_Init
@@ -142,3 +136,45 @@ extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_Destory();
+/********************************************************************
+函数名称：DBModule_MQUser_UserInsert
+函数功能：插入用户
+ 参数.一：pSt_UserInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要插入的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_UserQuery
+函数功能：查询用户
+ 参数.一：pSt_UserInfo
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要查询的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_UserDelete
+函数功能：删除用户
+ 参数.一：pSt_UserInfo
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
