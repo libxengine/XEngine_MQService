@@ -66,7 +66,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH == pSt_ProtocolHdr->unOperatorType)
 	{
-		if (0 == st_ServiceCfg.st_XAuth.nAuth)
+		if (!st_ServiceCfg.st_XSql.bEnable)
 		{
 			pSt_ProtocolHdr->wReserve = 200;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
@@ -76,41 +76,23 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		}
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQLOGIN == pSt_ProtocolHdr->unOperatorCode)
 		{
+			XENGINE_PROTOCOL_USERINFO st_UserInfo;
 			XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
+
+			memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
 			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
-			if (1 == st_ServiceCfg.st_XAuth.nAuth)
+			_tcscpy(st_UserInfo.tszUserName, st_ProtocolAuth.tszUserName);
+			_tcscpy(st_UserInfo.tszUserPass, st_ProtocolAuth.tszUserPass);
+
+			if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 			{
-				if (!SessionModule_Auth_Exist(st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass))
-				{
-					pSt_ProtocolHdr->wReserve = 201;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
-					return FALSE;
-				}
-			}
-			else
-			{
-				int nHTTPCode = 0;
-				ProtocolModule_Packet_PassAuth(&st_ProtocolAuth, tszSDBuffer, &nSDLen);
-				if (!APIHelp_HttpRequest_Post(st_ServiceCfg.st_XAuth.tszAuthHttp, tszSDBuffer, &nHTTPCode))
-				{
-					pSt_ProtocolHdr->wReserve = 202;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求HTTP验证失败,请求HTTP:%s 错误:%lX"), lpszClientType, lpszClientAddr, st_ServiceCfg.st_XAuth.tszAuthHttp, APIHelp_GetLastError());
-					return FALSE;
-				}
-				if (200 != nHTTPCode)
-				{
-					pSt_ProtocolHdr->wReserve = 203;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求HTTP验证失败,请求HTTP地址:%s 错误"), lpszClientType, lpszClientAddr, st_ServiceCfg.st_XAuth.tszAuthHttp);
-					return FALSE;
-				}
+				pSt_ProtocolHdr->wReserve = 201;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+				return FALSE;
 			}
 			pSt_ProtocolHdr->wReserve = 0;
 			SessionModule_Client_SetAuth(lpszClientAddr);
@@ -135,7 +117,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 
 		SessionModule_Client_Get(lpszClientAddr, &st_MQClient, &bAuth);
-		if ((st_ServiceCfg.st_XAuth.nAuth > 0) && !bAuth)
+		if (st_ServiceCfg.st_XSql.bEnable && !bAuth)
 		{
 			pSt_ProtocolHdr->wReserve = 700;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);

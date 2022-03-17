@@ -56,12 +56,6 @@ typedef struct tag_XEngine_ServerConfig
         int nSQLPort;
         BOOL bEnable;
     }st_XSql;
-    struct  
-    {
-        int nAuth;
-        TCHAR tszAuthUser[MAX_PATH];
-        TCHAR tszAuthHttp[MAX_PATH];
-    }st_XAuth;
     struct
     {
         list<tstring> *pStl_ListStorage;
