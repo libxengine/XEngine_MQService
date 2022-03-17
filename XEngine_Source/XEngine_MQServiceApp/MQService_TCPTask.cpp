@@ -88,7 +88,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 			{
-				pSt_ProtocolHdr->wReserve = 201;
+				pSt_ProtocolHdr->wReserve = 701;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
@@ -100,9 +100,24 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
 		}
-		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQLOGIN == pSt_ProtocolHdr->unOperatorCode)
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQREG == pSt_ProtocolHdr->unOperatorCode)
 		{
+			XENGINE_PROTOCOL_USERINFO st_UserInfo;
+			memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
 
+			memcpy(&st_UserInfo, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERINFO));
+			if (!DBModule_MQUser_UserInsert(&st_UserInfo))
+			{
+				pSt_ProtocolHdr->wReserve = 711;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户注册失败,插入数据库失败,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+				return FALSE;
+			}
+			pSt_ProtocolHdr->wReserve = 0;
+			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求用户注册成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_UserInfo.tszUserName, st_UserInfo.tszUserPass);
 		}
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)

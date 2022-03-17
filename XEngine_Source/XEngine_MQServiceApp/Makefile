@@ -1,8 +1,8 @@
 CC = g++ -Wall
 RELEASE = 0
 UNICODE = 0  
-LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../MQCore_ConfigModule -L ../MQCore_XMQModule -L ../MQCore_DDSMessage -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../XEngine_ThirdPart/jsoncpp
-LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpServer -lMQCore_XMQModule -lMQCore_DDSMessage -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -ljsoncpp
+LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../MQCore_ConfigModule -L ../MQCore_XMQModule -L ../MQCore_DDSMessage -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
+LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpServer -lMQCore_XMQModule -lMQCore_DDSMessage -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule -ljsoncpp
 LIBEX = -static-libgcc -ldl -lrt -lpthread
 LOADSO = -Wl,-rpath=./,--disable-new-dtags
 LIBINCLUDE = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_DDSTask.o XEngine_MQServiceApp.o

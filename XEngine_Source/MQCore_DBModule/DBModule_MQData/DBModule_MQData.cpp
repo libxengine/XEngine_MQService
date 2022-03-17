@@ -97,7 +97,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return FALSE;
     }
-    TCHAR tszSQLStatement[2048];
+    TCHAR tszSQLStatement[10240];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
     _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer);

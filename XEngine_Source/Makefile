@@ -9,12 +9,13 @@ BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_MQCORE_PATH = ./MQCore_XMQModule
 BASE_DDSMESSAGE_PATH = ./MQCore_DDSMessage
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
+BASE_DATABASE_PATH = ./MQCore_DBModule
 BASE_SESSION_PATH = ./MQCore_SessionModule
 
 APP_SERVICE_PATH = ./XEngine_MQServiceApp
 
 NETENGINE_LIB = libjsoncpp.so               \
-                libMQCore_ConfigModule.so libMQCore_XMQModule.so libMQCore_DDSMessage.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so      \
+                libMQCore_ConfigModule.so libMQCore_XMQModule.so libMQCore_DDSMessage.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_DBModule.so     \
 		        XEngine_MQServiceApp.exe 
 
 .PHONY:MakeAll 
@@ -33,7 +34,9 @@ libMQCore_ProtocolModule.so:
 	make -C $(BASE_PROTOCOL_PATH) $(FLAGS)
 libMQCore_SessionModule.so:
 	make -C $(BASE_SESSION_PATH) $(FLAGS)
-	
+libMQCore_DBModule.so:
+	make -C $(BASE_DATABASE_PATH) $(FLAGS)
+
 XEngine_MQServiceApp.exe:
 	make -C $(APP_SERVICE_PATH) $(FLAGS)
 

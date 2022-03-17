@@ -203,7 +203,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
 		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
 		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
 		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
-		st_JsonMQProtocol["nPubTime"] = pSt_MQProtocol->nPubTime;
+		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
 		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 	}
 	
