@@ -28,6 +28,7 @@ this software support following features
 13. get order and start serial pos setting  
 14. Unlimited load message types  
 15. data distribution service(DDS),Support WAN and LAN
+16. Access control(planning)
 
 ## install
 
@@ -70,14 +71,14 @@ GITHUB:https://github.com/libxengine/xengine
 - XEngine_Docment  docment directory  
 - XEngine_Release  install directory  
 - XEngine_Source   code    directory  
-- XEngine_Apps     Client code directory  
+- XEngine_Apps     Client code directory 
+- XEngine_SQLFile  database file back dir 
 
 ## other problems   
 You can refer to the document under the docment directory. It contains API protocol and service description.  
 
 ## Test Server Address
-Address:app.xyry.org or 159.75.200.173  
-Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
+Address:app.xyry.org Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
 
 ## Participate in contribution
 

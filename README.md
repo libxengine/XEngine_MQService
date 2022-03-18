@@ -13,7 +13,7 @@ c c++Message Service
 ## 软件特性
 此软件支持以下特性  
 1. 消息序列  
-2. 永久消息(planning)  
+2. 永久消息  
 3. 消息超时  
 4. 主题分区  
 5. 消息回溯(planning)  
@@ -27,12 +27,13 @@ c c++Message Service
 13. 获取顺序与开始序列号设置  
 14. 不限制负载的消息类型  
 15. 消息分发服务(DDS),支持广域网和局域网
+16. 权限控制(planning)
 
 ## 安装教程
 
 #### 版本需求
 支持WINDOWS 7SP1和LINUX(UBUNT20.04,CENTOS8)以上系统  
-XEngine版本需要V7.23或者以上版本  
+XEngine版本需要V7.30或者以上版本  
 
 #### Windows
 使用VS打开并且编译
@@ -67,13 +68,13 @@ GITHUB:https://github.com/libxengine/xengine
 - XEngine_Release  安装目录结构  
 - XEngine_Source   源代目录结构  
 - XEngine_Apps     演示客户端目录  
+- XEngine_SQLFile  数据库文件备份目录  
 
 ## 其他问题  
 你可以参考docment目录下的文档.里面包含了API协议和服务说明.
 
 ## 测试服务器
-地址:app.xyry.org 或者 159.75.200.173  
-端口:TCP 5200,HTTP 5201,WEBSOCKET 5202  
+地址:app.xyry.org 端口:TCP 5200,HTTP 5201,WEBSOCKET 5202  
 
 ## 参与贡献
 
