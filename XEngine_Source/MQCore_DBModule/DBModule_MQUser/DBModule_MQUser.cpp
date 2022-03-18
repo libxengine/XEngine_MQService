@@ -212,14 +212,13 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("DELETE * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserName = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return FALSE;
 	}
-	
 	return TRUE;
 }
 /********************************************************************
