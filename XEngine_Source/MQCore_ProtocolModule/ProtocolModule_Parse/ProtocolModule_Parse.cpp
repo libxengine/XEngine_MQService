@@ -74,8 +74,6 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
 		return FALSE;
 	}
-	Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
-
 	if (!st_JsonRoot["unOperatorType"].isNull())
 	{
 		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
@@ -103,6 +101,7 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	//如果负载的是消息
 	if (!st_JsonRoot["st_MQProtocol"].isNull())
 	{
+		Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
 		_tcscpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
 		st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
