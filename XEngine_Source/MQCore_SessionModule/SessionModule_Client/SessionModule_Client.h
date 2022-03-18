@@ -36,6 +36,7 @@ public:
     BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial);
     BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
     BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth = TRUE);
+    BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName);
 private:
     shared_mutex st_Locker;
 private:

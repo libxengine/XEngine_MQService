@@ -67,6 +67,10 @@ extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lps
 {
 	return m_SessionClient.SessionModule_Client_SetAuth(lpszClientAddr, lpszUserName, bAuth);
 }
+extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * ptszUserName)
+{
+	return m_SessionClient.SessionModule_Client_GetAuth(lpszClientAddr, ptszUserName);
+}
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/

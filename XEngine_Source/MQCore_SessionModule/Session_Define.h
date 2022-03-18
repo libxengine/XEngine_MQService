@@ -196,6 +196,25 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
 备注：
 *********************************************************************/
 extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth = TRUE);
+/********************************************************************
+函数名称：SessionModule_Client_GetAuth
+函数功能：获取客户端地址对应的用户
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+ 参数.二：ptszUserName
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出绑定的用户名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/
