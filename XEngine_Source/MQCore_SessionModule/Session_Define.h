@@ -180,7 +180,12 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
   类型：常量字符指针
   可空：N
   意思：输入要操作的客户端
- 参数.二：bAuth
+ 参数.二：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入绑定的用户名
+ 参数.三：bAuth
   In/Out：In
   类型：逻辑型
   可空：Y
@@ -190,7 +195,7 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth = TRUE);
+extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth = TRUE);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/

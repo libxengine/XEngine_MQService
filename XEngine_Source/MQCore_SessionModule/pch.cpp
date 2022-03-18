@@ -63,9 +63,9 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_ADDDelSerial(lpszClientAddr);
 }
-extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth)
+extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth)
 {
-	return m_SessionClient.SessionModule_Client_SetAuth(lpszClientAddr, bAuth);
+	return m_SessionClient.SessionModule_Client_SetAuth(lpszClientAddr, lpszUserName, bAuth);
 }
 /************************************************************************/
 /*                        订阅                                          */

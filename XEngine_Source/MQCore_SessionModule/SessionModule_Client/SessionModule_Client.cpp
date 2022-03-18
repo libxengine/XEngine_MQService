@@ -313,7 +313,12 @@ BOOL CSessionModule_Client::SessionModule_Client_ADDDelSerial(LPCTSTR lpszClient
   类型：常量字符指针
   可空：N
   意思：输入要操作的客户端
- 参数.二：bAuth
+ 参数.二：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入绑定的用户名
+ 参数.三：bAuth
   In/Out：In
   类型：逻辑型
   可空：Y
@@ -323,7 +328,7 @@ BOOL CSessionModule_Client::SessionModule_Client_ADDDelSerial(LPCTSTR lpszClient
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth /* = TRUE */)
+BOOL CSessionModule_Client::SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth /* = TRUE */)
 {
 	Session_IsErrorOccur = FALSE;
 
@@ -344,6 +349,7 @@ BOOL CSessionModule_Client::SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr,
 		return FALSE;
 	}
 	stl_MapIterator->second.bAuth = bAuth;
+	_tcscpy(stl_MapIterator->second.tszUserName, lpszUserName);
 	st_Locker.unlock_shared();
 	return TRUE;
 }
