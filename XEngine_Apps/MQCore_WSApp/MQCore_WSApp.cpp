@@ -9,12 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _CENTOS
+#endif
 #include <json/json.h>
-#else
-#include <jsoncpp/json/json.h>
-#endif
-#endif
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
@@ -23,7 +19,8 @@
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
+#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
+//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
 
 SOCKET m_Socket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
@@ -73,7 +70,7 @@ void MQ_Authorize()
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonAuth;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQLOGIN;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonAuth["tszUserName"] = "123123aa";

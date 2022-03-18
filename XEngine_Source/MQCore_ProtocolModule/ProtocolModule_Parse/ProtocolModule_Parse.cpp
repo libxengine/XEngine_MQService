@@ -74,8 +74,6 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
 		return FALSE;
 	}
-	Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
-
 	if (!st_JsonRoot["unOperatorType"].isNull())
 	{
 		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
@@ -95,17 +93,20 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	*pInt_MsgLen = 0;
 	XENGINE_PROTOCOL_XMQ st_MQProtocol;
 	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
+	XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
 
-	memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 	memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+	memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+	memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
 	//如果负载的是消息
 	if (!st_JsonRoot["st_MQProtocol"].isNull())
 	{
+		Json::Value st_JsonMQProtocol = st_JsonRoot["st_MQProtocol"];
 		_tcscpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
-		st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
 		st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
-
+		st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
+		st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
 	//后者负载的是验证协议
@@ -125,6 +126,40 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERAUTH);
 	}
+	if (!st_JsonRoot["st_User"].isNull())
+	{
+		Json::Value st_JsonUser = st_JsonRoot["st_User"];
+
+		if (!st_JsonUser["nUserLevel"].isNull())
+		{
+			st_ProtocolInfo.nUserLevel = st_JsonUser["nUserLevel"].asInt();
+		}
+		if (!st_JsonUser["nUserState"].isNull())
+		{
+			st_ProtocolInfo.nUserState = st_JsonUser["nUserState"].asInt();
+		}
+		if (!st_JsonUser["nPhoneNumber"].isNull())
+		{
+			st_ProtocolInfo.nPhoneNumber = st_JsonUser["nPhoneNumber"].asInt64();
+		}
+		if (!st_JsonUser["nIDNumber"].isNull())
+		{
+			st_ProtocolInfo.nIDNumber = st_JsonUser["nIDNumber"].asInt64();
+		}
+		if (!st_JsonUser["tszUserName"].isNull())
+		{
+			_tcscpy(st_ProtocolInfo.tszUserName, st_JsonUser["tszUserName"].asCString());
+		}
+		if (!st_JsonUser["tszUserPass"].isNull())
+		{
+			_tcscpy(st_ProtocolInfo.tszUserPass, st_JsonUser["tszUserPass"].asCString());
+		}
+		if (!st_JsonUser["tszEMailAddr"].isNull())
+		{
+			_tcscpy(st_ProtocolInfo.tszEMailAddr, st_JsonUser["tszEMailAddr"].asCString());
+		}
+		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERINFO);
+	}
 	//或者包含附加内容
 	if (!st_JsonRoot["st_Payload"].isNull())
 	{
@@ -132,6 +167,7 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
 	}
 
+	int nPos = 0;
 	*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
 	if (NULL == *pptszMsgBuffer)
 	{
@@ -141,18 +177,25 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	}
 	memset(*pptszMsgBuffer, '\0', *pInt_MsgLen);
 
-	if (st_JsonRoot["st_MQProtocol"].isNull())
+	if (!st_JsonRoot["st_MQProtocol"].isNull())
 	{
-		memcpy(*pptszMsgBuffer, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+		memcpy(*pptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
-	else
+	if (!st_JsonRoot["st_Auth"].isNull())
 	{
-		memcpy(*pptszMsgBuffer, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-		if (!st_JsonRoot["st_Payload"].isNull())
-		{
-			Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
-			memcpy(*pptszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
-		}
+		memcpy(*pptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
+	}
+	if (!st_JsonRoot["st_User"].isNull())
+	{
+		memcpy(*pptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
+	}
+	if (!st_JsonRoot["st_Payload"].isNull())
+	{
+		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
+		memcpy(*pptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
 	}
 	return TRUE;
 }

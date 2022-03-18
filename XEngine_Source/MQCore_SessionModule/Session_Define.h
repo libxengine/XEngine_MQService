@@ -180,7 +180,12 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
   类型：常量字符指针
   可空：N
   意思：输入要操作的客户端
- 参数.二：bAuth
+ 参数.二：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入绑定的用户名
+ 参数.三：bAuth
   In/Out：In
   类型：逻辑型
   可空：Y
@@ -190,7 +195,26 @@ extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth = TRUE);
+extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth = TRUE);
+/********************************************************************
+函数名称：SessionModule_Client_GetAuth
+函数功能：获取客户端地址对应的用户
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+ 参数.二：ptszUserName
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出绑定的用户名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/
@@ -294,48 +318,3 @@ extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
 备注：
 *********************************************************************/
 extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT *** pppSt_ListClient, int* pInt_ListCount);
-/************************************************************************/
-/*                        验证                                          */
-/************************************************************************/
-/********************************************************************
-函数名称：SessionModule_Auth_Init
-函数功能：初始化授权会话管理器
- 参数.一：lpszAuthFile
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入授权文件地址
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Auth_Init(LPCTSTR lpszAuthFile);
-/************************************************************************
-函数名称：SessionModule_Auth_Destory
-函数功能：销毁授权管理器
-返回值
-  类型：逻辑型
-  意思：是否销毁成功
-备注：
-************************************************************************/
-extern "C" BOOL SessionModule_Auth_Destory();
-/********************************************************************
-函数名称：SessionModule_Auth_Exist
-函数功能：是否验证通过
- 参数.一：lpszUser
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入用户名
- 参数.二：lpszPass
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入密码
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Auth_Exist(LPCTSTR lpszUser, LPCTSTR lpszPass);

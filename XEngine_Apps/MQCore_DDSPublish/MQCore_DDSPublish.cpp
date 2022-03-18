@@ -5,6 +5,7 @@
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"XEngine_Core/XEngine_Core")
 #pragma comment(lib,"../../XEngine_Source/Debug/MQCore_ProtocolModule")
+#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +19,7 @@
 #include "../../XEngine_Source/MQCore_ProtocolModule/Protocol_Define.h"
 #include "../../XEngine_Source/MQCore_ProtocolModule/Protocol_Error.h"
 
-//g++ -std=c++17 -Wall -g MQCore_DDSPublish.cpp -o MQCore_DDSPublish.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L ../../XEngine_Source/MQCore_ProtocolModule -lXEngine_BaseLib -lXEngine_Core -lMQCore_ProtocolModule -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_DDSPublish.cpp -o MQCore_DDSPublish.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L ../../XEngine_Source/MQCore_ProtocolModule -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Core -lMQCore_ProtocolModule -ljsoncpp
 
 SOCKET m_Socket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
@@ -44,11 +45,11 @@ int main()
 	st_DDSProtocol.bCreater = TRUE;
 	st_DDSProtocol.bTcp = FALSE;
 	st_DDSProtocol.nPort = 10000;
-	_tcscpy(st_DDSProtocol.tszTopic, lpszKey);
+	strcpy(st_DDSProtocol.tszTopic, lpszKey);
 	
 	if (st_DDSProtocol.bTcp)
 	{
-		_tcscpy(st_DDSProtocol.tszDDSAddr, lpszIPAddr);
+		strcpy(st_DDSProtocol.tszDDSAddr, lpszIPAddr);
 		//创建服务器
 		if (!NetCore_TCPSelect_StartEx(&xhClient, st_DDSProtocol.nPort))
 		{
@@ -58,7 +59,7 @@ int main()
 	}
 	else
 	{
-		_tcscpy(st_DDSProtocol.tszDDSAddr, lpszGroupAddr);
+		strcpy(st_DDSProtocol.tszDDSAddr, lpszGroupAddr);
 		//初始化组播发送服务
 		if (!NetCore_GroupCast_SDCreate((SOCKET*)&xhClient, st_DDSProtocol.tszDDSAddr, st_DDSProtocol.nPort))
 		{

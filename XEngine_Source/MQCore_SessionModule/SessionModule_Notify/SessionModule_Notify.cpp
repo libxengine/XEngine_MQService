@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "SessionModule_Notify.h"
 /********************************************************************
 //    Created:     2021/07/09  13:37:50
@@ -235,6 +235,13 @@ BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, S
 	{
 		Session_IsErrorOccur = TRUE;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	if (stl_MapIterator->second.pStl_ListClient->size() <= 0)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_EMPTY;
 		st_Locker.unlock_shared();
 		return FALSE;
 	}

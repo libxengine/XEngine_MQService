@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /********************************************************************
 //    Created:     2021/07/02  10:12:38
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_SessionModule\SessionModule_Client\SessionModule_Client.h
@@ -13,6 +13,7 @@
 typedef struct
 {
     TCHAR tszKeyStr[128];                                               //主题名称
+    TCHAR tszUserName[128];                                             //登录的用户名
     __int64x nSerialPos;                                                //当前序列号标记
     int nNetType;                                                       //网络类型
     BOOL bAuth;                                                         //是否通过验证
@@ -34,7 +35,8 @@ public:
     BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol);
     BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial);
     BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr);
-    BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, BOOL bAuth = TRUE);
+    BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth = TRUE);
+    BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName);
 private:
     shared_mutex st_Locker;
 private:

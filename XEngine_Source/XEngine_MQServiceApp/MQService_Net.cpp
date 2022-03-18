@@ -16,6 +16,7 @@ void __stdcall MessageQueue_Callback_TCPRecv(LPCTSTR lpszClientAddr, SOCKET hSoc
         return;
     }
     SocketOpt_HeartBeat_ActiveAddrEx(xhTCPHeart, lpszClientAddr);
+    XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("投递TCP数据包到消息队列成功,%d"), nMsgLen);
 }
 void __stdcall MessageQueue_Callback_TCPLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
@@ -122,6 +123,12 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
 	{
 		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
+    }
+	XENGINE_PROTOCOL_USERINFO st_UserInfo;
+	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+    if (SessionModule_Client_GetAuth(lpszClientAddr, st_UserInfo.tszUserName))
+    {
+        DBModule_MQUser_UserUPDate(&st_UserInfo);
     }
     SessionModule_Client_Delete(lpszClientAddr);
 }

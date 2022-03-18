@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Config_Json.h"
 /********************************************************************
 //    Created:     2021/07/01  11:02:26
@@ -111,28 +111,18 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XLog.nMaxCount = st_JsonXLog["MaxCount"].asInt();
     pSt_ServerConfig->st_XLog.nLogLeave = st_JsonXLog["LogLeave"].asInt();
 
-    if (st_JsonRoot["XSql"].empty() || (4 != st_JsonRoot["XSql"].size()))
+    if (st_JsonRoot["XSql"].empty() || (5 != st_JsonRoot["XSql"].size()))
     {
         Config_IsErrorOccur = TRUE;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XSQL;
         return FALSE;
     }
     Json::Value st_JsonXSql = st_JsonRoot["XSql"];
+    pSt_ServerConfig->st_XSql.bEnable = st_JsonXSql["SQLEnable"].asInt();
     pSt_ServerConfig->st_XSql.nSQLPort = st_JsonXSql["SQLPort"].asInt();
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLAddr,st_JsonXSql["SQLAddr"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
-
-	if (st_JsonRoot["XSql"].empty() || (3 != st_JsonRoot["XAuth"].size()))
-	{
-		Config_IsErrorOccur = TRUE;
-		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTH;
-		return FALSE;
-	}
-	Json::Value st_JsonXAuth = st_JsonRoot["XAuth"];
-	pSt_ServerConfig->st_XAuth.nAuth = st_JsonXAuth["nAuth"].asInt();
-	_tcscpy(pSt_ServerConfig->st_XAuth.tszAuthUser, st_JsonXAuth["AuthUser"].asCString());
-	_tcscpy(pSt_ServerConfig->st_XAuth.tszAuthHttp, st_JsonXAuth["AuthHttp"].asCString());
 
 	if (st_JsonRoot["XVer"].empty())
 	{

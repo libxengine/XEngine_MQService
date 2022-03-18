@@ -50,9 +50,5 @@ extern BOOL Session_IsErrorOccur;
 extern DWORD Session_dwErrorCode;
 
 #ifdef _WINDOWS
-#ifdef _WIN64
-#pragma comment(lib,"x64/XEngine_BaseLib/XEngine_BaseLib")
-#else
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
-#endif
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
 #endif

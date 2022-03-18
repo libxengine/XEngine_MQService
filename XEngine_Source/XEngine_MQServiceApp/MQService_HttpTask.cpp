@@ -37,6 +37,7 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(LPVOID lParam)
 				}
 				MessageQueue_Http_Handle(&st_HTTPReqparam, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, ppszHdrList, nHdrCount);
 				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
 			}
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);

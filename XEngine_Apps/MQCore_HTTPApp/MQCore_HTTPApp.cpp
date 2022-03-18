@@ -5,16 +5,13 @@
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
 #pragma comment(lib,"x86/XEngine_NetHelp/NetHelp_APIHelp")
+#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _CENTOS
+#endif
 #include <json/json.h>
-#else
-#include <jsoncpp/json/json.h>
-#endif
-#endif
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
@@ -23,7 +20,7 @@
 #include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIHelp -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lNetHelp_APIHelp -ljsoncpp
 
 SOCKET m_Socket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
@@ -38,7 +35,7 @@ void MQ_Authorize()
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonAuth;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQLOGIN;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonAuth["tszUserName"] = "123123aa";
