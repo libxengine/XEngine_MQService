@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 17/03/2022 10:02:14
+ Date: 18/03/2022 09:16:23
 */
 
 SET NAMES utf8mb4;
@@ -28,10 +28,9 @@ CREATE TABLE `UserInfo`  (
   `tszEMailAddr` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '电子邮件',
   `nPhoneNumber` bigint NULL DEFAULT NULL COMMENT '电话号码',
   `nIDNumber` bigint NULL DEFAULT NULL COMMENT '身份证',
-  `nMQKey` tinyint NULL DEFAULT NULL COMMENT '用户绑定的KEY的ID',
   `nUserState` tinyint NOT NULL COMMENT '用户状态1在线,0离线',
   `nUserLevel` int NOT NULL COMMENT '用户等级,数字越小越高',
-  `tszLoginTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '登录时间',
+  `tszLoginTime` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '登录时间',
   `tszCreateTime` datetime NOT NULL COMMENT '注册时间',
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
