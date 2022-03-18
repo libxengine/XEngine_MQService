@@ -18,12 +18,63 @@ using namespace std;
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
-//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -lXEngine_BaseLib -lXClient_Socket
+//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXClient_Socket
 
 SOCKET m_Socket;
 __int64x nLastNumber = 0;
 LPCTSTR lpszKey = _T("XEngine_NotifyKey");  //主题
 
+void MQ_Register()
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
+	TCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byIsReply = TRUE;           //获得处理返回结果
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	st_ProtocolInfo.nUserLevel = 0;
+	st_ProtocolInfo.nUserState = 0;
+	st_ProtocolInfo.nPhoneNumber = 13699999999;
+	st_ProtocolInfo.nIDNumber = 511000000000101010;
+	strcpy(st_ProtocolInfo.tszUserName, "123123aa");
+	strcpy(st_ProtocolInfo.tszUserPass, "123123");
+	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
+
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERINFO);
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 0;
+	TCHAR* ptszMsgBuffer;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	printf("%d\n", st_ProtocolHdr.wReserve);
+	if (nLen > 0)
+	{
+		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	}
+}
 void MQ_Authorize()
 {
 	int nLen = 0;
@@ -37,13 +88,13 @@ void MQ_Authorize()
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQLOGIN;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.byIsReply = TRUE;           //获得处理返回结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	_tcscpy(st_ProtocolAuth.tszUserName, "123123aa");
-	_tcscpy(st_ProtocolAuth.tszUserPass, "123123");
+	strcpy(st_ProtocolAuth.tszUserName, "123123aa");
+	strcpy(st_ProtocolAuth.tszUserPass, "123123");
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERAUTH);
 
@@ -69,6 +120,55 @@ void MQ_Authorize()
 	{
 		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
+}
+//删除用户
+void MQ_DeleteUser()
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
+	TCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byIsReply = TRUE;    
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERINFO);
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	st_ProtocolInfo.nUserLevel = 0;
+	st_ProtocolInfo.nUserState = 0;
+	st_ProtocolInfo.nPhoneNumber = 13699999999;
+	st_ProtocolInfo.nIDNumber = 511000000000101010;
+	strcpy(st_ProtocolInfo.tszUserName, "123123aa");
+	strcpy(st_ProtocolInfo.tszUserPass, "123123");
+	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen, FALSE))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+
+	return;
 }
 
 void MQ_Create()
@@ -380,8 +480,8 @@ void MQ_GetSerial()
 		}
 	}
 }
-//离开包
-void MQ_Delete()
+//删除主题
+void MQ_DeleteTopic()
 {
 	int nLen = 0;
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
@@ -394,13 +494,12 @@ void MQ_Delete()
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE;
 	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = FALSE;       //不获取结果
+	st_ProtocolHdr.byIsReply = TRUE;       //不获取结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-	st_XMQProtocol.nSerial = 1;          //要删除的序列号,必填
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
@@ -413,6 +512,7 @@ void MQ_Delete()
 		return;
 	}
 }
+
 //订阅
 void MQ_Subscribe()
 {
@@ -484,6 +584,7 @@ int main(int argc, char** argv)
 	}
 	printf("连接成功！\n");
 
+	MQ_Register();
 	MQ_Authorize();
 	if (argc > 1)
 	{
@@ -497,13 +598,13 @@ int main(int argc, char** argv)
 		{
 			MQ_Post(lpszMsgBuffer);
 		}
-		getchar();
 		MQ_GetNumber();
 		MQ_GetOrder();
 		MQ_Get();
 		MQ_Get();
 		MQ_Get();
-		//MQ_Delete();
+		MQ_DeleteTopic();
+		MQ_DeleteUser();
 	}
 
 	XClient_TCPSelect_Close(m_Socket);
