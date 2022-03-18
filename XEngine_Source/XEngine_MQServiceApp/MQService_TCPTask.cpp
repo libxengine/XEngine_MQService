@@ -97,8 +97,8 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			}
 			pSt_ProtocolHdr->wReserve = 0;
 			st_UserInfo.nUserState = 1;
-			SessionModule_Client_SetAuth(lpszClientAddr);
 			DBModule_MQUser_UserUPDate(&st_UserInfo);
+			SessionModule_Client_SetAuth(lpszClientAddr, st_UserInfo.tszUserName);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);

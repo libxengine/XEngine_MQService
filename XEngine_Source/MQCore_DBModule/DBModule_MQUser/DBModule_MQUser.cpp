@@ -141,7 +141,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserName = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -248,7 +248,14 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d AND tszLoginTime = now() WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+	if (1 == pSt_UserInfo->nUserState)
+	{
+		_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d,tszLoginTime = now() WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+	}
+	else
+	{
+		_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+	}
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
