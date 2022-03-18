@@ -6,6 +6,7 @@
 #pragma comment(lib,"XEngine_Core/XEngine_Core")
 #pragma comment(lib,"XEngine_Client/XClient_Socket")
 #pragma comment(lib,"../../XEngine_Source/Debug/MQCore_ProtocolModule")
+#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +27,7 @@
 #include "../../XEngine_Source/MQCore_ProtocolModule/Protocol_Define.h"
 #include "../../XEngine_Source/MQCore_ProtocolModule/Protocol_Error.h"
 
-//g++ -std=c++17 -Wall -g MQCore_DDSPublish.cpp -o MQCore_DDSPublish.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_DDSPublish.cpp -o MQCore_DDSPublish.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
 
 SOCKET* phSocket;
 LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
@@ -55,7 +56,7 @@ int main()
 	NetCore_BroadCast_SendInit(&hSDSocket, 5210, lpszIPAddr);
 	NetCore_BroadCast_RecvInit(&hRVSocket, 5211);
 
-	_tcscpy(st_DDSProtocol.tszTopic, lpszKey);
+	strcpy(st_DDSProtocol.tszTopic, lpszKey);
 	ProtocolModule_Packet_DDSTopic(&st_DDSProtocol, tszMsgBuffer, &nMsgLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REQTOPICQUERY);
 	NetCore_BroadCast_Send(hSDSocket, tszMsgBuffer, nMsgLen);
 

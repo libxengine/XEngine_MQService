@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 /********************************************************************
 //    Created:     2021/07/01  15:45:54
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_ProtocolModule\Protocol_Error.h
 //    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_ProtocolModule
 //    File Base:   Protocol_Error
 //    File Ext:    h
-//    Project:     XEngine(ÍøÂçÍ¨ÐÅÒýÇæ)
+//    Project:     XEngine(ç½‘ç»œé€šä¿¡å¼•æ“Ž)
 //    Author:      qyt
-//    Purpose:     µ¼³öµÄ´íÎó
+//    Purpose:     å¯¼å‡ºçš„é”™è¯¯
 //    History:
 *********************************************************************/
 #define ERROR_MQ_MODULE_PROTOCOL_PARAMENT 0x0030001

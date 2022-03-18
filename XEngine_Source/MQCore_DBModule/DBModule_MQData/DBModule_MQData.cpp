@@ -1,0 +1,258 @@
+﻿#include "pch.h"
+#include "DBModule_MQData.h"
+/********************************************************************
+//    Created:     2022/03/17  09:46:36
+//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule\DBModule_MQData\DBModule_MQData.cpp
+//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule\DBModule_MQData
+//    File Base:   DBModule_MQData
+//    File Ext:    cpp
+//    Project:     XEngine(网络通信引擎)
+//    Author:      qyt
+//    Purpose:     消息队列数据库操作
+//    History:
+*********************************************************************/
+CDBModule_MQData::CDBModule_MQData()
+{
+    xhDBSQL = 0;
+}
+CDBModule_MQData::~CDBModule_MQData()
+{
+
+}
+//////////////////////////////////////////////////////////////////////////
+//                         公有函数
+//////////////////////////////////////////////////////////////////////////
+/********************************************************************
+函数名称：DBModule_MQData_Init
+函数功能：初始化数据库管理器
+ 参数.一：pSt_DBConnector
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：数据MYSQL数据库连接信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
+{
+    DBModule_IsErrorOccur = FALSE;
+
+    if (NULL == pSt_DBConnector)
+    {
+        DBModule_IsErrorOccur = TRUE;
+        DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+        return FALSE;
+    }
+#ifdef _WINDOWS
+    LPCTSTR lpszStrCharset = _T("gbk");
+#else
+    LPCTSTR lpszStrCharset = _T("utf8");
+#endif
+    //连接数据库
+    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQData"));
+    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
+    {
+        DBModule_IsErrorOccur = TRUE;
+        DBModule_dwErrorCode = DataBase_GetLastError();
+        return FALSE;
+    }
+    return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQData_Destory
+函数功能：销毁数据库管理器
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_Destory()
+{
+    DBModule_IsErrorOccur = FALSE;
+    DataBase_MySQL_Close(xhDBSQL);
+    return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQData_Insert
+函数功能：插入消息到队列中
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要插入的数据信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+{
+    DBModule_IsErrorOccur = FALSE;
+
+    if (NULL == pSt_DBInfo)
+    {
+        DBModule_IsErrorOccur = TRUE;
+        DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+        return FALSE;
+    }
+    TCHAR tszSQLStatement[10240];
+    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+    _stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer);
+    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+    {
+        DBModule_IsErrorOccur = TRUE;
+        DBModule_dwErrorCode = DataBase_GetLastError();
+        return FALSE;
+    }
+    return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQData_Query
+函数功能：查询数据
+ 参数.一：pSt_DBInfo
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入查询数据,输出查询到的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_DBInfo)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[1])
+	{
+		_tcscpy(pSt_DBInfo->tszQueueName, pptszResult[1]);
+	}
+	if (NULL != pptszResult[2])
+	{
+		pSt_DBInfo->nQueueSerial = _ttoi64(pptszResult[2]);
+	}
+	if (NULL != pptszResult[3])
+	{
+		pSt_DBInfo->nQueueGetTime = _ttoi64(pptszResult[3]);
+	}
+	if (NULL != pptszResult[4])
+	{
+		_tcscpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[4]);
+	}
+	if (NULL != pptszResult[5])
+	{
+		_tcscpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[5]);
+	}
+	if (NULL != pptszResult[6])
+	{
+		_tcscpy(pSt_DBInfo->tszMsgBuffer, pptszResult[6]);
+	}
+	if (NULL != pptszResult[7])
+	{
+		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[7]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQData_CreateTable
+函数功能：创建表
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要创建的表名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
+{
+    DBModule_IsErrorOccur = FALSE;
+
+    TCHAR tszSQLQuery[2048];
+    memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+    _stprintf_s(tszSQLQuery, _T("CREATE TABLE IF NOT EXISTS `%s` ("
+        "`ID` int NOT NULL AUTO_INCREMENT,"
+        "`tszQueueName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所属队列',"
+        "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
+        "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
+        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '过期时间',"
+        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
+        "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
+        "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
+        "PRIMARY KEY (`ID`) USING BTREE"
+        ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
+    ), lpszQueueName);
+
+    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+    {
+        DBModule_IsErrorOccur = TRUE;
+        DBModule_dwErrorCode = DataBase_GetLastError();
+        return FALSE;
+    }
+    return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQData_DeleteTable
+函数功能：删除表
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+    _stprintf_s(tszSQLQuery, _T("DROP TABLE IF EXISTS `%s`"), lpszQueueName);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}

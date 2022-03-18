@@ -41,16 +41,22 @@ void ServiceApp_Stop(int signo)
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
+
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
+
 		XMQModule_Packet_Destory();
-		SessionModule_Auth_Destory();
+		DBModule_MQData_Destory();
+		DBModule_MQUser_Destory();
+
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}
@@ -62,7 +68,7 @@ void ServiceApp_Stop(int signo)
 
 static int ServiceApp_Deamon(int wait)
 {
-#ifndef _WINDOWS
+#ifndef _MSC_BUILD
 	pid_t pid = 0;
 	int status;
 	pid = fork();
@@ -139,6 +145,29 @@ int main(int argc, char** argv)
 		ServiceApp_Deamon(1);
 	}
 
+	if (st_ServiceCfg.st_XSql.bEnable)
+	{
+		DATABASE_MYSQL_CONNECTINFO st_MYSql;
+		memset(&st_MYSql, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
+
+		memcpy(&st_MYSql, &st_ServiceCfg.st_XSql, sizeof(DATABASE_MYSQL_CONNECTINFO));
+		if (!DBModule_MQData_Init(&st_MYSql))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		if (!DBModule_MQUser_Init(&st_MYSql))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化数据库服务成功"));
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，没有启用数据库"));
+	}
+
 	if (!SessionModule_Client_Init())
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
@@ -152,24 +181,6 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化消息队列服务成功"));
-
-	if (0 == st_ServiceCfg.st_XAuth.nAuth)
-	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，用户验证没有启用"));
-	}
-	else if (1 == st_ServiceCfg.st_XAuth.nAuth)
-	{
-		if (!SessionModule_Auth_Init(st_ServiceCfg.st_XAuth.tszAuthUser))
-		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中,本地用户验证启动失败,错误：%lX"), SessionModule_GetLastError());
-			goto NETSERVICEEXIT;
-		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，本地验证启动成功,用户列表地址:%s"), st_ServiceCfg.st_XAuth.tszAuthUser);
-	}
-	else
-	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，网络验证启动成功,HTTP网络地址:%s"), st_ServiceCfg.st_XAuth.tszAuthHttp);
-	}
 
 	if (st_ServiceCfg.nTCPPort > 0)
 	{
@@ -371,16 +382,22 @@ NETSERVICEEXIT:
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		RfcComponents_HttpServer_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+		
 		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
 		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
+		
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
+		
 		XMQModule_Packet_Destory();
-		SessionModule_Auth_Destory();
+		DBModule_MQData_Destory();
+		DBModule_MQUser_Destory();
+
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
 	}

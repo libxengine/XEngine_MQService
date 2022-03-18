@@ -11,17 +11,11 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 #include <tchar.h>
-#include <json/json.h>
-#else
-#ifdef _CENTOS
-#include <json/json.h>
-#else
-#include <jsoncpp/json/json.h>
-#endif
 #endif
 #endif //PCH_H
 #include <string.h>
 #include <memory>
+#include <json/json.h>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
@@ -45,6 +39,19 @@ extern BOOL Protocol_IsErrorOccur;
 extern DWORD Protocol_dwErrorCode;
 
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
+#ifdef _DEBUG
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Debug/jsoncpp")
+#else
+#pragma comment(lib,"../Debug/jsoncpp")
+#endif
+#else
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Release/jsoncpp")
+#else
+#pragma comment(lib,"../Release/jsoncpp")
+#endif
+#endif
 #endif

@@ -28,34 +28,21 @@ this software support following features
 13. get order and start serial pos setting  
 14. Unlimited load message types  
 15. data distribution service(DDS),Support WAN and LAN
+16. Access control(planning)
 
 ## install
 
 #### Requirements  
 support system above windows 7sp1 and linux(ubuntu20.04,centos8)  
 XEngine need V7.23 or above  
-vcpkg need 2021.05.11 or above  
 
 #### Windows
-use vs2019 x86(debug or release) x64(only release) open and complie  
+use vs open and complie  
 You need to configure the environment in the following way, otherwise you may need to set the library directory in the project yourself  
-
-##### install Dependent library
-vcpkg:https://github.com/microsoft/vcpkg   
-vcpkg.exe install jsoncpp  
-vcpkg integrate install  
-you can not use vcpkg and config jsoncpp development for youself   
 
 #### Linux
 Linux use Makefile to complie  
 supproted ubuntu x64 or centos x64     
-
-##### install Dependent library
-install jsoncpp to your system  
-ubuntu20.04  
-sudo apt install libjsoncpp-devel  
-Centos8.x  
-sudo dnf install jsoncpp-devel  
 
 ##### XEngine Install
 you can install xengine env to your system by shell   
@@ -84,14 +71,14 @@ GITHUB:https://github.com/libxengine/xengine
 - XEngine_Docment  docment directory  
 - XEngine_Release  install directory  
 - XEngine_Source   code    directory  
-- XEngine_Apps     Client code directory  
+- XEngine_Apps     Client code directory 
+- XEngine_SQLFile  database file back dir 
 
 ## other problems   
 You can refer to the document under the docment directory. It contains API protocol and service description.  
 
 ## Test Server Address
-Address:app.xyry.org or 159.75.200.173  
-Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
+Address:app.xyry.org Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
 
 ## Participate in contribution
 

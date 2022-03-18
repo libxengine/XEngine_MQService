@@ -200,10 +200,10 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
 	if (NULL != pSt_MQProtocol)
 	{
 		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
-		st_JsonMQProtocol["nSerial"] = pSt_MQProtocol->nSerial;
-		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
+		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
 		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
-
+		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
+		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
 		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 	}
 	
@@ -284,9 +284,9 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR*
 		st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
 
 		st_JsonObject["tszMQKey"] = pSt_MQNumber->tszMQKey;
-		st_JsonObject["nCount"] = pSt_MQNumber->nCount;
-		st_JsonObject["nFirstNumber"] = pSt_MQNumber->nFirstNumber;
-		st_JsonObject["nLastNumber"] = pSt_MQNumber->nLastNumber;
+		st_JsonObject["nCount"] = (Json::Value::Int64)pSt_MQNumber->nCount;
+		st_JsonObject["nFirstNumber"] = (Json::Value::Int64)pSt_MQNumber->nFirstNumber;
+		st_JsonObject["nLastNumber"] = (Json::Value::Int64)pSt_MQNumber->nLastNumber;
 		
 		st_JsonRoot["st_MQNumber"] = st_JsonObject;
 

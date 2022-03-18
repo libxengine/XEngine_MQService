@@ -1,12 +1,12 @@
 CC = g++ -Wall -std=c++17 -fPIC
 RELEASE = 0
 UNICODE = 0
-INCLUDE = -I ./
+INCLUDE = -I ./ -I ../XEngine_ThirdPart/jsoncpp
 FILECENTOS = /etc/redhat-release
-LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib 
+LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L ../XEngine_ThirdPart/jsoncpp
 LIB = -lXEngine_BaseLib 
 LIBEX = -static-libgcc -lrt -ldl -lpthread
-LOADSO = -Wl,-rpath=,--disable-new-dtags
+LOADSO = -Wl,-rpath=./,--disable-new-dtags
 LIBINCLUDE = DDSMessage_CommApi.o pch.o
 
 ifeq ($(RELEASE),1)
@@ -36,7 +36,7 @@ DDSMessage_CommApi.o:./DDSMessage_CommApi/DDSMessage_CommApi.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./DDSMessage_CommApi/DDSMessage_CommApi.cpp
 
 pch.o:./pch.cpp                          
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./pch.cpp
 
 
 InstallAll:InstallSo 

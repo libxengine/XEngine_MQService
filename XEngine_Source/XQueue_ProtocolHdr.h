@@ -27,8 +27,6 @@
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPCREATE 0x7007         //主题创建回复
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE 0x7008         //主题删除请求
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE 0x7009         //主题删除回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQLOGIN 0x700A       
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPLOGIN 0x700B
 //Only TCP WEBSOCKET
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY 0x7010         //请求订阅
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPNOTIFY 0x7011         //订阅回复
@@ -37,6 +35,13 @@
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER 0x7014         //请求消息队列编号信息
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPNUMBER 0x7015         //回复
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY 0x70A0         //消息通知
+//用户协议
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG 0x7020       
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG 0x7021
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG 0x7022
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERREG 0x7023
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL 0x7024
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERDEL 0x7025
 //消息分发服务
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REQTOPICCREATE 0x8001   //创建主题请求
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REPTOPICCREATE 0x8002   //创建主题回复
@@ -54,7 +59,8 @@ typedef struct tag_XEngine_ProtocolXmq
 {
 	CHAR tszMQKey[256];                                                   //此消息的KEY，不能为空
 	__int64x nSerial;                                                     //包序列号
-	int nKeepTime;                                                        //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，如果有多个永久存在的包nSerial必须有值
+	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区
+	int nKeepTime;                                                        //保持时间,单位秒,-1 永久存在 0 一次就结束,>0 保存秒数
 	int nGetTimer;                                                        //可以获取的次数
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;
 typedef struct tag_XEngine_MQNumber
