@@ -15,3 +15,4 @@ EXPORTS
 	DBModule_MQUser_UserInsert
 	DBModule_MQUser_UserQuery
 	DBModule_MQUser_UserDelete
+	DBModule_MQUser_UserUPDate

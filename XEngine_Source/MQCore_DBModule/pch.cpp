@@ -78,3 +78,7 @@ extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 {
 	return m_DBUser.DBModule_MQUser_UserDelete(pSt_UserInfo);
 }
+extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
+{
+	return m_DBUser.DBModule_MQUser_UserUPDate(pSt_UserInfo);
+}

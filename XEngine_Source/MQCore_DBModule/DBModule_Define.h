@@ -178,3 +178,17 @@ extern "C" BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserIn
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_UserUPDate
+函数功能：更新用户
+ 参数.一：pSt_UserInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要处理的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);

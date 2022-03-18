@@ -222,3 +222,39 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt
 	
 	return TRUE;
 }
+/********************************************************************
+函数名称：DBModule_MQUser_UserUPDate
+函数功能：更新用户
+ 参数.一：pSt_UserInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要处理的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserInfo)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d AND tszLoginTime = now() WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	return TRUE;
+}
