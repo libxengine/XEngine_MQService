@@ -185,7 +185,7 @@ int main(int argc, char** argv)
 	if (st_ServiceCfg.nTCPPort > 0)
 	{
 		//组包器
-		xhTCPPacket = HelpComponents_Datas_Init(st_ServiceCfg.st_XMax.nMaxQueue, 0, st_ServiceCfg.st_XMax.nTCPThread);
+		xhTCPPacket = HelpComponents_Datas_Init(st_ServiceCfg.st_XMax.nMaxQueue, st_ServiceCfg.st_XMax.nTCPThread);
 		if (NULL == xhTCPPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP组包器失败，错误：%lX"), Packets_GetLastError());
