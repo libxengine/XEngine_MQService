@@ -82,3 +82,22 @@ extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 {
 	return m_DBUser.DBModule_MQUser_UserUPDate(pSt_UserInfo);
 }
+/*************************************************************************
+						消息绑定导出函数
+**************************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyInsert(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyQuery(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyDelete(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyUPDate(pSt_UserKey);
+}

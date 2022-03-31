@@ -16,3 +16,8 @@ EXPORTS
 	DBModule_MQUser_UserQuery
 	DBModule_MQUser_UserDelete
 	DBModule_MQUser_UserUPDate
+
+	DBModule_MQUser_KeyInsert
+	DBModule_MQUser_KeyQuery
+	DBModule_MQUser_KeyDelete
+	DBModule_MQUser_KeyUPDate

@@ -23,7 +23,14 @@ typedef struct
 	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
 //用户消息
-
+typedef struct
+{
+	TCHAR tszUserName[MAX_PATH];                                          //用户名
+	TCHAR tszKeyName[MAX_PATH];                                           //绑定的KEY
+	TCHAR tszUPTime[64];                                                  //最后更新时间
+	TCHAR tszCreateTime[64];                                              //创建的时间
+	__int64x nKeySerial;                                                  //包序列号
+}XENGINE_DBUSERKEY;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
@@ -192,3 +199,62 @@ extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+/*************************************************************************
+						消息绑定导出函数
+**************************************************************************/
+/********************************************************************
+函数名称：DBModule_MQUser_KeyInsert
+函数功能：插入一个绑定的用户消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要插入的内容
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyQuery
+函数功能：通过用户查询绑定的消息信息
+ 参数.一：pSt_UserKey
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要查询的信息,输出查询到的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyDelete
+函数功能：删除绑定的消息队列
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyUPDate
+函数功能：更新用户绑定的消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
