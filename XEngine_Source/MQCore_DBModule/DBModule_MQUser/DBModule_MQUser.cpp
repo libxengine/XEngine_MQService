@@ -392,7 +392,15 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	if (_tcslen(pSt_UserKey->tszKeyName) <= 0)
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s'"), pSt_UserKey->tszUserName);
+	}
+	else
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	}
+
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
