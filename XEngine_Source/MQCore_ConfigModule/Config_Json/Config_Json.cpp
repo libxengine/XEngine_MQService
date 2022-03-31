@@ -133,9 +133,9 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	Json::Value st_JsonXVer = st_JsonRoot["XVer"];
     pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
 
-    for (unsigned int i = 0; i < st_JsonXVer["VersionList"].size(); i++)
+    for (unsigned int i = 0; i < st_JsonXVer["StorageVersion"].size(); i++)
     {
-        pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer["VersionList"][i].asCString());
+        pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer["StorageVersion"][i].asCString());
     }
     return TRUE;
 }
