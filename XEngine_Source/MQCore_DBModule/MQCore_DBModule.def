@@ -19,5 +19,6 @@ EXPORTS
 
 	DBModule_MQUser_KeyInsert
 	DBModule_MQUser_KeyQuery
+	DBModule_MQUser_KeyList
 	DBModule_MQUser_KeyDelete
 	DBModule_MQUser_KeyUPDate
