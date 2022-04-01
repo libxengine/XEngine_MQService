@@ -54,7 +54,6 @@ typedef struct tag_XEngine_ServerConfig
         TCHAR tszSQLPass[128];
         TCHAR tszDBName[128];                                                
         int nSQLPort;
-        BOOL bEnable;
     }st_XSql;
     struct
     {

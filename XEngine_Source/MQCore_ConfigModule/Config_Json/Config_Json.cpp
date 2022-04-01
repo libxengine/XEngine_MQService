@@ -111,14 +111,13 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XLog.nMaxCount = st_JsonXLog["MaxCount"].asInt();
     pSt_ServerConfig->st_XLog.nLogLeave = st_JsonXLog["LogLeave"].asInt();
 
-    if (st_JsonRoot["XSql"].empty() || (5 != st_JsonRoot["XSql"].size()))
+    if (st_JsonRoot["XSql"].empty() || (4 != st_JsonRoot["XSql"].size()))
     {
         Config_IsErrorOccur = TRUE;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XSQL;
         return FALSE;
     }
     Json::Value st_JsonXSql = st_JsonRoot["XSql"];
-    pSt_ServerConfig->st_XSql.bEnable = st_JsonXSql["SQLEnable"].asInt();
     pSt_ServerConfig->st_XSql.nSQLPort = st_JsonXSql["SQLPort"].asInt();
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLAddr,st_JsonXSql["SQLAddr"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
