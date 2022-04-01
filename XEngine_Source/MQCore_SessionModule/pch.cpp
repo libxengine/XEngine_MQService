@@ -39,33 +39,13 @@ extern "C" BOOL SessionModule_Client_Destory()
 {
 	return m_SessionClient.SessionModule_Client_Destory();
 }
-extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType)
+extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType)
 {
-	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, nNetType);
+	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, lpszUserName, nNetType);
 }
 extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
-}
-extern "C" BOOL SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol, BOOL * pbAuth)
-{
-	return m_SessionClient.SessionModule_Client_Get(lpszClientAddr, pSt_MQProtocol, pbAuth);
-}
-extern "C" BOOL SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ * pSt_MQProtocol)
-{
-	return m_SessionClient.SessionModule_Client_Set(lpszClientAddr, pSt_MQProtocol);
-}
-extern "C" BOOL SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial)
-{
-	return m_SessionClient.SessionModule_Client_SetOrder(lpszClientAddr, lpszKeyStr, bOrder, nMQSerial);
-}
-extern "C" BOOL SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr)
-{
-	return m_SessionClient.SessionModule_Client_ADDDelSerial(lpszClientAddr);
-}
-extern "C" BOOL SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth)
-{
-	return m_SessionClient.SessionModule_Client_SetAuth(lpszClientAddr, lpszUserName, bAuth);
 }
 extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * ptszUserName)
 {

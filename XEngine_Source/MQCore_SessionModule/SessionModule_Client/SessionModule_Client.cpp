@@ -55,8 +55,13 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
   In/Out：In
   类型：常量字符指针
   可空：N
+  意思：输入客户端地址
+ 参数.二：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
   意思：输入用户名
- 参数.二：nNetType
+ 参数.三：nNetType
   In/Out：In
   类型：整数型
   可空：N
@@ -66,7 +71,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, int nNetType)
+BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType)
 {
     Session_IsErrorOccur = FALSE;
 
@@ -79,10 +84,9 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, 
 	XENGINE_SESSIONINFO st_SessionInfo;
 	memset(&st_SessionInfo, '\0', sizeof(XENGINE_SESSIONINFO));
 
-	st_SessionInfo.bOrder = TRUE;
-	st_SessionInfo.nSerialPos = 1;
 	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nStartTime = time(NULL);
+	_tcscpy(st_SessionInfo.tszUserName, lpszUserName);
 
     st_Locker.lock();
 	stl_MapSession.insert(make_pair(lpszClientAddr, st_SessionInfo));
@@ -117,271 +121,33 @@ BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 	return TRUE;
 }
 /************************************************************************
-函数名称：SessionModule_Client_Get
-函数功能：获得客户端对应消息信息
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入客户端信息
- 参数.二：pSt_MQProtocol
-  In/Out：Out
-  类型：数据结构指针
-  可空：N
-  意思：输出消息内容
- 参数.三：pbAuth
-  In/Out：Out
-  类型：逻辑型
-  可空：N
-  意思：输出是否通过了验证
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Get(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, BOOL* pbAuth)
-{
-    Session_IsErrorOccur = FALSE;
-
-    if ((NULL == lpszClientAddr) || (NULL == pSt_MQProtocol))
-    {
-        Session_IsErrorOccur = TRUE;
-        Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-        return FALSE;
-    }
-	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
-	if (stl_MapIterator == stl_MapSession.end())
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		st_Locker.unlock_shared();
-		return FALSE;
-	}
-	*pbAuth = stl_MapIterator->second.bAuth;
-	pSt_MQProtocol->nSerial = stl_MapIterator->second.nSerialPos;
-	_tcscpy(pSt_MQProtocol->tszMQKey, stl_MapIterator->second.tszKeyStr);
-	st_Locker.unlock_shared();
-    return TRUE;
-}
-/************************************************************************
-函数名称：SessionModule_Client_Set
-函数功能：设置客户端信息
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入客户端信息
- 参数.二：pSt_MQProtocol
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入消息内容
-返回值
-  类型：逻辑型
-  意思：是否获取成功
-备注：
-************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Set(LPCTSTR lpszClientAddr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol)
-{
-    Session_IsErrorOccur = FALSE;
-
-    if ((NULL == lpszClientAddr) || (NULL == pSt_MQProtocol))
-    {
-        Session_IsErrorOccur = TRUE;
-        Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-        return FALSE;
-    }
-    //开始取出数据
-    st_Locker.lock_shared();
-    unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
-	if (stl_MapIterator == stl_MapSession.end())
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		st_Locker.unlock_shared();
-		return FALSE;
-	}
-	stl_MapIterator->second.nSerialPos = pSt_MQProtocol->nSerial;
-	_tcscpy(stl_MapIterator->second.tszKeyStr, pSt_MQProtocol->tszMQKey);
-    st_Locker.unlock_shared();
-    return TRUE;
-}
-/********************************************************************
-函数名称：SessionModule_Client_SetOrder
-函数功能：设置客户端队列读取顺序
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：要设置的客户端
- 参数.二：lpszKeyStr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：要设置的客户端
- 参数.三：bOrder
-  In/Out：In
-  类型：逻辑型
-  可空：N
-  意思：真为顺序读取,假为倒序
- 参数.四：nMQSerial
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：消息队列位置
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_SetOrder(LPCTSTR lpszClientAddr, LPCTSTR lpszKeyStr, BOOL bOrder, __int64x nMQSerial)
-{
-	Session_IsErrorOccur = FALSE;
-
-	if (NULL == lpszClientAddr)
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
-	}
-	//开始取出数据
-	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
-	if (stl_MapIterator == stl_MapSession.end())
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		st_Locker.unlock_shared();
-		return FALSE;
-	}
-	stl_MapIterator->second.bOrder = bOrder;
-	stl_MapIterator->second.nSerialPos = nMQSerial;
-	_tcscpy(stl_MapIterator->second.tszKeyStr, lpszKeyStr);
-	st_Locker.unlock_shared();
-	return TRUE;
-}
-/********************************************************************
-函数名称：SessionModule_Client_ADDDelSerial
-函数功能：序列号自加自减
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入客户端地址
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_ADDDelSerial(LPCTSTR lpszClientAddr)
-{
-	Session_IsErrorOccur = FALSE;
-
-	if (NULL == lpszClientAddr)
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
-	}
-
-	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
-	if (stl_MapIterator == stl_MapSession.end())
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		st_Locker.unlock_shared();
-		return FALSE;
-	}
-	if (stl_MapIterator->second.bOrder)
-	{
-		stl_MapIterator->second.nSerialPos++;
-	}
-	else
-	{
-		stl_MapIterator->second.nSerialPos--;
-	}
-	st_Locker.unlock_shared();
-	return TRUE;
-}
-/********************************************************************
-函数名称：SessionModule_Client_SetAuth
-函数功能：设置会话验证信息
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要操作的客户端
- 参数.二：lpszUserName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入绑定的用户名
- 参数.三：bAuth
-  In/Out：In
-  类型：逻辑型
-  可空：Y
-  意思：验证结果
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_SetAuth(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, BOOL bAuth /* = TRUE */)
-{
-	Session_IsErrorOccur = FALSE;
-
-	if (NULL == lpszClientAddr)
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
-	}
-
-	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
-	if (stl_MapIterator == stl_MapSession.end())
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		st_Locker.unlock_shared();
-		return FALSE;
-	}
-	stl_MapIterator->second.bAuth = bAuth;
-	_tcscpy(stl_MapIterator->second.tszUserName, lpszUserName);
-	st_Locker.unlock_shared();
-	return TRUE;
-}
-/********************************************************************
 函数名称：SessionModule_Client_GetAuth
-函数功能：获取客户端地址对应的用户
+函数功能：获得客户端是否登录
  参数.一：lpszClientAddr
   In/Out：In
   类型：常量字符指针
   可空：N
-  意思：输入要操作的客户端
+  意思：输入客户端信息
  参数.二：ptszUserName
   In/Out：Out
   类型：字符指针
-  可空：N
-  意思：输出绑定的用户名
+  可空：Y
+  意思：输出对应的用户名
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
-*********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName)
+************************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR* ptszUserName /* = NULL */)
 {
-	Session_IsErrorOccur = FALSE;
+    Session_IsErrorOccur = FALSE;
 
-	if (NULL == lpszClientAddr)
-	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
-	}
-
+    if (NULL == lpszClientAddr)
+    {
+        Session_IsErrorOccur = TRUE;
+        Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+        return FALSE;
+    }
 	st_Locker.lock_shared();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
 	if (stl_MapIterator == stl_MapSession.end())
@@ -391,14 +157,10 @@ BOOL CSessionModule_Client::SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr,
 		st_Locker.unlock_shared();
 		return FALSE;
 	}
-	if (!stl_MapIterator->second.bAuth)
+	if (NULL != ptszUserName)
 	{
-		Session_IsErrorOccur = TRUE;
-		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTAUTH;
-		st_Locker.unlock_shared();
-		return FALSE;
+		_tcscpy(ptszUserName, stl_MapIterator->second.tszUserName);
 	}
-	_tcscpy(ptszUserName, stl_MapIterator->second.tszUserName);
 	st_Locker.unlock_shared();
-	return TRUE;
+    return TRUE;
 }
