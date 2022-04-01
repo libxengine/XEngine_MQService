@@ -90,6 +90,35 @@ extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 /********************************************************************
+函数名称：DBModule_MQData_GetSerial
+函数功能：获取序列号
+ 参数.一：lpszName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查找的名称
+ 参数.二：pInt_DBCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计的个数
+ 参数.三：pSt_DBStart
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：开始的记录
+ 参数.四：pSt_DBEnd
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：结尾的记录
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
+/********************************************************************
 函数名称：DBModule_MQData_CreateTable
 函数功能：创建表
  参数.一：lpszQueueName

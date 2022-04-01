@@ -47,6 +47,10 @@ extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
 }
+extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x * pInt_DBCount, XENGINE_DBMESSAGEQUEUE * pSt_DBStart, XENGINE_DBMESSAGEQUEUE * pSt_DBEnd)
+{
+	return m_DBData.DBModule_MQData_GetSerial(lpszName, pInt_DBCount, pSt_DBStart, pSt_DBEnd);
+}
 extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
 {
 	return m_DBData.DBModule_MQData_CreateTable(lpszQueueName);

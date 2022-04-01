@@ -186,6 +186,167 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	return TRUE;
 }
 /********************************************************************
+函数名称：DBModule_MQData_GetSerial
+函数功能：获取序列号
+ 参数.一：lpszName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查找的名称
+ 参数.二：pInt_DBCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计的个数
+ 参数.三：pSt_DBStart
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：开始的记录
+ 参数.四：pSt_DBEnd
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：结尾的记录
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if ((NULL == pInt_DBCount) || (NULL == pSt_DBStart) || (NULL == pSt_DBEnd))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	//////////////////////////////////////////////////////////////////////////第一条
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID ASC LIMIT 1"), lpszName);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[1])
+	{
+		_tcscpy(pSt_DBStart->tszQueueName, pptszResult[1]);
+	}
+	if (NULL != pptszResult[2])
+	{
+		pSt_DBStart->nQueueSerial = _ttoi64(pptszResult[2]);
+	}
+	if (NULL != pptszResult[3])
+	{
+		pSt_DBStart->nQueueGetTime = _ttoi64(pptszResult[3]);
+	}
+	if (NULL != pptszResult[4])
+	{
+		_tcscpy(pSt_DBStart->tszQueueLeftTime, pptszResult[4]);
+	}
+	if (NULL != pptszResult[5])
+	{
+		_tcscpy(pSt_DBStart->tszQueuePublishTime, pptszResult[5]);
+	}
+	if (NULL != pptszResult[6])
+	{
+		_tcscpy(pSt_DBStart->tszMsgBuffer, pptszResult[6]);
+	}
+	if (NULL != pptszResult[7])
+	{
+		_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[7]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	//////////////////////////////////////////////////////////////////////////最后一条
+	nllLine = 0;
+	nllRow = 0;
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID DESC LIMIT 1"), lpszName);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[1])
+	{
+		_tcscpy(pSt_DBEnd->tszQueueName, pptszResult[1]);
+	}
+	if (NULL != pptszResult[2])
+	{
+		pSt_DBEnd->nQueueSerial = _ttoi64(pptszResult[2]);
+	}
+	if (NULL != pptszResult[3])
+	{
+		pSt_DBEnd->nQueueGetTime = _ttoi64(pptszResult[3]);
+	}
+	if (NULL != pptszResult[4])
+	{
+		_tcscpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[4]);
+	}
+	if (NULL != pptszResult[5])
+	{
+		_tcscpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[5]);
+	}
+	if (NULL != pptszResult[6])
+	{
+		_tcscpy(pSt_DBEnd->tszMsgBuffer, pptszResult[6]);
+	}
+	if (NULL != pptszResult[7])
+	{
+		_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[7]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	//////////////////////////////////////////////////////////////////////////统计
+	nllLine = 0;
+	nllRow = 0;
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	_stprintf(tszSQLStatement, _T("SELECT COUNT(*) FROM `%s`"), lpszName);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[0])
+	{
+		*pInt_DBCount = _ttoi64(pptszResult[0]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return TRUE;
+}
+/********************************************************************
 函数名称：DBModule_MQData_CreateTable
 函数功能：创建表
  参数.一：lpszQueueName
