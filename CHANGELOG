@@ -1,0 +1,187 @@
+XEngine_MQService V3.1.0.1001
+
+添加:数据库用户消息绑定数据库
+添加:数据库用户绑定列表函数
+添加:数据库获取消息序列号信息函数
+优化:配置文件版本列表
+修改:匹配到XEngineV7.31
+修改:启动打印版本功能
+修改:SessionModule_Client_Create 和 SessionModule_Client_GetAuth函数
+修改:扩展数据库大小字段
+修正:读取版本列表错误
+修正:插入相同用户到数据库
+删除:xmq模块,现在只支持数据库版本
+删除:删除消息队列协议
+删除:登录会话创建
+删除:session模块的以下函数
+       SessionModule_Client_Get
+	   SessionModule_Client_Set
+	   SessionModule_Client_SetOrder
+	   SessionModule_Client_ADDDelSerial
+	   SessionModule_Client_SetAuth
+
+added:user bind key db
+added:user key list function for db module
+added:get queue serial information function
+improved:configure version list
+modify:match for xengine 7.31
+modify:start print version information
+modify:SessionModule_Client_Create and SessionModule_Client_GetAuth functions for session module
+modify:expanded data size field
+fixed:read version list incorrent
+fixed:cant allow insert same data to db
+delete:xmq module,only support db version
+delete:delete message queue protocol
+delete:sesison create for net login
+delete:session module of follow functions
+       SessionModule_Client_Get
+	   SessionModule_Client_Set
+	   SessionModule_Client_SetOrder
+	   SessionModule_Client_ADDDelSerial
+	   SessionModule_Client_SetAuth
+======================================================================================
+XEngine_MQService V3.0.0.1001
+
+增加:会话模块获取对应客户端用户名
+增加:MYSQL模块支持用户管理和消息管理
+增加:JSONCPP现在集成到项目了
+增加:支持用户注册,删除
+增加:支持用户状态设置
+升级:VS编辑器到2022
+修改:支持WINDOWS x64 debug编译
+修改:原文件编码为utf8-bom
+修改:消息队列协议添加发布时间字段
+修改:用户处理打包协议
+修改:设置会话支持绑定用户
+删除:用户验证文件代码
+
+added:get auth client user for session module
+added:database module support user and message managment
+added:jsoncpp into project
+added:user register and delete
+added:user status set
+update:vs2019 to vs2022
+modify:support windows x64 debug build
+modify:source file encoding to utf8-bom
+modify:message queue protocol add publish time
+modify:user process and packet protocols
+modify:set session bind user name
+delete:auth list and file
+======================================================================================
+XEngine_MQService V2.1 
+
+增加:linux下守护进程运行
+增加:用户验证文件
+增加:现在支持用户验证了,可以本地或者HTTP代理验证
+增加:协议库增加公用解析函数
+修改:允许DDS服务错误启动
+修改:SessionModule_Client_Get 添加了是否验证参数
+修改:使用了新的websocket函数库
+修改:协议库解析函数支持解析验证协议了
+修改:现在HTTP和WEBSOCKET使用TCP的解析函数了
+修改:会话模块增加了网络类型字段
+更新:http配置文件和程序配置文件
+删除:多余的HTTP处理文件代码
+修正:在XEngine V7.23版本上面编译失败的问题
+
+added:deamon running in linux
+added:userlist file
+added:support authorize for user,can be local and http pass
+added:Common packet function
+modify:Allow DDS service to start with incorrectly
+modify:SessionModule_Client_Get added Authorize parament
+modify:use new websocket functions
+modify:protocol module parse function support parse authorize
+modify:now http and websocket use to tcp parse function
+modify:session module added net type field
+update:types and configure
+delete:more code for http
+fixed:build error on xengine V7.23
+======================================================================================
+XEngine_MQService V2.0 
+
+增加:现在程序支持DDS协议处理了
+增加:dds协议解析和打包模块
+修改:现在支持关闭某些服务了
+修改:广播端口区分发送和接收
+删除:dds 配置并将 Broadport 配置移动到主要字段
+
+added:dds protocol processing code
+added:dds protocol packet and parse for protocol module
+modify:now support close to some service
+modify:Broadcast port distinguishes sent and received
+delete:dds configure and move broadport configure to mainly field
+======================================================================================
+XEngine_MQService V1.5 
+
+修正:linux系统编译错误
+修正:TCP订阅错误
+修改:SessionModule_Client_ADDSerial到SessionModule_Client_ADDDelSerial,支持自动添加和删除
+修改:现在TCP协议必须回复了
+修改:解析函数数据使用二级指针了
+增加:HTTP增加byversio字段
+增加:tcp和websocket支持序列包信息获取和设置获取模式
+增加:http支持序列包信息获取
+增加:TCP支持JSON负载解析回复
+增加:支持设置消息读取顺序和序列号
+
+Fixed:linux build error
+Fixed:TCP Subscribe data error
+Modify:SessionModule_Client_ADDSerial to SessionModule_Client_ADDDelSerial support auto add and del
+Modify:must reply with tcp stream
+Modify:Parse function data using pointers to pointers
+Added:HTTP Parse byVersion Field
+Added:tcp and websocket support serial and number Requests
+Added:http support get packet information
+Added:tcp can be reply json
+Added:set message queue read order for session module
+======================================================================================
+XEngine_MQService V1.4.0.1001 
+
+Support:XEngine Version 7.18
+Added:Http And Websocket client test code
+Fixed:websocket and http subcribe do not work
+Fixed:Incorrect network type for notification message
+Improved:get message packet speed
+
+支持:XEngine V7.18版本
+添加:HTTP和WEBSOCKET客户端测试代码
+修正:websocket和http订阅模式没有作用的问题
+修正:通知消息网络类型不正确的问题
+优化:获取消息包速度
+======================================================================================
+XEngine_MQService V1.3 
+
+增加:WEBSOCKET协议支持
+修正:LINUX编译问题
+修正:其他BUG
+
+added:websocket protocol support
+fix:linux complie
+fix:other bug
+======================================================================================
+XEngine_MQService V1.2 
+
+增加:支持HTTP协议
+增加:TCP订阅模式支持
+修正:编译构建错误
+
+added:http protocol supported
+added:tcp subscribe modle supported
+fixed:build error
+======================================================================================
+XEngine_MQService V1.1 
+
+支持消息投递,获取,删除
+支持主题创建,删除
+支持消息序列
+支持消息保存时间
+支持消息使用次数
+支持系统自动管理序列号
+
+support message post,get,delete
+support topic create,delete
+support message serial
+support message save time
+support message use time
+support serivce automatically manage serial
