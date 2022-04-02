@@ -297,7 +297,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey)
 	TCHAR tszSQLStatement[2048];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `UserKey` (tszKeyUser,tszKeyName,nKeySerial,tszUPTime,tszCreateTime) VALUES('%s','%s',%lld,now(),now())"), pSt_UserKey->tszKeyName, pSt_UserKey->tszKeyName, pSt_UserKey->nKeySerial);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `UserKey` (tszKeyUser,tszKeyName,nKeySerial,tszUPTime,tszCreateTime) VALUES('%s','%s',%lld,now(),now())"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName, pSt_UserKey->nKeySerial);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
@@ -353,10 +353,6 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 		return FALSE;
 	}
 	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
-	if (NULL != pptszResult[2])
-	{
-		_tcscpy(pSt_UserKey->tszKeyName, pptszResult[2]);
-	}
 	if (NULL != pptszResult[3])
 	{
 		pSt_UserKey->nKeySerial = _ttoi64(pptszResult[3]);
