@@ -43,13 +43,10 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(LPVOID lParam)
 BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, int nNetType)
 {
 	int nSDLen = 2048;
-	int nRVLen = 2048;
 	LPCTSTR lpszClientType;
 	TCHAR tszSDBuffer[2048];
-	TCHAR tszRVBuffer[2048];
 
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
 	if (XENGINE_MQAPP_NETTYPE_TCP == nNetType)
 	{
