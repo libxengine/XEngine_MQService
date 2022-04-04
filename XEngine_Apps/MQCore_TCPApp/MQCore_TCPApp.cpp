@@ -373,7 +373,7 @@ void MQ_GetNumber()
 		}
 	}
 }
-void MQ_GetOrder()
+void MQ_GetSerial()
 {
 	int nLen = 0;
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
@@ -393,8 +393,7 @@ void MQ_GetOrder()
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
 
-	st_XMQProtocol.nKeepTime = 0;         //倒序
-	st_XMQProtocol.nSerial = nLastNumber;
+	st_XMQProtocol.nSerial = 10; //设置为10开始读取
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
@@ -419,7 +418,7 @@ void MQ_GetOrder()
 
 		if (0 == st_ProtocolHdr.wReserve)
 		{
-			printf("请求某个位置开始获取消息成功,主题:%s,序列号:%lld,顺序:%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_XMQProtocol.nKeepTime == 1 ? "顺序" : "倒序");
+			printf("请求某个位置开始获取消息成功,主题:%s,序列号:%lld\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial);
 		}
 		else
 		{
@@ -428,58 +427,6 @@ void MQ_GetOrder()
 	}
 }
 
-void MQ_GetSerial()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	TCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = TRUE;
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		printf("发送投递失败！\n");
-		return;
-	}
-
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		XENGINE_MQNUMBER st_MQNumber;
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(&st_MQNumber, '\0', sizeof(XENGINE_MQNUMBER));
-
-		memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(&st_MQNumber, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_MQNUMBER));
-
-		if (0 == st_ProtocolHdr.wReserve)
-		{
-			printf("接受到消息信息,主题:%s,个数:%lld,起始编号:%lld,结束编号:%lld\n", st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
-		}
-		else
-		{
-			printf("接受到消息信息失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-		}
-	}
-}
 //删除主题
 void MQ_DeleteTopic()
 {
@@ -594,12 +541,12 @@ int main(int argc, char** argv)
 	else
 	{
 		MQ_Create();
-		for (int i = 0; i < 10000; i++)
+		for (int i = 0; i < 1000; i++)
 		{
 			MQ_Post(lpszMsgBuffer);
 		}
+		MQ_GetSerial();
 		MQ_GetNumber();
-		MQ_GetOrder();
 		MQ_Get();
 		MQ_Get();
 		MQ_Get();
