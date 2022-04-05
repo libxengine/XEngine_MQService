@@ -195,6 +195,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
 
 	st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
 	st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
+	st_JsonRoot["xhToken"] = pSt_ProtocolHdr->xhToken;
 	st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
 
 	if (NULL != pSt_MQProtocol)
