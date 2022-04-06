@@ -13,6 +13,8 @@
 *********************************************************************/
 CSessionModule_Client::CSessionModule_Client()
 {
+	bRun = FALSE;
+	pSTDThread = NULL;
 }
 CSessionModule_Client::~CSessionModule_Client()
 {
@@ -23,15 +25,34 @@ CSessionModule_Client::~CSessionModule_Client()
 /********************************************************************
 函数名称：SessionModule_Client_Init
 函数功能：初始化客户端会话管理器
+ 参数.一：nSessionTime
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入会话超时时间,单位秒
+ 参数.二：fpCall_Timeout
+  In/Out：In/Out
+  类型：回调函数
+  可空：N
+  意思：设置会话超时回调
+ 参数.三：lParam
+  In/Out：In/Out
+  类型：无类型指针
+  可空：Y
+  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Init()
+BOOL CSessionModule_Client::SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, LPVOID lParam /* = NULL */)
 {
     Session_IsErrorOccur = FALSE;
 
+	bRun = TRUE;
+	m_lParam = lParam;
+	lpCall_Timeout = fpCall_Timeout;
+	pSTDThread = make_shared<thread>();
     return TRUE;
 }
 /************************************************************************
@@ -46,6 +67,12 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
 {
     Session_IsErrorOccur = FALSE;
 
+	bRun = FALSE;
+
+	if (pSTDThread->joinable())
+	{
+		pSTDThread->join();
+	}
     return TRUE;
 }
 /********************************************************************
@@ -85,7 +112,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, 
 	memset(&st_SessionInfo, '\0', sizeof(XENGINE_SESSIONINFO));
 
 	st_SessionInfo.nNetType = nNetType;
-	st_SessionInfo.nStartTime = time(NULL);
+	st_SessionInfo.nTimeStart = time(NULL);
 	_tcscpy(st_SessionInfo.tszUserName, lpszUserName);
 	_tcscpy(st_SessionInfo.tszUserAddr, lpszClientAddr);
 
@@ -164,4 +191,87 @@ BOOL CSessionModule_Client::SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr,
 	}
 	st_Locker.unlock_shared();
     return TRUE;
+}
+/************************************************************************
+函数名称：SessionModule_Client_GetUser
+函数功能：通过会话ID获取用户
+ 参数.一：lpszSessionStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入会话ID
+ 参数.二：ptszUserName
+  In/Out：Out
+  类型：字符指针
+  可空：Y
+  意思：输出对应的用户名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+************************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName /* = NULL */)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszSessionStr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	if (NULL != ptszUserName)
+	{
+		_tcscpy(ptszUserName, stl_MapIterator->second.tszUserName);
+	}
+	st_Locker.unlock_shared();
+	return TRUE;
+}
+///////////////////////////////////////////////////////////////////////////////
+//                      线程函数
+///////////////////////////////////////////////////////////////////////////////
+XHTHREAD CALLBACK CSessionModule_Client::SessionModule_Client_Thread(LPVOID lParam)
+{
+	CSessionModule_Client* pClass_This = (CSessionModule_Client*)lParam;
+
+	list<tstring> stl_ListClient;
+	while (pClass_This->bRun)
+	{
+		pClass_This->st_Locker.lock_shared();
+		unordered_map<tstring, XENGINE_SESSIONINFO>::const_iterator stl_MapIterator = pClass_This->stl_MapSession.begin();
+		for (; stl_MapIterator != pClass_This->stl_MapSession.end(); stl_MapIterator++)
+		{
+			//目前仅仅支持HTTP客户端会话超时
+			if (XENGINE_MQAPP_NETTYPE_HTTP == stl_MapIterator->second.nNetType)
+			{
+				time_t nTimeEnd = time(NULL);
+				if ((nTimeEnd - stl_MapIterator->second.nTimeStart) > pClass_This->nSessionTime)
+				{
+					//移除客户端
+					stl_ListClient.push_back(stl_MapIterator->first.c_str());
+					break;
+				}
+			}
+		}
+		pClass_This->st_Locker.unlock_shared();
+		//是否有需要移除的客户端
+		if (!stl_ListClient.empty())
+		{
+			for (auto stl_ListIterator = stl_ListClient.begin(); stl_ListIterator != stl_ListClient.end(); stl_ListIterator++)
+			{
+				pClass_This->lpCall_Timeout(stl_ListIterator->c_str(), pClass_This->m_lParam);
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	return 0;
 }

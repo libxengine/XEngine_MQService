@@ -31,9 +31,9 @@ extern "C" DWORD SessionModule_GetLastError(int* pInt_SysError)
 /************************************************************************/
 /*                        客户端会话                                    */
 /************************************************************************/
-extern "C" BOOL SessionModule_Client_Init()
+extern "C" BOOL SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, LPVOID lParam)
 {
-	return m_SessionClient.SessionModule_Client_Init();
+	return m_SessionClient.SessionModule_Client_Init(nSessionTime, fpCall_Timeout, lParam);
 }
 extern "C" BOOL SessionModule_Client_Destory()
 {
@@ -50,6 +50,10 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * ptszUserName)
 {
 	return m_SessionClient.SessionModule_Client_GetAuth(lpszClientAddr, ptszUserName);
+}
+extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR * ptszUserName)
+{
+	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
 }
 /************************************************************************/
 /*                        订阅                                          */
