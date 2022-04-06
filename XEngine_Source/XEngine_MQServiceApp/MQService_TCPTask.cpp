@@ -293,18 +293,6 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			memset(&st_MessageQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET;
-			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
-			{
-				//HTTP不能有为0的情况
-				if (st_MQProtocol.nSerial <= 0)
-				{
-					pSt_ProtocolHdr->wReserve = 721;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,获取消息数据失败,HTTP必须设置消息序列"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
-					return FALSE;
-				}
-			}
 			if (st_MQProtocol.nSerial > 0)
 			{
 				st_MessageQueue.nQueueSerial = st_MQProtocol.nSerial;
