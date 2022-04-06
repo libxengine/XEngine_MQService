@@ -12,6 +12,7 @@
 *********************************************************************/
 typedef struct
 {
+    TCHAR tszUserAddr[128];                                             //用户地址
     TCHAR tszUserName[128];                                             //登录的用户名
     time_t nStartTime;                                                  //时间
     int nNetType;                                                       //网络类型

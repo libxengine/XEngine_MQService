@@ -87,6 +87,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, 
 	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nStartTime = time(NULL);
 	_tcscpy(st_SessionInfo.tszUserName, lpszUserName);
+	_tcscpy(st_SessionInfo.tszUserAddr, lpszClientAddr);
 
     st_Locker.lock();
 	stl_MapSession.insert(make_pair(lpszClientAddr, st_SessionInfo));
