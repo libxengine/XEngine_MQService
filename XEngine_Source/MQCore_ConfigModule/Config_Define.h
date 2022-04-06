@@ -40,6 +40,7 @@ typedef struct tag_XEngine_ServerConfig
         int nTCPTimeOut;
         int nHttpTimeOut;
         int nWSTimeOut;
+        int nSessionTime;
     }st_XTime;
     struct
     {

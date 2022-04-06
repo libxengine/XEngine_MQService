@@ -86,7 +86,7 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 
-    if (st_JsonRoot["XTime"].empty() || (6 != st_JsonRoot["XTime"].size()))
+    if (st_JsonRoot["XTime"].empty() || (7 != st_JsonRoot["XTime"].size()))
     {
         Config_IsErrorOccur = TRUE;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
@@ -99,6 +99,7 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XTime.nTCPTimeOut = st_JsonXTime["nTCPTimeOut"].asInt();
     pSt_ServerConfig->st_XTime.nHttpTimeOut = st_JsonXTime["nHttpTimeOut"].asInt();
     pSt_ServerConfig->st_XTime.nWSTimeOut = st_JsonXTime["nWSTimeOut"].asInt();
+    pSt_ServerConfig->st_XTime.nSessionTime = st_JsonXTime["nSessionTime"].asInt();
     
     if (st_JsonRoot["XLog"].empty() || (3 != st_JsonRoot["XLog"].size()))
     {
