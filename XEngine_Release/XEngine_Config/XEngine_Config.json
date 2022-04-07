@@ -22,7 +22,8 @@
         "nTimeCheck":3,
         "nTCPTimeOut":5,
         "nHttpTimeOut":5,
-        "nWSTimeOut":5
+        "nWSTimeOut":5,
+        "nSessionTime":60
     },
     "XLog":{
         "MaxSize":1024000,
@@ -36,7 +37,7 @@
         "SQLPass":"123123Ruiyue"
     },
     "XVer":[
-        "3.1.0.1001 Build20220402",
+        "3.1.0.1001 Build20220408",
         "3.0.0.1001 Build20220318",
         "2.1.0.1001 Build20211119",
         "2.0.0.1001 Build20210930",
