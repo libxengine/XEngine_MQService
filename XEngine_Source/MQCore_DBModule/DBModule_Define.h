@@ -23,7 +23,14 @@ typedef struct
 	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
 //用户消息
-
+typedef struct
+{
+	TCHAR tszUserName[MAX_PATH];                                          //用户名
+	TCHAR tszKeyName[MAX_PATH];                                           //绑定的KEY
+	TCHAR tszUPTime[64];                                                  //最后更新时间
+	TCHAR tszCreateTime[64];                                              //创建的时间
+	__int64x nKeySerial;                                                  //包序列号
+}XENGINE_DBUSERKEY;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +89,35 @@ extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQData_GetSerial
+函数功能：获取序列号
+ 参数.一：lpszName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查找的名称
+ 参数.二：pInt_DBCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计的个数
+ 参数.三：pSt_DBStart
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：开始的记录
+ 参数.四：pSt_DBEnd
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：结尾的记录
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
 /********************************************************************
 函数名称：DBModule_MQData_CreateTable
 函数功能：创建表
@@ -192,3 +228,86 @@ extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+/*************************************************************************
+						消息绑定导出函数
+**************************************************************************/
+/********************************************************************
+函数名称：DBModule_MQUser_KeyInsert
+函数功能：插入一个绑定的用户消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要插入的内容
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyQuery
+函数功能：通过用户查询绑定的消息信息
+ 参数.一：pSt_UserKey
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要查询的信息,输出查询到的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyList
+函数功能：枚举用户关联的列表
+ 参数.一：lpszUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：pppSt_UserKey
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出用户列表信息
+ 参数.三：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyDelete
+函数功能：删除绑定的消息队列
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyUPDate
+函数功能：更新用户绑定的消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);

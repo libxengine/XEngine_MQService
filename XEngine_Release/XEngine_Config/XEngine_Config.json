@@ -22,7 +22,8 @@
         "nTimeCheck":3,
         "nTCPTimeOut":5,
         "nHttpTimeOut":5,
-        "nWSTimeOut":5
+        "nWSTimeOut":5,
+        "nSessionTime":60
     },
     "XLog":{
         "MaxSize":1024000,
@@ -30,21 +31,19 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLEnable":1,
         "SQLAddr":"192.168.1.12",
         "SQLPort":3306,
         "SQLUser":"ruiyue",
         "SQLPass":"123123Ruiyue"
     },
-    "XVer":{
-        "StorageVersion":[
-            "3.0.0.1001 Build20220318",
-            "2.1.0.1001 Build20211119",
-            "2.0.0.1001 Build20210930",
-            "1.4.0.1001 Build20210806",
-            "1.3.0.1001 Build20210723",
-            "1.2.0.1001 Build20210716",
-            "1.1.0.1001 Build20210702"
-        ]
-    }
+    "XVer":[
+        "3.1.0.1001 Build20220408",
+        "3.0.0.1001 Build20220318",
+        "2.1.0.1001 Build20211119",
+        "2.0.0.1001 Build20210930",
+        "1.4.0.1001 Build20210806",
+        "1.3.0.1001 Build20210723",
+        "1.2.0.1001 Build20210716",
+        "1.1.0.1001 Build20210702"
+    ]
 }

@@ -40,6 +40,7 @@ typedef struct tag_XEngine_ServerConfig
         int nTCPTimeOut;
         int nHttpTimeOut;
         int nWSTimeOut;
+        int nSessionTime;
     }st_XTime;
     struct
     {
@@ -54,7 +55,6 @@ typedef struct tag_XEngine_ServerConfig
         TCHAR tszSQLPass[128];
         TCHAR tszDBName[128];                                                
         int nSQLPort;
-        BOOL bEnable;
     }st_XSql;
     struct
     {

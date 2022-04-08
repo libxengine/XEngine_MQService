@@ -177,7 +177,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 }
 
 
-void MQ_GetOrder()
+void MQ_GetSerial()
 {
 	int nLen = 0;
 	TCHAR tszMsgBuffer[2048];
@@ -191,8 +191,7 @@ void MQ_GetOrder()
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nKeepTime"] = 0;
-	st_JsonMQProtocol["nSerial"] = 1;
+	st_JsonMQProtocol["nSerial"] = 10;
 
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 
@@ -214,7 +213,7 @@ void MQ_GetOrder()
 	printf("MQ_GetOrder:%s\n", tszMsgBuffer);
 }
 
-void MQ_GetSerial()
+void MQ_GetNumber()
 {
 	int nLen = 0;
 	TCHAR tszMsgBuffer[2048];
@@ -283,42 +282,7 @@ void MQ_Get()
 	}
 	printf("MQ_Get:%s\n", tszMsgBuffer);
 }
-//离开包
-void MQ_Delete()
-{
-	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	Json::Value st_JsonRoot;
-	Json::Value st_JsonMQProtocol;
-	Json::Value st_JsonPayload;
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-
-	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 1;
-
-	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-
-	nLen = st_JsonRoot.toStyledString().length();
-	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
-
-	if (!MQ_SendPacket(tszMsgBuffer, nLen))
-	{
-		printf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
-	{
-		printf("接受数据失败！\n");
-		return;
-	}
-	printf("MQ_Delete:%s\n", tszMsgBuffer);
-}
 //订阅
 void MQ_Subscribe()
 {
@@ -407,9 +371,8 @@ int main()
 	MQ_Create();
 	MQ_Post("123hello");
 	MQ_GetSerial();
-	MQ_GetOrder();
+	MQ_GetNumber();
 	MQ_Get();
-	MQ_Delete();
 	MQ_Subscribe();
 
 #ifdef _WINDOWS

@@ -21,6 +21,7 @@ public:
 	BOOL DBModule_MQData_Destory();
 	BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+	BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
 	BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 	BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
 private:
