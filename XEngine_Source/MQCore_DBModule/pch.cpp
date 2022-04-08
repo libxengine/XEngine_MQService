@@ -47,6 +47,10 @@ extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
 }
+extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x * pInt_DBCount, XENGINE_DBMESSAGEQUEUE * pSt_DBStart, XENGINE_DBMESSAGEQUEUE * pSt_DBEnd)
+{
+	return m_DBData.DBModule_MQData_GetSerial(lpszName, pInt_DBCount, pSt_DBStart, pSt_DBEnd);
+}
 extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
 {
 	return m_DBData.DBModule_MQData_CreateTable(lpszQueueName);
@@ -81,4 +85,27 @@ extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
 {
 	return m_DBUser.DBModule_MQUser_UserUPDate(pSt_UserInfo);
+}
+/*************************************************************************
+						消息绑定导出函数
+**************************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyInsert(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyQuery(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount)
+{
+	return m_DBUser.DBModule_MQUser_KeyList(lpszUser, pppSt_UserKey, pInt_ListCount);
+}
+extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyDelete(pSt_UserKey);
+}
+extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY * pSt_UserKey)
+{
+	return m_DBUser.DBModule_MQUser_KeyUPDate(pSt_UserKey);
 }

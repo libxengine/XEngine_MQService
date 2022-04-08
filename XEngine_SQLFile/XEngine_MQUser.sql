@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 18/03/2022 09:16:23
+ Date: 31/03/2022 10:22:53
 */
 
 SET NAMES utf8mb4;
@@ -33,7 +33,7 @@ CREATE TABLE `UserInfo`  (
   `tszLoginTime` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '登录时间',
   `tszCreateTime` datetime NOT NULL COMMENT '注册时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for UserKey
@@ -43,7 +43,9 @@ CREATE TABLE `UserKey`  (
   `ID` int NOT NULL AUTO_INCREMENT,
   `tszKeyUser` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
   `tszKeyName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户绑定的KEY名称',
-  `nKeySerial` int NOT NULL COMMENT '用户绑定KEY的序列号',
+  `nKeySerial` bigint NOT NULL COMMENT '用户绑定KEY的序列号',
+  `tszUPTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `tszCreateTime` datetime NOT NULL COMMENT '创建的时间',
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 

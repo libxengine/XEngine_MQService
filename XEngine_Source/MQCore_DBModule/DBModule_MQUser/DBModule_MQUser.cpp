@@ -264,3 +264,269 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt
 
 	return TRUE;
 }
+//////////////////////////////////////////////////////////////////////////
+/********************************************************************
+函数名称：DBModule_MQUser_KeyInsert
+函数功能：插入一个绑定的用户消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要插入的内容
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserKey)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	if (DBModule_MQUser_KeyQuery(pSt_UserKey))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EXIST;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[2048];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf(tszSQLStatement, _T("INSERT INTO `UserKey` (tszKeyUser,tszKeyName,nKeySerial,tszUPTime,tszCreateTime) VALUES('%s','%s',%lld,now(),now())"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName, pSt_UserKey->nKeySerial);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_KeyQuery
+函数功能：通过用户查询绑定的消息信息
+ 参数.一：pSt_UserKey
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：输入要查询的信息,输出查询到的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserKey)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	//名称为,消息名为必填
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	if (NULL != pptszResult[3])
+	{
+		pSt_UserKey->nKeySerial = _ttoi64(pptszResult[3]);
+	}
+	if (NULL != pptszResult[4])
+	{
+		_tcscpy(pSt_UserKey->tszUPTime, pptszResult[4]);
+	}
+	if (NULL != pptszResult[5])
+	{
+		_tcscpy(pSt_UserKey->tszCreateTime, pptszResult[5]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_KeyList
+函数功能：枚举用户关联的列表
+ 参数.一：lpszUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：pppSt_UserKey
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出用户列表信息
+ 参数.三：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == lpszUser)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	//名称为,消息名为必填
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
+	for (__int64u i = 0; i < nllLine; i++)
+	{
+		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+		if (NULL != pptszResult[1])
+		{
+			_tcscpy((*pppSt_UserKey)[i]->tszUserName, pptszResult[1]);
+		}
+		if (NULL != pptszResult[2])
+		{
+			_tcscpy((*pppSt_UserKey)[i]->tszKeyName, pptszResult[2]);
+		}
+		if (NULL != pptszResult[3])
+		{
+			(*pppSt_UserKey)[i]->nKeySerial = _ttoi64(pptszResult[3]);
+		}
+		if (NULL != pptszResult[4])
+		{
+			_tcscpy((*pppSt_UserKey)[i]->tszUPTime, pptszResult[4]);
+		}
+		if (NULL != pptszResult[5])
+		{
+			_tcscpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[5]);
+		}
+		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_KeyDelete
+函数功能：删除绑定的消息队列
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserKey)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	if (_tcslen(pSt_UserKey->tszKeyName) <= 0)
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s'"), pSt_UserKey->tszUserName);
+	}
+	else
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	}
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_KeyUPDate
+函数功能：更新用户绑定的消息
+ 参数.一：pSt_UserKey
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_UserKey)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf_s(tszSQLStatement, _T("UPDATE `UserKey` SET nKeySerial = %lld WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->nKeySerial, pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	return TRUE;
+}

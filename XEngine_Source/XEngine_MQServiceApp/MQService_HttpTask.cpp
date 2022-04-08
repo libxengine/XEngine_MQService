@@ -44,6 +44,17 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(LPVOID lParam)
 	}
 	return 0;
 }
+void CALLBACK MessageQueue_HttpTime(LPCSTR lpszSessionStr, LPVOID lParam)
+{
+	XENGINE_PROTOCOL_USERINFO st_UserInfo;
+	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+	if (SessionModule_Client_GetUser(lpszSessionStr, st_UserInfo.tszUserName))
+	{
+		DBModule_MQUser_UserUPDate(&st_UserInfo);
+	}
+	SessionModule_Client_Delete(lpszSessionStr);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP消息端:%s,会话ID:%s,用户会话超时!"), st_UserInfo.tszUserName, lpszSessionStr);
+}
 BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, TCHAR** pptszListHdr, int nHdrCount)
 {
 	LPCTSTR lpszMethod = _T("POST");

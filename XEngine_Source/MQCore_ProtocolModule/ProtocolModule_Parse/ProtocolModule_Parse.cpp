@@ -82,6 +82,10 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	{
 		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
 	}
+	if (!st_JsonRoot["xhToken"].isNull())
+	{
+		pSt_ProtocolHdr->xhToken = st_JsonRoot["xhToken"].asUInt64();
+	}
 	if (!st_JsonRoot["wReserve"].isNull())
 	{
 		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();

@@ -16,7 +16,7 @@ c c++Message Service
 2. 永久消息  
 3. 消息超时  
 4. 主题分区  
-5. 消息回溯(planning)  
+5. 消息回溯
 6. 加密通信(planning)  
 7. 负载均衡(planning)  
 8. 消息次数  
@@ -85,6 +85,13 @@ GITHUB:https://github.com/libxengine/xengine
 
 ## 关注我们
 如果你觉得这个软件对你有帮助,请你给我们一个START吧
+
+## 开发计划
+自动移除超时客户端  
+扩展获取消息的内容  
+消息属性生效  
+删除包协议  
+Session支持  
 
 ## 提交问题
 

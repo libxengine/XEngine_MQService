@@ -16,6 +16,7 @@
 #include <string.h>
 #include <memory>
 #include <string>
+#include <thread>
 #include <list>
 #include <shared_mutex>
 #include <unordered_map>

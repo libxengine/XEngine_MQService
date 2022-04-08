@@ -46,8 +46,6 @@ typedef std::string tstring;
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
-#include "../MQCore_XMQModule/XMQModule_Define.h"
-#include "../MQCore_XMQModule/XMQModule_Error.h"
 #include "../MQCore_DDSMessage/DDSMessage_Define.h"
 #include "../MQCore_DDSMessage/DDSMessage_Error.h"
 #include "../MQCore_ProtocolModule/Protocol_Define.h"
@@ -101,14 +99,12 @@ extern shared_ptr<std::thread> pSTDThread;
 #pragma comment(lib,"../x64/Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_DDSMessage.lib")
-#pragma comment(lib,"../x64/Debug/MQCore_XMQModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_DBModule.lib")
 #else
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DDSMessage.lib")
-#pragma comment(lib,"../Debug/MQCore_XMQModule.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DBModule.lib")
 #endif
@@ -117,14 +113,12 @@ extern shared_ptr<std::thread> pSTDThread;
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DDSMessage.lib")
-#pragma comment(lib,"../x64/Release/MQCore_XMQModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DBModule.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Release/MQCore_DDSMessage.lib")
-#pragma comment(lib,"../Release/MQCore_XMQModule.lib")
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Release/MQCore_DBModule.lib")
 #endif
