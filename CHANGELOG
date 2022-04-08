@@ -1,5 +1,7 @@
 XEngine_MQService V3.1.0.1001
 
+添加:为HTTP会话ID支持
+添加:会话超时
 添加:数据库用户消息绑定数据库
 添加:数据库用户绑定列表函数
 添加:数据库获取消息序列号信息函数
@@ -10,6 +12,7 @@ XEngine_MQService V3.1.0.1001
 修改:扩展数据库大小字段
 修正:读取版本列表错误
 修正:插入相同用户到数据库
+删除:http获取消息需要序列号
 删除:xmq模块,现在只支持数据库版本
 删除:删除消息队列协议
 删除:登录会话创建
@@ -20,6 +23,8 @@ XEngine_MQService V3.1.0.1001
 	   SessionModule_Client_ADDDelSerial
 	   SessionModule_Client_SetAuth
 
+added:session id supported for http
+added:session time out
 added:user bind key db
 added:user key list function for db module
 added:get queue serial information function
@@ -30,6 +35,7 @@ modify:SessionModule_Client_Create and SessionModule_Client_GetAuth functions fo
 modify:expanded data size field
 fixed:read version list incorrent
 fixed:cant allow insert same data to db
+delete:http get packet need to serial code
 delete:xmq module,only support db version
 delete:delete message queue protocol
 delete:sesison create for net login
