@@ -2,12 +2,12 @@
 
 BOOL bIsRun = FALSE;
 XLOG xhLog = NULL;
-XNETHANDLE xhTCPSocket = 0;
-XNETHANDLE xhHTTPSocket = 0;
-XNETHANDLE xhWSSocket = 0;
+XHANDLE xhTCPSocket = 0;
+XHANDLE xhHTTPSocket = 0;
+XHANDLE xhWSSocket = 0;
 
-XNETHANDLE xhTCPHeart = 0;
-XNETHANDLE xhWSHeart = 0;
+XHANDLE xhTCPHeart = 0;
+XHANDLE xhWSHeart = 0;
 
 XHANDLE xhTCPPacket = NULL;
 XHANDLE xhHTTPPacket = NULL;
@@ -105,8 +105,8 @@ int main(int argc, char** argv)
 	bIsRun = TRUE;
 	LPCTSTR lpszHTTPMime = _T("./XEngine_Config/HttpMime.types");
 	LPCTSTR lpszHTTPCode = _T("./XEngine_Config/HttpCode.types");
-	TCHAR tszStringMsg[2048];
 	LPCTSTR lpszLogFile = _T("./XEngine_Log/XEngine_MQServiceApp.Log");
+	TCHAR tszStringMsg[2048];
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
 	THREADPOOL_PARAMENT** ppSt_ListHTTPParam;
@@ -176,7 +176,8 @@ int main(int argc, char** argv)
 		//启动心跳
 		if (st_ServiceCfg.st_XTime.bHBTime)
 		{
-			if (!SocketOpt_HeartBeat_InitEx(&xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart))
+			xhTCPHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart);
+			if (NULL == xhTCPHeart)
 			{
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), NetCore_GetLastError());
 				goto NETSERVICEEXIT;
@@ -188,7 +189,8 @@ int main(int argc, char** argv)
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，TCP心跳服务被设置为不启用"));
 		}
 		//启动网络
-		if (!NetCore_TCPXCore_StartEx(&xhTCPSocket, st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+		xhTCPSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread);
+		if (NULL == xhTCPSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP网络服务器失败，错误：%lX"), NetCore_GetLastError());
 			goto NETSERVICEEXIT;
@@ -228,7 +230,8 @@ int main(int argc, char** argv)
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化HTTP组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
 
-		if (!NetCore_TCPXCore_StartEx(&xhHTTPSocket, st_ServiceCfg.nHttpPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+		xhHTTPSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nHttpPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread);
+		if (NULL == xhHTTPSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动HTTP网络服务器失败，错误：%lX"), NetCore_GetLastError());
 			goto NETSERVICEEXIT;
@@ -270,7 +273,8 @@ int main(int argc, char** argv)
 
 		if (st_ServiceCfg.st_XTime.bHBTime)
 		{
-			if (!SocketOpt_HeartBeat_InitEx(&xhWSHeart, st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_WSHeart))
+			xhWSHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_WSHeart);
+			if (NULL == xhWSHeart)
 			{
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化Websocket心跳服务失败，错误：%lX"), NetCore_GetLastError());
 				goto NETSERVICEEXIT;
@@ -281,8 +285,8 @@ int main(int argc, char** argv)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，Websocket心跳服务被设置为不启用"));
 		}
-
-		if (!NetCore_TCPXCore_StartEx(&xhWSSocket, st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread))
+		xhWSSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread);
+		if (NULL == xhWSSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动Websocket网络服务器失败，错误：%lX"), NetCore_GetLastError());
 			goto NETSERVICEEXIT;
