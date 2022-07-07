@@ -6,9 +6,6 @@ XHANDLE xhTCPSocket = 0;
 XHANDLE xhHTTPSocket = 0;
 XHANDLE xhWSSocket = 0;
 
-XHANDLE xhTCPHeart = 0;
-XHANDLE xhWSHeart = 0;
-
 XHANDLE xhTCPPacket = NULL;
 XHANDLE xhHTTPPacket = NULL;
 XHANDLE xhWSPacket = NULL;
@@ -45,9 +42,6 @@ void ServiceApp_Stop(int signo)
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
-
-		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
-		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
 
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
@@ -156,7 +150,7 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化数据库服务成功"));
 
-	if (!SessionModule_Client_Init(st_ServiceCfg.st_XTime.nSessionTime, MessageQueue_HttpTime))
+	if (!SessionModule_Client_Init(st_ServiceCfg.st_XTime.nSessionTime, MessageQueue_Callback_Timeout))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
 		goto NETSERVICEEXIT;
@@ -173,21 +167,6 @@ int main(int argc, char** argv)
 			goto NETSERVICEEXIT;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，启动TCP组包器成功"));
-		//启动心跳
-		if (st_ServiceCfg.st_XTime.bHBTime)
-		{
-			xhTCPHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_TCPHeart);
-			if (NULL == xhTCPHeart)
-			{
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化TCP心跳服务失败，错误：%lX"), NetCore_GetLastError());
-				goto NETSERVICEEXIT;
-			}
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化TCP心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nTCPTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
-		}
-		else
-		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，TCP心跳服务被设置为不启用"));
-		}
 		//启动网络
 		xhTCPSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread);
 		if (NULL == xhTCPSocket)
@@ -271,20 +250,6 @@ int main(int argc, char** argv)
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化Websocket组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nWSThread);
 
-		if (st_ServiceCfg.st_XTime.bHBTime)
-		{
-			xhWSHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck, MessageQueue_Callback_WSHeart);
-			if (NULL == xhWSHeart)
-			{
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("初始化Websocket心跳服务失败，错误：%lX"), NetCore_GetLastError());
-				goto NETSERVICEEXIT;
-			}
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("启动服务中，初始化Websocket心跳服务成功,句柄:%llu,时间:%d,次数:%d"), xhTCPHeart, st_ServiceCfg.st_XTime.nWSTimeOut, st_ServiceCfg.st_XTime.nTimeCheck);
-		}
-		else
-		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("启动服务中，Websocket心跳服务被设置为不启用"));
-		}
 		xhWSSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nIOThread);
 		if (NULL == xhWSSocket)
 		{
@@ -372,9 +337,6 @@ NETSERVICEEXIT:
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
-		
-		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
-		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
 		
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);

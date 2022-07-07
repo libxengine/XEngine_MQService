@@ -2,7 +2,6 @@
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_TCPLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
-    SocketOpt_HeartBeat_InsertAddrEx(xhTCPHeart, lpszClientAddr);
 	HelpComponents_Datas_CreateEx(xhTCPPacket, lpszClientAddr, 0);
     XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO,_T("TCP客户端连接，TCP客户端地址：%s"),lpszClientAddr);
 	return TRUE;
@@ -14,16 +13,11 @@ void __stdcall MessageQueue_Callback_TCPRecv(LPCTSTR lpszClientAddr, SOCKET hSoc
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR,_T("投递TCP数据包到消息队列失败，错误：%lX"),Packets_GetLastError());
         return;
     }
-    SocketOpt_HeartBeat_ActiveAddrEx(xhTCPHeart, lpszClientAddr);
     XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("投递TCP数据包到消息队列成功,%d"), nMsgLen);
 }
 void __stdcall MessageQueue_Callback_TCPLeave(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, FALSE);
-}
-void __stdcall MessageQueue_Callback_TCPHeart(LPCSTR lpszClientAddr, SOCKET hSocket, int nStatus, LPVOID lParam)
-{
-    XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, TRUE);
 }
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_HttpLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -47,7 +41,6 @@ void __stdcall MessageQueue_Callback_HttpLeave(LPCTSTR lpszClientAddr, SOCKET hS
 //////////////////////////////////////////////////////////////////////////
 BOOL __stdcall MessageQueue_Callback_WSLogin(LPCTSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
-    SocketOpt_HeartBeat_InsertAddrEx(xhWSHeart, lpszClientAddr);
     RfcComponents_WSPacket_CreateEx(xhWSPacket, lpszClientAddr, 0);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端连接，Websocket客户端地址：%s"), lpszClientAddr);
 	return TRUE;
@@ -63,7 +56,6 @@ void __stdcall MessageQueue_Callback_WSRecv(LPCTSTR lpszClientAddr, SOCKET hSock
             XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("投递Websocket数据包到消息队列失败，错误：%lX"), WSFrame_GetLastError());
             return;
 		}
-        SocketOpt_HeartBeat_ActiveAddrEx(xhWSHeart, lpszClientAddr);
 	}
 	else
 	{
@@ -81,9 +73,10 @@ void __stdcall MessageQueue_Callback_WSLeave(LPCTSTR lpszClientAddr, SOCKET hSoc
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, FALSE);
 }
-void __stdcall MessageQueue_Callback_WSHeart(LPCSTR lpszClientAddr, SOCKET hSocket, int nStatus, LPVOID lParam)
+//////////////////////////////////////////////////////////////////////////
+void __stdcall MessageQueue_Callback_Timeout(LPCSTR lpszSessionStr, LPVOID lParam)
 {
-    XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, TRUE);
+	XEngine_MQXService_Close(lpszSessionStr, XENGINE_MQAPP_NETTYPE_HTTP, TRUE);
 }
 //////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
@@ -91,32 +84,19 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
     {
         HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
-        if (bHeart)
-        {
-            NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
-        }
-        else
-        {
-            SocketOpt_HeartBeat_DeleteAddrEx(xhTCPHeart, lpszClientAddr);
-        }
+        NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
         RfcComponents_WSPacket_DeleteEx(xhWSPacket, lpszClientAddr);
-		if (bHeart)
-		{
-			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
-		}
-		else
-		{
-            SocketOpt_HeartBeat_DeleteAddrEx(xhWSHeart, lpszClientAddr);
-		}
+        NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);;
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
     }
     else
 	{
 		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
+        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);;
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;
@@ -137,7 +117,6 @@ BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int 
             XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给TCP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
             return FALSE;
         }
-        SocketOpt_HeartBeat_ActiveAddrEx(xhTCPHeart, lpszClientAddr);
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
@@ -170,7 +149,6 @@ BOOL XEngine_MQXService_Send(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int 
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return FALSE;
 		}
-        SocketOpt_HeartBeat_ActiveAddrEx(xhWSHeart, lpszClientAddr);
     }
     return TRUE;
 }
