@@ -236,6 +236,42 @@ BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr,
 	st_Locker.unlock_shared();
 	return TRUE;
 }
+/********************************************************************
+函数名称：SessionModule_Client_Heart
+函数功能：触发一次心跳
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要触发的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_Heart(LPCTSTR lpszClientAddr)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	stl_MapIterator->second.nTimeStart = time(NULL);
+	st_Locker.unlock_shared();
+	return TRUE;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //                      线程函数
 ///////////////////////////////////////////////////////////////////////////////

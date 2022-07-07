@@ -9,6 +9,7 @@ EXPORTS
 	SessionModule_Client_Delete
 	SessionModule_Client_GetAuth
 	SessionModule_Client_GetUser
+	SessionModule_Client_Heart
 
 	SessionModule_Notify_Create
 	SessionModule_Notify_Destory

@@ -55,6 +55,10 @@ extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR * pts
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
 }
+extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr)
+{
+	return m_SessionClient.SessionModule_Client_Heart(lpszClientAddr);
+}
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/

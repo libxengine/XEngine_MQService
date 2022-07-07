@@ -148,6 +148,20 @@ extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * pts
 备注：
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
+/********************************************************************
+函数名称：SessionModule_Client_Heart
+函数功能：触发一次心跳
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要触发的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/
