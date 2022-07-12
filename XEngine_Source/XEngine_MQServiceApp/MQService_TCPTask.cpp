@@ -200,7 +200,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 		{
 			_stprintf(tszSessionStr, _T("%lld"), pSt_ProtocolHdr->xhToken);
-			if (!SessionModule_Client_GetAuth(tszSessionStr, tszUserName))
+			if (!SessionModule_Client_GetUser(tszSessionStr, tszUserName))
 			{
 				pSt_ProtocolHdr->wReserve = 700;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -211,7 +211,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		}
 		else
 		{
-			if (!SessionModule_Client_GetAuth(lpszClientAddr, tszUserName))
+			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
 			{
 				pSt_ProtocolHdr->wReserve = 700;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);

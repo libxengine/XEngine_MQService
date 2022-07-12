@@ -74,9 +74,9 @@ void __stdcall MessageQueue_Callback_WSLeave(LPCTSTR lpszClientAddr, SOCKET hSoc
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, FALSE);
 }
 //////////////////////////////////////////////////////////////////////////
-void __stdcall MessageQueue_Callback_Timeout(LPCSTR lpszSessionStr, LPVOID lParam)
+void __stdcall MessageQueue_Callback_Timeout(LPCSTR lpszClientAddr, LPCTSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, LPVOID lParam)
 {
-	XEngine_MQXService_Close(lpszSessionStr, XENGINE_MQAPP_NETTYPE_HTTP, TRUE);
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, TRUE);
 }
 //////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
@@ -101,7 +101,7 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     }
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;
 	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
-    if (SessionModule_Client_GetAuth(lpszClientAddr, st_UserInfo.tszUserName))
+    if (SessionModule_Client_GetUser(lpszClientAddr, st_UserInfo.tszUserName))
     {
         DBModule_MQUser_UserUPDate(&st_UserInfo);
     }
