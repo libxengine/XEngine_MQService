@@ -1,20 +1,31 @@
 CC = g++ -Wall -std=c++17 -fPIC
+SHAREFLAG = -shared
+SHAREDLL = so
 RELEASE = 0
 UNICODE = 0
 INCLUDE = -I ./ -I ../XEngine_ThirdPart/jsoncpp
 FILECENTOS = /etc/redhat-release
 LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L ../XEngine_ThirdPart/jsoncpp
 LIB = -lXEngine_BaseLib 
-LIBEX = -static-libgcc -lrt -ldl -lpthread
+LIBEX = -ldl -lpthread
 LOADSO = -Wl,-rpath=./,--disable-new-dtags
 LIBINCLUDE = DDSMessage_CommApi.o pch.o
+
+ifeq ($(shell uname),Darwin)
+	SHAREDLL = dylib
+	SHAREFLAG = -dynamiclib
+	LOADSO = 
+else
+	SHAREDLL = so
+	SHAREFLAG = -shared
+endif
 
 ifeq ($(RELEASE),1)
 FLAGS = -c -O2 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
+FLAGS = -c
+DEBUG = -g
 endif
 
 ifeq ($(UNICODE),1)
@@ -30,7 +41,7 @@ else
 endif
 
 all:$(LIBINCLUDE)
-	$(CC) $(DEBUG) $(LIBINCLUDE) -o libMQCore_DDSMessage.so -shared -fPIC $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
+	$(CC) $(DEBUG) $(LIBINCLUDE) -o libMQCore_DDSMessage.$(SHAREDLL) $(SHAREFLAG) -fPIC $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
 
 DDSMessage_CommApi.o:./DDSMessage_CommApi/DDSMessage_CommApi.cpp                         
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./DDSMessage_CommApi/DDSMessage_CommApi.cpp
@@ -40,13 +51,13 @@ pch.o:./pch.cpp
 
 
 InstallAll:InstallSo 
-InstallSo:./libMQCore_DDSMessage.so
-	cp ./libMQCore_DDSMessage.so ../../XEngine_Release/libMQCore_DDSMessage.so
+InstallSo:./libMQCore_DDSMessage.$(SHAREDLL)
+	cp ./libMQCore_DDSMessage.$(SHAREDLL) ../../XEngine_Release/libMQCore_DDSMessage.$(SHAREDLL)
 
 
 CleanAll:CleanObj CleanMk
 CleanObj:
 	rm *.o                                           
 CleanMk:
-	rm *.so                                         
+	rm *.$(SHAREDLL)                                         
 	
