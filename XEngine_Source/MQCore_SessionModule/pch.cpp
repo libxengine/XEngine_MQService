@@ -47,10 +47,6 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
-extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * ptszUserName)
-{
-	return m_SessionClient.SessionModule_Client_GetAuth(lpszClientAddr, ptszUserName);
-}
 extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR * ptszUserName)
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
