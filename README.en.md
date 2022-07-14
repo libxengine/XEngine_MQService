@@ -1,6 +1,7 @@
 [中文](README.md) ||  [English](README.en.md)  
 # XEngine_MQService
 This repository has a development and master branch. If you want to use it, please use the master branch  
+As long as the repository is not in suspended state, we will maintain and develop it all the time, please use it with confidence
 
 #### Description
 c c++消息服务 消息中间件
@@ -32,31 +33,33 @@ this software support following features
 
 ## install
 
-#### Requirements  
-support system above windows 7sp1 and linux(ubuntu20.04,centos8)  
-XEngine need V7.23 or above  
+#### XEngine Evn
+you must install XEngine,need V7.38 or above,install XEngine can be refer to xengine Readme docment  
+GITEE:https://gitee.com/xyry/libxengine  
+GITHUB:https://github.com/libxengine/xengine
+
+##### fast to deployment 
+git clone https://gitee.com/xyry/libxengine.git or git clone https://github.com/libxengine/xengine.git  
+window Exection XEngine_WINEnv.bat   
+Linux Exection:sudo ./XEngine_LINEnv.sh -i 3  
+Macos Exection:./XEngine_LINEnv.sh -i 3
 
 #### Windows
-use vs open and complie  
-You need to configure the environment in the following way, otherwise you may need to set the library directory in the project yourself  
+use vs open and complie,support windows 7sp1 and above   
+Just Run it.
 
 #### Linux
 Linux use Makefile to complie  
-supproted ubuntu x64 or centos x64     
+supproted ubuntu x64 or centos x64  
 
-##### XEngine Install
-you can install xengine env to your system by shell   
-like this:sudo XEngine_RunEnv.sh -i 3  
+#### MacOS
+Linux use Makefile to complie,terminal exection,Requires mac 12 and above  
+
 ##### complie
 execute command in XEngine_Source path
 make complie  
 make FLAGS=InstallAll install  
 make FLAGS=CleanAll clear  
-
-#### XEngine Env
-install XEngine can be refer to xengine Readme docment  
-GITEE:https://gitee.com/xyry/libxengine  
-GITHUB:https://github.com/libxengine/xengine  
 
 #### use
 
