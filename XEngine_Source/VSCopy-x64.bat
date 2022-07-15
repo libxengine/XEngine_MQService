@@ -13,8 +13,9 @@ copy /y "%XEngine_Lib64%\XEngine_HelpComponents\HelpComponents_DataBase.dll" "./
 copy /y "%XEngine_Lib64%\XEngine_RfcComponents\RfcComponents_HttpServer.dll" "./"
 copy /y "%XEngine_Lib64%\XEngine_RfcComponents\RfcComponents_WSProtocol.dll" "./"
 
-copy /y "%XEngine_Lib64%\XEngine_LibEx\libcrypto-1_1.dll" "./"
-copy /y "%XEngine_Lib64%\XEngine_LibEx\libssl-1_1.dll" "./"
+copy /y "%XEngine_Lib64%\XEngine_LibEx\libcrypto-3.dll" "./"
+copy /y "%XEngine_Lib64%\XEngine_LibEx\libssl-3.dll" "./"
+copy /y "%XEngine_Lib64%\XEngine_LibEx\nghttp2.dll" "./"
 copy /y "%XEngine_Lib64%\XEngine_HelpComponents\zlib1.dll" "./"
 copy /y "%XEngine_Lib64%\XEngine_HelpComponents\bson-1.0.dll" "./"
 copy /y "%XEngine_Lib64%\XEngine_HelpComponents\mongoc-1.0.dll" "./"

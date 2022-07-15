@@ -57,12 +57,9 @@ typedef std::string tstring;
 
 extern BOOL bIsRun;
 extern XLOG xhLog;
-extern XNETHANDLE xhTCPSocket;
-extern XNETHANDLE xhHTTPSocket;
-extern XNETHANDLE xhWSSocket;
-
-extern XNETHANDLE xhTCPHeart;
-extern XNETHANDLE xhWSHeart;
+extern XHANDLE xhTCPSocket;
+extern XHANDLE xhHTTPSocket;
+extern XHANDLE xhWSSocket;
 
 extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
