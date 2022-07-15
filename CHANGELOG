@@ -1,3 +1,25 @@
+XEngine_MQService V3.2.0.1001
+
+添加:为会话模块添加心跳
+添加:打印XEngine版本功能
+修改:http现在也支持心跳协议了
+修改:移动会话超时函数到网络文件下
+修改:现在回调函数拥有更多参数
+修改:现在支持MACOS系统了
+更新:匹配XEngine V7.38版本
+删除:套接字超时功能
+删除:会话模块重复的函数
+
+added:heart active for session module
+added:xengine version printf
+modify:support heartbeat for Http
+modify:move session timeout to net.cpp
+modify:support macos now
+update:match xengine version 7.38
+delete:socket timeout
+delete:repeated function for session module
+modify:callback function has more parament
+======================================================================================
 XEngine_MQService V3.1.0.1001
 
 添加:为HTTP会话ID支持

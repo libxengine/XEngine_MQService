@@ -1,13 +1,20 @@
-CC = g++ -Wall
+CC = g++ -Wall -std=c++17
 RELEASE = 0
 UNICODE = 0  
-LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents  \
-          -L ../MQCore_ConfigModule -L ../MQCore_DDSMessage -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
+LOADBIN = 0
 LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpServer \
       -lMQCore_DDSMessage -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule -ljsoncpp
-LIBEX = -static-libgcc -ldl -lrt -lpthread
+LIBEX = -ldl -lpthread
 LOADSO = -Wl,-rpath=./,--disable-new-dtags
 LIBINCLUDE = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_DDSTask.o XEngine_MQServiceApp.o
+
+ifeq ($(shell uname),Darwin)
+	LOADBIN = -L ../MQCore_ConfigModule -L ../MQCore_DDSMessage -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
+	LOADSO = 
+else
+	LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents  \
+	          -L ../MQCore_ConfigModule -L ../MQCore_DDSMessage -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
+endif
 
 ifeq ($(RELEASE),1)
 FLAGS = -c -O2 

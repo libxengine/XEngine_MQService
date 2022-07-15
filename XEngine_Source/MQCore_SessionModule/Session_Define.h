@@ -31,7 +31,7 @@ typedef struct
 //////////////////////////////////////////////////////////////////////////
 //                        导出回调函数
 //////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCSTR lpszSessionStr, LPVOID lParam);
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCSTR lpszClientAddr, LPCTSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, LPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
@@ -111,25 +111,6 @@ extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpsz
 *********************************************************************/
 extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
 /************************************************************************
-函数名称：SessionModule_Client_GetAuth
-函数功能：获得客户端是否登录
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入客户端信息
- 参数.二：ptszUserName
-  In/Out：Out
-  类型：字符指针
-  可空：Y
-  意思：输出对应的用户名
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-************************************************************************/
-extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * ptszUserName = NULL);
-/************************************************************************
 函数名称：SessionModule_Client_GetUser
 函数功能：通过会话ID获取用户
  参数.一：lpszSessionStr
@@ -148,6 +129,20 @@ extern "C" BOOL SessionModule_Client_GetAuth(LPCTSTR lpszClientAddr, TCHAR * pts
 备注：
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
+/********************************************************************
+函数名称：SessionModule_Client_Heart
+函数功能：触发一次心跳
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要触发的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr);
 /************************************************************************/
 /*                        订阅                                          */
 /************************************************************************/

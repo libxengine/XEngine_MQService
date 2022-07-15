@@ -34,12 +34,7 @@ typedef struct tag_XEngine_ServerConfig
     }st_XMax;
     struct
     {
-        BOOL bHBTime;
         int nDBMonth;
-        int nTimeCheck;
-        int nTCPTimeOut;
-        int nHttpTimeOut;
-        int nWSTimeOut;
         int nSessionTime;
     }st_XTime;
     struct

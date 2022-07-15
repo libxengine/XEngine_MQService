@@ -63,7 +63,35 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		lpszClientType = _T("WEBSOCKET");
 	}
 
-	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH == pSt_ProtocolHdr->unOperatorType)
+	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_HEARTBEAT == pSt_ProtocolHdr->unOperatorType)
+	{
+		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_HB_SYN == pSt_ProtocolHdr->unOperatorCode)
+		{
+			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+			{
+				_stprintf(tszSessionStr, _T("%lld"), pSt_ProtocolHdr->xhToken);
+			}
+			else
+			{
+				_tcscpy(tszSessionStr, lpszClientAddr);
+			}
+			SessionModule_Client_Heart(tszSessionStr);
+			//如果设置了标志位或者是HTTP请求,那么返回消息
+			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+			{
+				pSt_ProtocolHdr->unPacketSize = 0;
+				pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_HB_ACK;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("客户端：%s，处理心跳协议成功，回复标志位：%d"), lpszClientAddr, pSt_ProtocolHdr->byIsReply);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("客户端：%s，处理心跳子协议失败，协议类型没有找到：%d"), lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
+		}
+	}
+	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH == pSt_ProtocolHdr->unOperatorType)
 	{
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG == pSt_ProtocolHdr->unOperatorCode)
 		{
@@ -172,7 +200,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 		{
 			_stprintf(tszSessionStr, _T("%lld"), pSt_ProtocolHdr->xhToken);
-			if (!SessionModule_Client_GetAuth(tszSessionStr, tszUserName))
+			if (!SessionModule_Client_GetUser(tszSessionStr, tszUserName))
 			{
 				pSt_ProtocolHdr->wReserve = 700;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -183,7 +211,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 		}
 		else
 		{
-			if (!SessionModule_Client_GetAuth(lpszClientAddr, tszUserName))
+			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
 			{
 				pSt_ProtocolHdr->wReserve = 700;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
