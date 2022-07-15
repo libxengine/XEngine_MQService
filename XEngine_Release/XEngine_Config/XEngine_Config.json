@@ -17,12 +17,7 @@
         "nWSThread":2
     },
     "XTime":{
-        "bHBTime":0,
         "nDBMonth":3,
-        "nTimeCheck":3,
-        "nTCPTimeOut":5,
-        "nHttpTimeOut":5,
-        "nWSTimeOut":5,
         "nSessionTime":60
     },
     "XLog":{
@@ -37,6 +32,7 @@
         "SQLPass":"123123Ruiyue"
     },
     "XVer":[
+        "3.2.0.1001 Build20220715",
         "3.1.0.1001 Build20220408",
         "3.0.0.1001 Build20220318",
         "2.1.0.1001 Build20211119",
