@@ -33,9 +33,6 @@
     <ClCompile Include="MQService_WSTask.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQService_DDSTask.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MQService_Config.h">
@@ -54,9 +51,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MQService_WSTask.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQService_DDSTask.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -502,10 +502,6 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("%s消息端:%s,子协议错误，子协议：%x"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
 		}
 	}
-	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XDDS == pSt_ProtocolHdr->unOperatorType)
-	{
-		MQService_DDSTask_Handle(pSt_ProtocolHdr, lpszClientAddr, lpszMsgBuffer, nMsgLen);
-	}
 	else
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("%s消息端:%s,主协议错误，协议：%x"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->unOperatorType);
