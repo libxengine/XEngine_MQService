@@ -531,7 +531,7 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	TCHAR tszSQLStatement[1024];
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime >= %lld"), time(NULL));
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), time(NULL));
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
@@ -581,8 +581,7 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf_s(tszSQLQuery, _T("DELETE FORM `XEngine_TimeRelease` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
-
+	_stprintf_s(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;
