@@ -74,6 +74,7 @@ extern XENGINE_SERVERCONFIG st_ServiceCfg;
 #include "MQService_TCPTask.h"
 #include "MQService_HttpTask.h"
 #include "MQService_WSTask.h"
+#include "MQService_Task.h"
 
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")

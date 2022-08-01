@@ -281,6 +281,24 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					st_DBQueue.nQueueSerial = 1;
 				}
 			}
+			//是否被设置定时发布
+			if (st_MQProtocol.nPubTime > 0)
+			{
+				XENGINE_DBTIMERELEASE st_DBTime;
+				XENGINE_LIBTIMER st_LibTime;
+
+				memset(&st_DBTime, '\0', sizeof(XENGINE_DBTIMERELEASE));
+				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+
+				st_DBTime.nIDMsg = st_DBQueue.nQueueSerial;
+				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
+				_tcscpy(st_DBTime.tszQueueName, st_DBQueue.tszQueueName);
+
+				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
+				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, TRUE, &st_LibTime);
+				DBModule_MQData_TimeInsert(&st_DBTime);
+			}
+			//插入数据库
 			if (!DBModule_MQData_Insert(&st_DBQueue))
 			{
 				pSt_ProtocolHdr->wReserve = 702;
