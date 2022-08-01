@@ -121,7 +121,6 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			{
 				//HTTP使用SESSION
 				BaseLib_OperatorHandle_Create(&pSt_ProtocolHdr->xhToken);
-
 				_stprintf(tszSessionStr, _T("%lld"), pSt_ProtocolHdr->xhToken);
 				SessionModule_Client_Create(tszSessionStr, st_UserInfo.tszUserName, nNetType);
 			}
