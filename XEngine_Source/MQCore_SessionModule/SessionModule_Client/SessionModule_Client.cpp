@@ -193,6 +193,47 @@ BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr,
 	return TRUE;
 }
 /********************************************************************
+函数名称：SessionModule_Client_GetType
+函数功能：通过客户端获得连接的网络类型
+ 参数.一：lpszSessionStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+ 参数.二：pInt_NetType
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出网络类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszSessionStr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
+	if (stl_MapIterator == stl_MapSession.end())
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		st_Locker.unlock_shared();
+		return FALSE;
+	}
+	*pInt_NetType = stl_MapIterator->second.nNetType;
+	st_Locker.unlock_shared();
+	return TRUE;
+}
+/********************************************************************
 函数名称：SessionModule_Client_Heart
 函数功能：触发一次心跳
  参数.一：lpszClientAddr

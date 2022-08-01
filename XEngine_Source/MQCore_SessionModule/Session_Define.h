@@ -130,6 +130,25 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
 /********************************************************************
+函数名称：SessionModule_Client_GetType
+函数功能：通过客户端获得连接的网络类型
+ 参数.一：lpszSessionStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+ 参数.二：pInt_NetType
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出网络类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType);
+/********************************************************************
 函数名称：SessionModule_Client_Heart
 函数功能：触发一次心跳
  参数.一：lpszClientAddr
