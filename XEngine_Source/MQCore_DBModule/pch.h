@@ -17,6 +17,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
+#include <thread>
+#include <memory>
+using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>

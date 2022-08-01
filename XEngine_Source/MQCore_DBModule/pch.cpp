@@ -31,9 +31,9 @@ extern "C" DWORD DBModule_GetLastError(int* pInt_SysError)
 /*************************************************************************
 						消息队列导出函数
 **************************************************************************/
-extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
+extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam)
 {
-	return m_DBData.DBModule_MQData_Init(pSt_DBConnector);
+	return m_DBData.DBModule_MQData_Init(pSt_DBConnector, fpCall_TimePublish, lParam);
 }
 extern "C" BOOL DBModule_MQData_Destory()
 {
@@ -58,6 +58,18 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
 extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 {
 	return m_DBData.DBModule_MQData_DeleteTable(lpszQueueName);
+}
+extern "C" BOOL DBModule_MQData_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+{
+	return m_DBData.DBModule_MQData_TimeInsert(pSt_DBInfo);
+}
+extern "C" BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount)
+{
+	return m_DBData.DBModule_MQData_TimeQuery(pppSt_DBInfo, pInt_ListCount);
+}
+extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+{
+	return m_DBData.DBModule_MQData_TimeDelete(pSt_DBInfo);
 }
 /*************************************************************************
 						消息用户导出函数
