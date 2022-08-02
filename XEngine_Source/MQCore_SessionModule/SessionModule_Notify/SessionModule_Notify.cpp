@@ -134,8 +134,21 @@ BOOL CSessionModule_Notify::SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LP
 	st_NotifyClient.enClientType = enClientType;
 	_tcscpy(st_NotifyClient.tszNotifyAddr, lpszClientAddr);
 
+	BOOL bFound = FALSE;
 	stl_MapIterator->second.st_Locker->lock();
-	stl_MapIterator->second.pStl_ListClient->push_back(st_NotifyClient);
+	for (auto stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin(); stl_ListIterator != stl_MapIterator->second.pStl_ListClient->end(); stl_ListIterator++)
+	{
+		//不允许重复订阅
+		if ((0 == _tcsncmp(lpszClientAddr, stl_ListIterator->tszNotifyAddr, _tcslen(lpszClientAddr))) && (enClientType == stl_ListIterator->enClientType))
+		{
+			bFound = TRUE;
+			break;
+		}
+	}
+	if (!bFound)
+	{
+		stl_MapIterator->second.pStl_ListClient->push_back(st_NotifyClient);
+	}
 	stl_MapIterator->second.st_Locker->unlock();
 	st_Locker.unlock_shared();
     return TRUE;
@@ -254,6 +267,48 @@ BOOL CSessionModule_Notify::SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, S
 	}
 	*pInt_ListCount = stl_MapIterator->second.pStl_ListClient->size();
 	stl_MapIterator->second.st_Locker->unlock_shared();
+	st_Locker.unlock_shared();
+	return TRUE;
+}
+/********************************************************************
+函数名称：SessionModule_Notify_DelClient
+函数功能：删除指定客户端的订阅内容
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要删除的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Notify::SessionModule_Notify_DelClient(LPCTSTR lpszClientAddr)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONNOTIFY>::iterator stl_MapIterator = stl_MapSession.begin();
+	for (; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
+	{
+		stl_MapIterator->second.st_Locker->lock();
+		list<SESSION_NOTIFYCLIENT>::const_iterator stl_ListIterator = stl_MapIterator->second.pStl_ListClient->begin();
+		for (; stl_ListIterator != stl_MapIterator->second.pStl_ListClient->end(); stl_ListIterator++)
+		{
+			if (0 == _tcsncmp(lpszClientAddr, stl_ListIterator->tszNotifyAddr, _tcslen(lpszClientAddr)))
+			{
+				stl_MapIterator->second.pStl_ListClient->erase(stl_ListIterator);
+				break;
+			}
+		}
+		stl_MapIterator->second.st_Locker->unlock();
+	}
 	st_Locker.unlock_shared();
 	return TRUE;
 }

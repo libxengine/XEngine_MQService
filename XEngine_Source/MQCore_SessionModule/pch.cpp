@@ -82,3 +82,7 @@ extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIF
 {
 	return m_SessionNotify.SessionModule_Notify_GetList(lpszTopicStr, pppSt_ListClient, pInt_ListCount);
 }
+extern "C" BOOL SessionModule_Notify_DelClient(LPCTSTR lpszClientAddr)
+{
+	return m_SessionNotify.SessionModule_Notify_DelClient(lpszClientAddr);
+}
