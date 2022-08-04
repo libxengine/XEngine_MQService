@@ -26,7 +26,7 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLAddr":"192.168.1.12",
+        "SQLAddr":"127.0.0.1",
         "SQLPort":3306,
         "SQLUser":"ruiyue",
         "SQLPass":"123123Ruiyue"
