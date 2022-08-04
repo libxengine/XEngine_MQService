@@ -6,7 +6,7 @@ LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool 
       -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule -ljsoncpp
 LIBEX = -ldl -lpthread
 LOADSO = -Wl,-rpath=./,--disable-new-dtags
-LIBINCLUDE = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o XEngine_MQServiceApp.o
+LIBINCLUDE = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_Task.o XEngine_MQServiceApp.o
 
 ifeq ($(shell uname),Darwin)
 	LOADBIN = -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
@@ -43,7 +43,9 @@ MQService_HttpTask.o:./MQService_HttpTask.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_HttpTask.cpp
 MQService_WSTask.o:./MQService_WSTask.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_WSTask.cpp
-		
+MQService_Task.o:./MQService_Task.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_Task.cpp
+
 XEngine_MQServiceApp.o:./XEngine_MQServiceApp.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./XEngine_MQServiceApp.cpp   
 

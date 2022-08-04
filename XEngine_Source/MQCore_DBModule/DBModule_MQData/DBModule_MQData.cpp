@@ -531,7 +531,11 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	TCHAR tszSQLStatement[1024];
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+#ifdef _MSC_BUILD
 	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), time(NULL));
+#else
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime <= %ld"), time(NULL));
+#endif
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
@@ -541,7 +545,7 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBInfo, *pInt_ListCount, sizeof(XENGINE_DBTIMERELEASE));
-	for (int i = 0; i < nllLine; i++)
+	for (__int64u i = 0; i < nllLine; i++)
 	{
 		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		if (NULL != pptszResult[0])
