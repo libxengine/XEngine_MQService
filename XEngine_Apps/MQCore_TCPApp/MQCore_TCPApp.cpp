@@ -320,6 +320,58 @@ void MQ_Get()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
+
+void MQ_TimePublish()
+{
+	int nLen = 0;
+	LPCTSTR lpszMsgBuffer = _T("hello world");
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
+	TCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byIsReply = TRUE;                  //必须为真
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + _tcslen(lpszMsgBuffer);
+	st_XMQProtocol.nSerial = 0;          //要获取的序列号,如果为0,服务会自动处理
+	st_XMQProtocol.nPubTime = time(NULL) + 60; //当前时间+60秒
+	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, _tcslen(lpszMsgBuffer));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		printf("发送投递失败！\n");
+		return;
+	}
+	nLen = 0;
+	CHAR* ptszMsgBuffer = NULL;
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr, 60))
+	{
+		printf("接受数据失败！\n");
+		return;
+	}
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+}
+
 void MQ_GetNumber()
 {
 	int nLen = 0;
@@ -393,7 +445,7 @@ void MQ_GetSerial()
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
 
-	st_XMQProtocol.nSerial = 10; //设置为10开始读取
+	st_XMQProtocol.nSerial = 5; //设置为5开始读取
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
@@ -492,29 +544,14 @@ void MQ_Subscribe()
 		printf("发送投递失败！\n");
 		return;
 	}
-	while (TRUE)
+	nLen = 0;
+	CHAR* ptszMsgBuffer = NULL;
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 	{
-		nLen = 2048;
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-		{
-			memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-			memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-			memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-			memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
-
-			if (0 == st_ProtocolHdr.wReserve)
-			{
-				printf("接受到数据,主题:%s,序列:%lld,长度：%d，内容：%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_ProtocolHdr.unPacketSize - sizeof(XENGINE_PROTOCOL_XMQ), tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ));
-			}
-			else
-			{
-				printf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-			}
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		printf("接受数据失败！\n");
+		return;
 	}
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 int main(int argc, char** argv)
 {
@@ -533,26 +570,20 @@ int main(int argc, char** argv)
 
 	MQ_Register();
 	MQ_Authorize();
-	if (argc > 1)
+	MQ_Create();
+	for (int i = 0; i < 10; i++)
 	{
-		MQ_Create();
-		MQ_Subscribe();
+		MQ_Post(lpszMsgBuffer);
 	}
-	else
-	{
-		MQ_Create();
-		for (int i = 0; i < 1000; i++)
-		{
-			MQ_Post(lpszMsgBuffer);
-		}
-		MQ_GetSerial();
-		MQ_GetNumber();
-		MQ_Get();
-		MQ_Get();
-		MQ_Get();
-		MQ_DeleteTopic();
-		MQ_DeleteUser();
-	}
+	MQ_GetSerial();
+	MQ_GetNumber();
+	MQ_Get();
+	MQ_Get();
+	MQ_Get();
+	MQ_Subscribe();
+	MQ_TimePublish();
+	MQ_DeleteTopic();
+	MQ_DeleteUser();
 
 	XClient_TCPSelect_Close(m_Socket);
 #ifdef _WINDOWS
