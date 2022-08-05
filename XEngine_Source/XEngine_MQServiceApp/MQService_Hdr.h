@@ -46,8 +46,6 @@ typedef std::string tstring;
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
-#include "../MQCore_DDSMessage/DDSMessage_Define.h"
-#include "../MQCore_DDSMessage/DDSMessage_Error.h"
 #include "../MQCore_ProtocolModule/Protocol_Define.h"
 #include "../MQCore_ProtocolModule/Protocol_Error.h"
 #include "../MQCore_SessionModule/Session_Define.h"
@@ -69,18 +67,14 @@ extern XNETHANDLE xhTCPPool;
 extern XNETHANDLE xhHttpPool;
 extern XNETHANDLE xhWSPool;
 
-extern SOCKET hSDSocket;
-extern SOCKET hRVSocket;
-
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
-extern shared_ptr<std::thread> pSTDThread;
 
 #include "MQService_Config.h"
 #include "MQService_Net.h"
 #include "MQService_TCPTask.h"
 #include "MQService_HttpTask.h"
 #include "MQService_WSTask.h"
-#include "MQService_DDSTask.h"
+#include "MQService_Task.h"
 
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
@@ -95,13 +89,11 @@ extern shared_ptr<std::thread> pSTDThread;
 #ifdef _WIN64
 #pragma comment(lib,"../x64/Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_ProtocolModule.lib")
-#pragma comment(lib,"../x64/Debug/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_DBModule.lib")
 #else
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
-#pragma comment(lib,"../Debug/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DBModule.lib")
 #endif
@@ -109,13 +101,11 @@ extern shared_ptr<std::thread> pSTDThread;
 #ifdef _WIN64
 #pragma comment(lib,"../x64/Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
-#pragma comment(lib,"../x64/Release/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DBModule.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
-#pragma comment(lib,"../Release/MQCore_DDSMessage.lib")
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Release/MQCore_DBModule.lib")
 #endif

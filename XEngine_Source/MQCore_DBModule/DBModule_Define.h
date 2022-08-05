@@ -10,6 +10,13 @@
 //    Purpose:     导出的函数
 //    History:
 *********************************************************************/
+//////////////////////////////////////////////////////////////////////////
+//                       导出的回调
+//////////////////////////////////////////////////////////////////////////
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCTSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, LPVOID lParam);
+//////////////////////////////////////////////////////////////////////////
+//                       导出的数据结构
+//////////////////////////////////////////////////////////////////////////
 //消息队列
 typedef struct  
 {
@@ -22,6 +29,12 @@ typedef struct
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
 }XENGINE_DBMESSAGEQUEUE;
+typedef struct
+{
+	TCHAR tszQueueName[256];                                              //此消息的KEY
+	__int64x nIDMsg;                                                      //消息ID
+	__int64x nIDTime;                                                     //发布时间
+}XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct
 {
@@ -46,12 +59,22 @@ extern "C" DWORD DBModule_GetLastError(int *pInt_SysError = NULL);
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
+ 参数.二：fpCall_TimePublish
+  In/Out：In
+  类型：回调函数
+  可空：N
+  意思：定时消息发布回调函数
+ 参数.三：lParam
+  In/Out：In
+  类型：无类型指针
+  可空：Y
+  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
+extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam = NULL);
 /********************************************************************
 函数名称：DBModule_MQData_Destory
 函数功能：销毁数据库管理器
@@ -146,6 +169,53 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
+/********************************************************************
+函数名称：DBModule_MQData_TimeInsert
+函数功能：定时发布插入
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQData_TimeQuery
+函数功能：定时发布查询
+ 参数.一：pppSt_DBInfo
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：导出的列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：导出的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
+/********************************************************************
+函数名称：DBModule_MQData_TimeDelete
+函数功能：定时发布删除
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/

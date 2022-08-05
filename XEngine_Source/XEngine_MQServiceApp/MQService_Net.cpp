@@ -105,6 +105,7 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     {
         DBModule_MQUser_UserUPDate(&st_UserInfo);
     }
+    SessionModule_Notify_DelClient(lpszClientAddr);
     SessionModule_Client_Delete(lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////

@@ -51,6 +51,10 @@ extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR * pts
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
 }
+extern "C" BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType)
+{
+	return m_SessionClient.SessionModule_Client_GetType(lpszSessionStr, pInt_NetType);
+}
 extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Heart(lpszClientAddr);
@@ -77,4 +81,8 @@ extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszCl
 extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT * **pppSt_ListClient, int* pInt_ListCount)
 {
 	return m_SessionNotify.SessionModule_Notify_GetList(lpszTopicStr, pppSt_ListClient, pInt_ListCount);
+}
+extern "C" BOOL SessionModule_Notify_DelClient(LPCTSTR lpszClientAddr)
+{
+	return m_SessionNotify.SessionModule_Notify_DelClient(lpszClientAddr);
 }

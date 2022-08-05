@@ -40,13 +40,6 @@
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERREG 0x7023
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL 0x7024
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERDEL 0x7025
-//消息分发服务
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REQTOPICCREATE 0x8001   //创建主题请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REPTOPICCREATE 0x8002   //创建主题回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REQTOPICDELETE 0x8003   //主题被删除
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REPTOPICDELETE 0x8004   //主题被删除
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REQTOPICQUERY 0x8005    //主题请求是否存在
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_DDS_REPTOPICQUERY 0x8006    //回复
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////
@@ -68,13 +61,4 @@ typedef struct tag_XEngine_MQNumber
 	__int64x nFirstNumber;                                                //起始编码
 	__int64x nLastNumber;                                                 //末尾编号
 }XENGINE_MQNUMBER, * LPXENGINE_MQNUMBER;
-//数据分发服务子协议
-typedef struct tag_XEngine_ProtocolXdds
-{
-	CHAR tszTopic[MAX_PATH];                                              //主题
-	CHAR tszDDSAddr[64];                                                  //分发地址
-	BOOL bCreater;                                                        //是否是创建者
-	BOOL bTcp;                                                            //是否启用TCP，默认UDP
-	int nPort;                                                            //端口
-}XENGINE_PROTOCOL_XDDS, * LPXENGINE_PROTOCOL_XDDS;
 #pragma pack(pop)

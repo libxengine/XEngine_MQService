@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MQCore_Hdr", "MQCore_Hdr", 
 		XQueue_ProtocolHdr.h = XQueue_ProtocolHdr.h
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_DDSMessage", "MQCore_DDSMessage\MQCore_DDSMessage.vcxproj", "{A02A61BE-4CB1-478D-ACA5-71368158BF4E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XEngine_ThirdPart", "XEngine_ThirdPart", "{3A071C4D-036B-47DF-AC77-4DD1521F51FD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "XEngine_ThirdPart\jsoncpp\jsoncpp.vcxproj", "{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}"
@@ -64,14 +62,6 @@ Global
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x64.Build.0 = Release|x64
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x86.ActiveCfg = Release|Win32
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x86.Build.0 = Release|Win32
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Debug|x64.ActiveCfg = Debug|x64
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Debug|x64.Build.0 = Debug|x64
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Debug|x86.ActiveCfg = Debug|Win32
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Debug|x86.Build.0 = Debug|Win32
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x64.ActiveCfg = Release|x64
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x64.Build.0 = Release|x64
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x86.ActiveCfg = Release|Win32
-		{A02A61BE-4CB1-478D-ACA5-71368158BF4E}.Release|x86.Build.0 = Release|Win32
 		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.ActiveCfg = Debug|x64
 		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.Build.0 = Debug|x64
 		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.ActiveCfg = Debug|Win32

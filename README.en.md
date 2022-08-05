@@ -28,7 +28,7 @@ this software support following features
 12. Active delivery acquisition mode or passive subscription notification module  
 13. get order and start serial pos setting  
 14. Unlimited load message types  
-15. data distribution service(DDS),Support WAN and LAN
+15. timed message
 16. Access control(planning)
 
 ## install

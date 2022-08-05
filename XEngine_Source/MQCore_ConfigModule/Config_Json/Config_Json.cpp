@@ -69,8 +69,6 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
     pSt_ServerConfig->nWSPort = st_JsonRoot["nWSPort"].asInt();
-    pSt_ServerConfig->nBroadRVPort = st_JsonRoot["nBroadRVPort"].asInt();
-    pSt_ServerConfig->nBroadSDPort = st_JsonRoot["nBroadSDPort"].asInt();
 
     if (st_JsonRoot["XMax"].empty() || (6 != st_JsonRoot["XMax"].size()))
     {
