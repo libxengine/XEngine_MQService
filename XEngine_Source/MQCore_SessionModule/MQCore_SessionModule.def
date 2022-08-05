@@ -8,6 +8,7 @@ EXPORTS
 	SessionModule_Client_Create
 	SessionModule_Client_Delete
 	SessionModule_Client_GetUser
+	SessionModule_Client_GetType
 	SessionModule_Client_Heart
 
 	SessionModule_Notify_Create
@@ -15,3 +16,4 @@ EXPORTS
 	SessionModule_Notify_Insert
 	SessionModule_Notify_Delete
 	SessionModule_Notify_GetList
+	SessionModule_Notify_DelClient

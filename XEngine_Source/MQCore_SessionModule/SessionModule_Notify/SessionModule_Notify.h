@@ -27,6 +27,7 @@ public:
     BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
     BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
     BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT*** pppSt_ListClient, int* pInt_ListCount);
+    BOOL SessionModule_Notify_DelClient(LPCTSTR lpszClientAddr);
 private:
     shared_mutex st_Locker;
 private:

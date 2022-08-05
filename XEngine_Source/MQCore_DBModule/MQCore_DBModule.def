@@ -11,6 +11,10 @@ EXPORTS
 	DBModule_MQData_CreateTable
 	DBModule_MQData_DeleteTable
 
+	DBModule_MQData_TimeInsert
+	DBModule_MQData_TimeQuery
+	DBModule_MQData_TimeDelete
+
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory
 	DBModule_MQUser_UserInsert

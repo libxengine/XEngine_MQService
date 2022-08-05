@@ -119,64 +119,6 @@ extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_Protocol
 备注：
 *********************************************************************/
 extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
-/********************************************************************
-函数名称：ProtocolModule_Packet_DDSTopic
-函数功能：DDS主题协议打包函数
- 参数.一：pSt_DDSProtocol
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入要打包的DDS协议
- 参数.二：ptszMsgBuffer
-  In/Out：Out
-  类型：字符指针
-  可空：N
-  意思：输出打好包的缓冲区
- 参数.三：pInt_MsgLen
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：输出缓冲区大小
- 参数.四：dwOPeratorCode
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入操作码
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_DDSTopic(XENGINE_PROTOCOL_XDDS * pSt_DDSProtocol, TCHAR * ptszMsgBuffer, int* pInt_MsgLen, DWORD dwOPeratorCode);
-/********************************************************************
-函数名称：ProtocolModule_Packet_DDSQuery
-函数功能：DDS查询回复协议
- 参数.一：pppSt_DDSProtocol
-  In/Out：In
-  类型：三级指针
-  可空：N
-  意思：输入DDS信息列表
- 参数.二：nListCount
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入列表个数
- 参数.三：ptszMsgBuffer
-  In/Out：Out
-  类型：字符指针
-  可空：N
-  意思：输出打好包的缓冲区
- 参数.四：pInt_MsgLen
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：输出缓冲区大小
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_DDSQuery(XENGINE_PROTOCOL_XDDS*** pppSt_DDSProtocol, int nListCount, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
@@ -214,32 +156,3 @@ extern "C" BOOL ProtocolModule_Packet_DDSQuery(XENGINE_PROTOCOL_XDDS*** pppSt_DD
 备注：
 *********************************************************************/
 extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, TCHAR * *pptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);
-/********************************************************************
-函数名称：ProtocolModule_Parse_DDSQuery
-函数功能：DDS查询解析协议
- 参数.一：lpszMsgBuffer
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要解析的内容
- 参数.二：nMsgLen
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入解析的大小
- 参数.三：pppSt_DDSProtocol
-  In/Out：In/Out
-  类型：三级指针
-  可空：N
-  意思：输出DDS信息列表,此内存需要释放
- 参数.四：pInt_ListCount
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：输出列表个数
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL ProtocolModule_Parse_DDSQuery(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XDDS*** pppSt_DDSProtocol, int* pInt_ListCount);

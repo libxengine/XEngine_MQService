@@ -1,3 +1,23 @@
+XEngine_MQService V3.3.0.1001
+
+添加:定时发布功能
+添加:为会话模块添加获取用户网络类型的功能
+修复:某些时候程序退出崩溃
+修复:重复订阅现在不允许了
+修复:用户离开订阅还存在的问题
+修复:订阅的消息会发送给自己的问题
+修复:登录打印不正确的问题
+删除:DDS模块和相关代码
+
+added:Timed Release
+added:get user net type for session module
+fixed:sometime is crashed when program exit
+fixed:Duplicate subscriptions are not allowed
+fixed:The problem that the user leaves the subscription is work
+fixed:the problem that subscribe messages sent to yourself
+fixed:login printf is incorrent
+delete:dds module and Delete related functions
+======================================================================================
 XEngine_MQService V3.2.0.1001
 
 添加:为会话模块添加心跳
