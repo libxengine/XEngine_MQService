@@ -6,8 +6,6 @@
     "nHttpPort":5201,
     "nWSPort":5202,
     "nRPCPort":5203,
-    "nBroadRVPort":5210,
-    "nBroadSDPort":5211,
     "XMax":{
         "nMaxClient":10000,
         "nMaxQueue":10000,
@@ -26,12 +24,13 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLAddr":"127.0.0.1",
+        "SQLAddr":"192.168.1.12",
         "SQLPort":3306,
         "SQLUser":"ruiyue",
         "SQLPass":"123123Ruiyue"
     },
     "XVer":[
+        "3.3.0.1001 Build20220805",
         "3.2.0.1001 Build20220715",
         "3.1.0.1001 Build20220408",
         "3.0.0.1001 Build20220318",
