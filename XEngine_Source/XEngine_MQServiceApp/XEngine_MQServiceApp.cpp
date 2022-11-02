@@ -2,17 +2,17 @@
 
 BOOL bIsRun = FALSE;
 XLOG xhLog = NULL;
-XHANDLE xhTCPSocket = 0;
-XHANDLE xhHTTPSocket = 0;
-XHANDLE xhWSSocket = 0;
+XHANDLE xhTCPSocket = NULL;
+XHANDLE xhHTTPSocket = NULL;
+XHANDLE xhWSSocket = NULL;
 
 XHANDLE xhTCPPacket = NULL;
 XHANDLE xhHTTPPacket = NULL;
 XHANDLE xhWSPacket = NULL;
 
-XNETHANDLE xhTCPPool = 0;
-XNETHANDLE xhHttpPool = 0;
-XNETHANDLE xhWSPool = 0;
+XHANDLE xhTCPPool = NULL;
+XHANDLE xhHttpPool = NULL;
+XHANDLE xhWSPool = NULL;
 
 XENGINE_SERVERCONFIG st_ServiceCfg;
 
@@ -175,7 +175,8 @@ int main(int argc, char** argv)
 			ppSt_ListTCPParam[i]->lParam = pInt_Pos;
 			ppSt_ListTCPParam[i]->fpCall_ThreadsTask = MessageQueue_TCPThread;
 		}
-		if (!ManagePool_Thread_NQCreate(&xhTCPPool, &ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread))
+		xhTCPPool = ManagePool_Thread_NQCreate(&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread);
+		if (NULL == xhTCPPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动TCP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
 			goto NETSERVICEEXIT;
@@ -216,7 +217,8 @@ int main(int argc, char** argv)
 			ppSt_ListHTTPParam[i]->lParam = pInt_Pos;
 			ppSt_ListHTTPParam[i]->fpCall_ThreadsTask = MessageQueue_HttpThread;
 		}
-		if (!ManagePool_Thread_NQCreate(&xhHttpPool, &ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread))
+		xhHttpPool = ManagePool_Thread_NQCreate(&ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread);
+		if (NULL == xhHttpPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动HTTP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
 			goto NETSERVICEEXIT;
@@ -257,7 +259,8 @@ int main(int argc, char** argv)
 			ppSt_ListWSParam[i]->lParam = pInt_Pos;
 			ppSt_ListWSParam[i]->fpCall_ThreadsTask = MessageQueue_WebsocketThread;
 		}
-		if (!ManagePool_Thread_NQCreate(&xhWSPool, &ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread))
+		xhWSPool = ManagePool_Thread_NQCreate(&ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread);
+		if (NULL == xhWSPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动Websocket线程池服务失败，错误：%lX"), ManagePool_GetLastError());
 			goto NETSERVICEEXIT;

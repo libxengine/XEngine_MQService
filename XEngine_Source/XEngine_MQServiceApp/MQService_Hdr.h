@@ -63,9 +63,9 @@ extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
 extern XHANDLE xhWSPacket;
 
-extern XNETHANDLE xhTCPPool;
-extern XNETHANDLE xhHttpPool;
-extern XNETHANDLE xhWSPool;
+extern XHANDLE xhTCPPool;
+extern XHANDLE xhHttpPool;
+extern XHANDLE xhWSPool;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 
