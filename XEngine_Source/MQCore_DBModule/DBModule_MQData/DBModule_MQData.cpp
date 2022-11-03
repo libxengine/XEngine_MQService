@@ -126,7 +126,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
     TCHAR tszSQLStatement[10240];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->wMsgType);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -210,7 +210,11 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	}
 	if (NULL != pptszResult[8])
 	{
-		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[8]);
+		pSt_DBInfo->wMsgType = _ttoi(pptszResult[8]);
+	}
+	if (NULL != pptszResult[9])
+	{
+		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return TRUE;
@@ -308,7 +312,11 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[8])
 		{
-			_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[8]);
+			pSt_DBStart->wMsgType = _ttoi(pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -362,7 +370,11 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[8])
 		{
-			_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[8]);
+			pSt_DBEnd->wMsgType = _ttoi(pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -424,6 +436,7 @@ BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
         "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
         "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
 		"`nDataLen` int NOT NULL COMMENT '数据大小',"
+		"`nDataType` int NOT NULL COMMENT '数据类型',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
         "PRIMARY KEY (`ID`) USING BTREE"
         ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
