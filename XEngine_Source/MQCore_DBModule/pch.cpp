@@ -71,6 +71,10 @@ extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_TimeDelete(pSt_DBInfo);
 }
+extern "C" BOOL DMBodule_MQData_TimeClaer(time_t nTime)
+{
+	return m_DBData.DMBodule_MQData_TimeClaer(nTime);
+}
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/

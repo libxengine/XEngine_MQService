@@ -28,6 +28,7 @@ public:
 	BOOL DBModule_MQData_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
 	BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+	BOOL DMBodule_MQData_TimeClaer(time_t nTime = 0);
 protected:
 	static XHTHREAD CALLBACK DBModule_MQData_TimeThread(LPVOID lParam);
 private:

@@ -68,6 +68,8 @@ BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = DataBase_GetLastError();
         return FALSE;
     }
+	DMBodule_MQData_TimeClaer();
+
 	bIsRun = TRUE;
 	m_lParam = lParam;
 	lpCall_TimePublish = fpCall_TimePublish;
@@ -599,6 +601,44 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
 	_stprintf_s(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DMBodule_MQData_TimeClaer
+函数功能：清理超时通知
+ 参数.一：nTime
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：输入要清理的日期
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DMBodule_MQData_TimeClaer(time_t nTime /* = 0 */)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	if (0 == nTime)
+	{
+		nTime = time(NULL);
+	}
+#ifdef _MSC_BUILD
+	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), nTime);
+#else
+	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %ld"), nTime);
+#endif
+
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;
