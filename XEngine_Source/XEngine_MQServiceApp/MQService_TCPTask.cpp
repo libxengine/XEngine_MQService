@@ -236,12 +236,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
 			_tcscpy(st_DBQueue.tszQueueName, st_MQProtocol.tszMQKey);
 			memcpy(st_DBQueue.tszMsgBuffer, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_DBQueue.nMsgLen);
-			if (st_MQProtocol.nPubTime > 0)
-			{
-				XENGINE_LIBTIMER st_LibTimer;
-				memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
-				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTimer);
-			}
+		
 			if (st_MQProtocol.nKeepTime > 0)
 			{
 				XENGINE_LIBTIMER st_LibTime;
