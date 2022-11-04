@@ -623,6 +623,7 @@ XHTHREAD CALLBACK CDBModule_MQData::DBModule_MQData_TimeThread(LPVOID lParam)
 		{
 			pClass_This->lpCall_TimePublish(ppSt_DBInfo[i]->tszQueueName, ppSt_DBInfo[i]->nIDMsg, ppSt_DBInfo[i]->nIDTime, pClass_This->m_lParam);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBInfo, nListCount);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	return 0;
