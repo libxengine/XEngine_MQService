@@ -48,7 +48,7 @@ BOOL MQ_RecvPacket(TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 	TCHAR tszRVBuffer[2048];
 	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszRVBuffer, &nRVLen, FALSE))
+	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszRVBuffer, &nRVLen))
 	{
 		return FALSE;
 	}
@@ -352,7 +352,7 @@ int main()
 	int nPos = 0;
 	nLen = 1024;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen, FALSE))
+	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
 	{
 		printf("NetClient_TCPSelect_RecvMsg:%lX", XClient_GetLastError());
 		return -1;

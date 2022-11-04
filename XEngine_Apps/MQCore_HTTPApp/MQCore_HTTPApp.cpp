@@ -48,7 +48,7 @@ void MQ_Authorize()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -90,7 +90,7 @@ void MQ_Create()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -129,7 +129,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -159,7 +159,7 @@ void MQ_GetNumber()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -190,7 +190,7 @@ void MQ_Get()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;

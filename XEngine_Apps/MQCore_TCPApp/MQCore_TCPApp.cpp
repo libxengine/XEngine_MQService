@@ -160,7 +160,7 @@ void MQ_DeleteUser()
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen, FALSE))
+	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
 	{
 		printf("接受数据失败！\n");
 		return;
@@ -204,7 +204,7 @@ void MQ_Create()
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen, FALSE))
+	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
 	{
 		printf("接受数据失败！\n");
 		return;
