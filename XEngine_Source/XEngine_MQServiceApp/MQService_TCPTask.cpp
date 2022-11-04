@@ -84,11 +84,11 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			}
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("客户端：%s，处理心跳协议成功，回复标志位：%d"), lpszClientAddr, pSt_ProtocolHdr->byIsReply);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("%s客户端：%s，处理心跳协议成功，回复标志位：%d"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->byIsReply);
 		}
 		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("客户端：%s，处理心跳子协议失败，协议类型没有找到：%d"), lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端：%s，处理心跳子协议失败，协议类型没有找到：%d"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
 		}
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH == pSt_ProtocolHdr->unOperatorType)
@@ -230,6 +230,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			memset(&st_DBQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 			memset(&st_DBIndex, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 
+			st_DBQueue.byMsgType = pSt_ProtocolHdr->byVersion;
 			st_DBQueue.nQueueSerial = st_MQProtocol.nSerial;
 			st_DBQueue.nQueueGetTime = st_MQProtocol.nGetTimer;
 			st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
