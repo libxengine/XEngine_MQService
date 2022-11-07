@@ -117,6 +117,19 @@ BOOL CConfig_Json::Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
     _tcscpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
 
+	if (st_JsonRoot["XPass"].empty() || (5 != st_JsonRoot["XPass"].size()))
+	{
+		Config_IsErrorOccur = TRUE;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XPASS;
+		return FALSE;
+	}
+	Json::Value st_JsonXPass = st_JsonRoot["XPass"];
+    pSt_ServerConfig->st_XPass.nTimeout = st_JsonXPass["nTimeout"].asInt();
+    _tcscpy(pSt_ServerConfig->st_XPass.tszPassLogin, st_JsonXPass["tszPassLogin"].asCString());
+	_tcscpy(pSt_ServerConfig->st_XPass.tszPassLogout, st_JsonXPass["tszPassLogout"].asCString());
+	_tcscpy(pSt_ServerConfig->st_XPass.tszPassRegister, st_JsonXPass["tszPassRegister"].asCString());
+	_tcscpy(pSt_ServerConfig->st_XPass.tszPassUNReg, st_JsonXPass["tszPassUNReg"].asCString());
+
 	if (st_JsonRoot["XVer"].empty())
 	{
 		Config_IsErrorOccur = TRUE;
