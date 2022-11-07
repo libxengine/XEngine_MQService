@@ -113,12 +113,46 @@ extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_Protocol
   类型：整数型指针
   可空：N
   意思：输出缓冲区大小
+ 参数.四：nCode
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要操作的协议
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
+extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
+/********************************************************************
+函数名称：ProtocolModule_Packet_PassUser
+函数功能：HTTP用户信息打包函数
+ 参数.一：pSt_ProtocolUser
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的内容
+ 参数.二：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.三：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+ 参数.四：nCode
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要操作的协议
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/

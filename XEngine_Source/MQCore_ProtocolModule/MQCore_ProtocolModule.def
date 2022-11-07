@@ -6,5 +6,6 @@ EXPORTS
 	ProtocolModule_Packet_Common
 	ProtocolModule_Packet_MQNumber
 	ProtocolModule_Packet_PassAuth
+	ProtocolModule_Packet_PassUser
 
 	ProtocolModule_Parse_Http

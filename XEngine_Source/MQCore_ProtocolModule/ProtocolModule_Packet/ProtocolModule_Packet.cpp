@@ -317,12 +317,17 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR*
   类型：整数型指针
   可空：N
   意思：输出缓冲区大小
+ 参数.四：nCode
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要操作的协议
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
 {
 	Protocol_IsErrorOccur = FALSE;
 
@@ -333,12 +338,84 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USE
 		return FALSE;
 	}
 	Json::Value st_JsonRoot;
+	Json::Value st_JsonAuth;
 	Json::StreamWriterBuilder st_JsonBuilder;
 
-	st_JsonRoot["tszUserName"] = pSt_ProtocolAuth->tszUserName;
-	st_JsonRoot["tszUserPass"] = pSt_ProtocolAuth->tszUserPass;
-	st_JsonRoot["enClientType"] = pSt_ProtocolAuth->enClientType;
-	st_JsonRoot["enDeviceType"] = pSt_ProtocolAuth->enDeviceType;
+	st_JsonAuth["tszUserName"] = pSt_ProtocolAuth->tszUserName;
+	st_JsonAuth["tszUserPass"] = pSt_ProtocolAuth->tszUserPass;
+	st_JsonAuth["enClientType"] = pSt_ProtocolAuth->enClientType;
+	st_JsonAuth["enDeviceType"] = pSt_ProtocolAuth->enDeviceType;
+
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = nCode;
+	st_JsonRoot["wReserve"] = 0;
+	st_JsonRoot["byVersion"] = 2;
+	st_JsonRoot["st_Auth"] = st_JsonAuth;
+
+	st_JsonBuilder["emitUTF8"] = true;
+
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return TRUE;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_PassUser
+函数功能：HTTP用户信息打包函数
+ 参数.一：pSt_ProtocolUser
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的内容
+ 参数.二：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.三：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+ 参数.四：nCode
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要操纵的协议
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	if ((NULL == pSt_ProtocolUser) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return FALSE;
+	}
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonUser;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonUser["nIDNumber"] = pSt_ProtocolUser->nIDNumber;
+	st_JsonUser["nPhoneNumber"] = pSt_ProtocolUser->nPhoneNumber;
+	st_JsonUser["nUserLevel"] = pSt_ProtocolUser->nUserLevel;
+	st_JsonUser["nUserState"] = pSt_ProtocolUser->nUserState;
+	st_JsonUser["tszCreateTime"] = pSt_ProtocolUser->tszCreateTime;
+	st_JsonUser["tszEMailAddr"] = pSt_ProtocolUser->tszEMailAddr;
+	st_JsonUser["tszLoginTime"] = pSt_ProtocolUser->tszLoginTime;
+	st_JsonUser["tszUserName"] = pSt_ProtocolUser->tszUserName;
+	st_JsonUser["tszUserPass"] = pSt_ProtocolUser->tszUserPass;
+
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = nCode;
+	st_JsonRoot["wReserve"] = 0;
+	st_JsonRoot["byVersion"] = 2;
+	st_JsonRoot["st_User"] = st_JsonUser;
+
 	st_JsonBuilder["emitUTF8"] = true;
 
 	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
