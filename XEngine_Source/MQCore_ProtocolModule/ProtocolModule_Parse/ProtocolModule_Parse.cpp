@@ -74,26 +74,31 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
 		return FALSE;
 	}
-	if (!st_JsonRoot["unOperatorType"].isNull())
+
+	if (NULL != pSt_ProtocolHdr)
 	{
-		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
+		if (!st_JsonRoot["unOperatorType"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
+		}
+		if (!st_JsonRoot["unOperatorCode"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
+		}
+		if (!st_JsonRoot["xhToken"].isNull())
+		{
+			pSt_ProtocolHdr->xhToken = st_JsonRoot["xhToken"].asUInt64();
+		}
+		if (!st_JsonRoot["wReserve"].isNull())
+		{
+			pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
+		}
+		if (!st_JsonRoot["byVersion"].isNull())
+		{
+			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
+		}
 	}
-	if (!st_JsonRoot["unOperatorCode"].isNull())
-	{
-		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
-	}
-	if (!st_JsonRoot["xhToken"].isNull())
-	{
-		pSt_ProtocolHdr->xhToken = st_JsonRoot["xhToken"].asUInt64();
-	}
-	if (!st_JsonRoot["wReserve"].isNull())
-	{
-		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
-	}
-	if (!st_JsonRoot["byVersion"].isNull())
-	{
-		pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
-	}
+	
 	*pInt_MsgLen = 0;
 	XENGINE_PROTOCOL_XMQ st_MQProtocol;
 	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
