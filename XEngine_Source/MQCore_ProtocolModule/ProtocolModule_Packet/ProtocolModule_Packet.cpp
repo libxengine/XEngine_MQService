@@ -346,7 +346,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USE
 	st_JsonAuth["enClientType"] = pSt_ProtocolAuth->enClientType;
 	st_JsonAuth["enDeviceType"] = pSt_ProtocolAuth->enDeviceType;
 
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
 	st_JsonRoot["unOperatorCode"] = nCode;
 	st_JsonRoot["wReserve"] = 0;
 	st_JsonRoot["byVersion"] = 2;
