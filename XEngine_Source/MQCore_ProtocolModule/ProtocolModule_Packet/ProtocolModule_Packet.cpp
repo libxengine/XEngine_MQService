@@ -400,8 +400,8 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 	Json::Value st_JsonUser;
 	Json::StreamWriterBuilder st_JsonBuilder;
 
-	st_JsonUser["nIDNumber"] = pSt_ProtocolUser->nIDNumber;
-	st_JsonUser["nPhoneNumber"] = pSt_ProtocolUser->nPhoneNumber;
+	st_JsonUser["nIDNumber"] = (Json::Value::UInt64)pSt_ProtocolUser->nIDNumber;
+	st_JsonUser["nPhoneNumber"] = (Json::Value::UInt64)pSt_ProtocolUser->nPhoneNumber;
 	st_JsonUser["nUserLevel"] = pSt_ProtocolUser->nUserLevel;
 	st_JsonUser["nUserState"] = pSt_ProtocolUser->nUserState;
 	st_JsonUser["tszCreateTime"] = pSt_ProtocolUser->tszCreateTime;
