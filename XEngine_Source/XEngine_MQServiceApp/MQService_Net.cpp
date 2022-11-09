@@ -90,13 +90,13 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
         RfcComponents_WSPacket_DeleteEx(xhWSPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);;
+        NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
     }
     else
 	{
 		RfcComponents_HttpServer_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);;
+        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;

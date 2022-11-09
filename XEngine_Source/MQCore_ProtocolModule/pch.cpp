@@ -50,7 +50,7 @@ extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO * pSt_P
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
-extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, TCHAR * *pptszMsgBuffer, int* pInt_MsgLen)
+extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, TCHAR *ptszMsgBuffer, int* pInt_MsgLen)
 {
-	return m_ProtocolParse.ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, pptszMsgBuffer, pInt_MsgLen);
+	return m_ProtocolParse.ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, ptszMsgBuffer, pInt_MsgLen);
 }

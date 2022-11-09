@@ -17,7 +17,7 @@ public:
     CProtocolModule_Parse();
     ~CProtocolModule_Parse();
 public:
-    BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR** pptszMsgBuffer, int* pInt_MsgLen);
+    BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
 protected:
 private:
 };

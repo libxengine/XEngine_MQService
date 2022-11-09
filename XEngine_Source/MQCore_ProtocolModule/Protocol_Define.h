@@ -174,11 +174,11 @@ extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_Pr
   类型：数据结构指针
   可空：Y
   意思：输出解析到的头协议
- 参数.四：pptszMsgBuffer
+ 参数.四：ptszMsgBuffer
   In/Out：Out
-  类型：二级指针
+  类型：字符指针
   可空：Y
-  意思：输出消息内容,需要释放内存
+  意思：输出消息内容
  参数.五：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
@@ -189,4 +189,4 @@ extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_Pr
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, TCHAR * *pptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);
+extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, TCHAR *ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);

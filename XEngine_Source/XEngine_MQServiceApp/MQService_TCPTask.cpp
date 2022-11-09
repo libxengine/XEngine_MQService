@@ -108,11 +108,11 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG;
 			if (_tcslen(st_ServiceCfg.st_XPass.tszPassLogin) > 0)
 			{
-				int nHTTPCode = 0;
 				int nRVLen = 0;
-				TCHAR* ptszRVBuffer = NULL;
+				int nHTTPCode = 0;
 				TCHAR* ptszSDBuffer = NULL;
 				APIHELP_HTTPPARAMENT st_HTTPParament;
+
 				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
 
 				st_HTTPParament.nTimeConnect = 2;
@@ -127,8 +127,8 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程验证失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
 					return FALSE;
 				}
-				ProtocolModule_Parse_Http(ptszSDBuffer, nSDLen, NULL, &ptszRVBuffer, &nRVLen);
-				memcpy(&st_UserInfo, ptszRVBuffer, nRVLen);
+				ProtocolModule_Parse_Http(ptszSDBuffer, nSDLen, NULL, (TCHAR*)&st_UserInfo, &nRVLen);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszSDBuffer);
 			}
 			else
 			{
@@ -159,6 +159,15 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
+		}
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT == pSt_ProtocolHdr->unOperatorCode)
+		{
+			XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
+			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,用户登出成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG == pSt_ProtocolHdr->unOperatorCode)
 		{

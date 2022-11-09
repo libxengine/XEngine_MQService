@@ -50,13 +50,14 @@ BOOL MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCTST
 	if (0 == _tcsnicmp(lpszMethod, pSt_HTTPParam->tszHttpMethod, _tcslen(lpszMethod)))
 	{
 		int nPLen = 0;
-		TCHAR* ptszMsgBuffer = NULL;
+		TCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;
+
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, &ptszMsgBuffer, &nPLen);
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, ptszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_HTTP);
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else
 	{
