@@ -144,7 +144,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理

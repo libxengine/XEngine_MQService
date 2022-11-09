@@ -230,7 +230,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
-	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
 	st_ProtocolHdr.byIsReply = TRUE;           //获得处理返回结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
@@ -336,13 +336,13 @@ void MQ_TimePublish()
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
-	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
 	st_ProtocolHdr.byIsReply = TRUE;                  //必须为真
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + _tcslen(lpszMsgBuffer);
 	st_XMQProtocol.nSerial = 0;          //要获取的序列号,如果为0,服务会自动处理
-	st_XMQProtocol.nPubTime = time(NULL) + 60; //当前时间+60秒
+	st_XMQProtocol.nPubTime = time(NULL) + 30; //当前时间+60秒
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
@@ -529,7 +529,7 @@ void MQ_Subscribe()
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.wReserve = 1;            //1为请求订阅
-	st_ProtocolHdr.byIsReply = FALSE;       //不获取结果
+	st_ProtocolHdr.byIsReply = TRUE;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
