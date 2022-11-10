@@ -43,6 +43,10 @@ window执行XEngine_WINEnv.bat 脚本.
 Linux执行:sudo ./XEngine_LINEnv.sh -i 3  
 macos执行:./XEngine_LINEnv.sh -i 3  
 
+##### 依赖环境
+需要MYSQL服务的支持,执行XEngine_SQLFile/CreateDatabase.sql  创建数据库  
+分别执行:执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建库  
+
 #### Windows
 使用VS打开并且编译,支持WINDOWS 7SP1以上系统  
 直接运行即可
@@ -96,8 +100,14 @@ make FLAGS=CleanAll 清理编译
 
 ## 开发计划
 扩展获取消息的内容  
+数据库缓存功能  
+消息编辑  
+用户消息  
 消息属性生效  
-删除包协议  
+公众号和小程序  
+消息强推送  
+功能开关  
+MQTT支持  
 
 ## 提交问题
 
