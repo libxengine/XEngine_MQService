@@ -48,7 +48,7 @@ void MQ_Authorize()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -90,7 +90,7 @@ void MQ_Create()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -110,7 +110,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
 	st_JsonRoot["xhToken"] = xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
@@ -129,7 +129,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -159,7 +159,7 @@ void MQ_GetNumber()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -190,7 +190,7 @@ void MQ_Get()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Post(lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;

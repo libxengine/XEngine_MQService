@@ -68,6 +68,8 @@ BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = DataBase_GetLastError();
         return FALSE;
     }
+	DMBodule_MQData_TimeClaer();
+
 	bIsRun = TRUE;
 	m_lParam = lParam;
 	lpCall_TimePublish = fpCall_TimePublish;
@@ -126,7 +128,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
     TCHAR tszSQLStatement[10240];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -210,7 +212,11 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	}
 	if (NULL != pptszResult[8])
 	{
-		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[8]);
+		pSt_DBInfo->byMsgType = _ttoi(pptszResult[8]);
+	}
+	if (NULL != pptszResult[9])
+	{
+		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return TRUE;
@@ -308,7 +314,11 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[8])
 		{
-			_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[8]);
+			pSt_DBStart->byMsgType = _ttoi(pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -362,7 +372,11 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[8])
 		{
-			_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[8]);
+			pSt_DBEnd->byMsgType = _ttoi(pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -424,6 +438,7 @@ BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
         "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
         "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
 		"`nDataLen` int NOT NULL COMMENT '数据大小',"
+		"`nDataType` tinyint NOT NULL COMMENT '数据类型',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
         "PRIMARY KEY (`ID`) USING BTREE"
         ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
@@ -594,6 +609,44 @@ BOOL CDBModule_MQData::DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 	}
 	return TRUE;
 }
+/********************************************************************
+函数名称：DMBodule_MQData_TimeClaer
+函数功能：清理超时通知
+ 参数.一：nTime
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：输入要清理的日期
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DMBodule_MQData_TimeClaer(time_t nTime /* = 0 */)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	if (0 == nTime)
+	{
+		nTime = time(NULL);
+	}
+#ifdef _MSC_BUILD
+	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), nTime);
+#else
+	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %ld"), nTime);
+#endif
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
@@ -610,6 +663,7 @@ XHTHREAD CALLBACK CDBModule_MQData::DBModule_MQData_TimeThread(LPVOID lParam)
 		{
 			pClass_This->lpCall_TimePublish(ppSt_DBInfo[i]->tszQueueName, ppSt_DBInfo[i]->nIDMsg, ppSt_DBInfo[i]->nIDTime, pClass_This->m_lParam);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBInfo, nListCount);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	return 0;

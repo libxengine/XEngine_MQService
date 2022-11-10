@@ -44,6 +44,10 @@ window Exection XEngine_WINEnv.bat
 Linux Exection:sudo ./XEngine_LINEnv.sh -i 3  
 Macos Exection:./XEngine_LINEnv.sh -i 3
 
+##### dependent environment
+need to mysql service support,exection XEngine_SQLFile/CreateDatabase.sql to create database  
+and exection:XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create table  
+
 #### Windows
 use vs open and complie,support windows 7sp1 and above   
 Just Run it.

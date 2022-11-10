@@ -49,6 +49,14 @@ typedef struct tag_XEngine_ServerConfig
         TCHAR tszDBName[128];                                                
         int nSQLPort;
     }st_XSql;
+    struct  
+    {
+        TCHAR tszPassRegister[MAX_PATH];
+        TCHAR tszPassUNReg[MAX_PATH];
+        TCHAR tszPassLogin[MAX_PATH];
+        TCHAR tszPassLogout[MAX_PATH];
+        int nTimeout;
+    }st_XPass;
     struct
     {
         list<tstring> *pStl_ListStorage;

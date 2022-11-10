@@ -40,13 +40,14 @@ BOOL MessageQueue_Websocket_Handle(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer
 	if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT == enOPCode)
 	{
 		int nPLen = 0;
-		TCHAR* ptszMsgBuffer = NULL;
+		TCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;
+
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, &ptszMsgBuffer, &nPLen);
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, ptszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
 	}
 	else
 	{
