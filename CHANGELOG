@@ -1,3 +1,23 @@
+XEngine_MQService V3.4.0.1001
+
+添加:为数据库表添加数据类型字段
+添加:HTTP代理配置支持(login,logout,register,unregister)
+修改:现在发送消息包含负载类型了
+修改:POST,CREATE,NOTIFY协议可以设置是否回复字段了
+修改:程序启动的时候会清理时间发布列表
+修正:时间通知没有释放内存的问题
+修正:ProtocolModule_Packet_PassAuth没有导出
+删除:tcptask没有用的发布时间转换函数
+
+added:data type for db
+added:http pass configure supported(login,logout,register,unregister)
+modify:reply payload format type now
+modify:post and create and notify protocols can be set reply field of header
+modify:clear timed release list when program start
+fixed:time notify does not free memory
+fixed:ProtocolModule_Packet_PassAuth does not export
+delete:unused pub time convert for tcptask
+======================================================================================
 XEngine_MQService V3.3.0.1001
 
 添加:定时发布功能

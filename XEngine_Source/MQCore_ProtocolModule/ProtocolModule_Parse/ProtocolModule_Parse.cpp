@@ -40,9 +40,9 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   意思：输出解析到的头协议
  参数.四：pptszMsgBuffer
   In/Out：Out
-  类型：二级指针
+  类型：字符指针
   可空：Y
-  意思：输出消息内容,需要释放内存
+  意思：输出消息内容
  参数.五：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
@@ -53,7 +53,7 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR** pptszMsgBuffer, int* pInt_MsgLen)
+BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
 	Protocol_IsErrorOccur = FALSE;
 
@@ -74,26 +74,31 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
 		return FALSE;
 	}
-	if (!st_JsonRoot["unOperatorType"].isNull())
+
+	if (NULL != pSt_ProtocolHdr)
 	{
-		pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
+		if (!st_JsonRoot["unOperatorType"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorType = st_JsonRoot["unOperatorType"].asInt();
+		}
+		if (!st_JsonRoot["unOperatorCode"].isNull())
+		{
+			pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
+		}
+		if (!st_JsonRoot["xhToken"].isNull())
+		{
+			pSt_ProtocolHdr->xhToken = st_JsonRoot["xhToken"].asUInt64();
+		}
+		if (!st_JsonRoot["wReserve"].isNull())
+		{
+			pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
+		}
+		if (!st_JsonRoot["byVersion"].isNull())
+		{
+			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
+		}
 	}
-	if (!st_JsonRoot["unOperatorCode"].isNull())
-	{
-		pSt_ProtocolHdr->unOperatorCode = st_JsonRoot["unOperatorCode"].asInt();
-	}
-	if (!st_JsonRoot["xhToken"].isNull())
-	{
-		pSt_ProtocolHdr->xhToken = st_JsonRoot["xhToken"].asUInt64();
-	}
-	if (!st_JsonRoot["wReserve"].isNull())
-	{
-		pSt_ProtocolHdr->wReserve = st_JsonRoot["wReserve"].asInt();
-	}
-	if (!st_JsonRoot["byVersion"].isNull())
-	{
-		pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
-	}
+	
 	*pInt_MsgLen = 0;
 	XENGINE_PROTOCOL_XMQ st_MQProtocol;
 	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
@@ -172,34 +177,25 @@ BOOL CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int
 	}
 
 	int nPos = 0;
-	*pptszMsgBuffer = (TCHAR*)malloc(*pInt_MsgLen);
-	if (NULL == *pptszMsgBuffer)
-	{
-		Protocol_IsErrorOccur = TRUE;
-		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
-		return FALSE;
-	}
-	memset(*pptszMsgBuffer, '\0', *pInt_MsgLen);
-
 	if (!st_JsonRoot["st_MQProtocol"].isNull())
 	{
-		memcpy(*pptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
 	if (!st_JsonRoot["st_Auth"].isNull())
 	{
-		memcpy(*pptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+		memcpy(ptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
 		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
 	}
 	if (!st_JsonRoot["st_User"].isNull())
 	{
-		memcpy(*pptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+		memcpy(ptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
 		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
 	}
 	if (!st_JsonRoot["st_Payload"].isNull())
 	{
 		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
-		memcpy(*pptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
+		memcpy(ptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
 	}
 	return TRUE;
 }

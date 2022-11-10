@@ -14,6 +14,7 @@ EXPORTS
 	DBModule_MQData_TimeInsert
 	DBModule_MQData_TimeQuery
 	DBModule_MQData_TimeDelete
+	DMBodule_MQData_TimeClaer
 
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory

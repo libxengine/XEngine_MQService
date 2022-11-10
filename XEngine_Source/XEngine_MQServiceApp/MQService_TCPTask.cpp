@@ -84,11 +84,11 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			}
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("客户端：%s，处理心跳协议成功，回复标志位：%d"), lpszClientAddr, pSt_ProtocolHdr->byIsReply);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _T("%s客户端：%s，处理心跳协议成功，回复标志位：%d"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->byIsReply);
 		}
 		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("客户端：%s，处理心跳子协议失败，协议类型没有找到：%d"), lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端：%s，处理心跳子协议失败，协议类型没有找到：%d"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);
 		}
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH == pSt_ProtocolHdr->unOperatorType)
@@ -106,17 +106,45 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			_tcscpy(st_UserInfo.tszUserPass, st_ProtocolAuth.tszUserPass);
 
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG;
-			if (!DBModule_MQUser_UserQuery(&st_UserInfo))
+			if (_tcslen(st_ServiceCfg.st_XPass.tszPassLogin) > 0)
 			{
-				pSt_ProtocolHdr->wReserve = 701;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
-				return FALSE;
+				int nRVLen = 0;
+				int nHTTPCode = 0;
+				TCHAR* ptszSDBuffer = NULL;
+				APIHELP_HTTPPARAMENT st_HTTPParament;
+
+				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+
+				st_HTTPParament.nTimeConnect = 2;
+
+				ProtocolModule_Packet_PassAuth(&st_ProtocolAuth, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG);
+				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassLogin, tszSDBuffer, &nHTTPCode, &ptszSDBuffer, &nSDLen, NULL, NULL, &st_HTTPParament);
+				if (200 != nHTTPCode)
+				{
+					pSt_ProtocolHdr->wReserve = 701;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程验证失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					return FALSE;
+				}
+				ProtocolModule_Parse_Http(ptszSDBuffer, nSDLen, NULL, (TCHAR*)&st_UserInfo, &nRVLen);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszSDBuffer);
+			}
+			else
+			{
+				if (!DBModule_MQUser_UserQuery(&st_UserInfo))
+				{
+					pSt_ProtocolHdr->wReserve = 701;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+					return FALSE;
+				}
+				st_UserInfo.nUserState = 1;
+				DBModule_MQUser_UserUPDate(&st_UserInfo);
 			}
 			pSt_ProtocolHdr->wReserve = 0;
-			st_UserInfo.nUserState = 1;
-
+			
 			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 			{
 				//HTTP使用SESSION
@@ -128,10 +156,18 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			{
 				SessionModule_Client_Create(lpszClientAddr, st_UserInfo.tszUserName, nNetType);
 			}
-			DBModule_MQUser_UserUPDate(&st_UserInfo);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
+		}
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT == pSt_ProtocolHdr->unOperatorCode)
+		{
+			XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
+			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
+
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,用户登出成功,暂时没有作用,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG == pSt_ProtocolHdr->unOperatorCode)
 		{
@@ -140,22 +176,44 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			memcpy(&st_UserInfo, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERINFO));
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERREG;
-			
-			if (DBModule_MQUser_UserQuery(&st_UserInfo))
+			//是否需要代理处理
+			if (_tcslen(st_ServiceCfg.st_XPass.tszPassRegister) > 0)
 			{
-				pSt_ProtocolHdr->wReserve = 721;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户注册失败,用户已经存在,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
-				return FALSE;
+				int nHTTPCode = 0;
+				APIHELP_HTTPPARAMENT st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+
+				st_HTTPParament.nTimeConnect = 2;
+
+				ProtocolModule_Packet_PassUser(&st_UserInfo, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG);
+				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassRegister, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
+				if (200 != nHTTPCode)
+				{
+					pSt_ProtocolHdr->wReserve = 701;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注册失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					return FALSE;
+				}
 			}
-			if (!DBModule_MQUser_UserInsert(&st_UserInfo))
+			else
 			{
-				pSt_ProtocolHdr->wReserve = 722;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户注册失败,插入数据库失败,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
-				return FALSE;
+				if (DBModule_MQUser_UserQuery(&st_UserInfo))
+				{
+					pSt_ProtocolHdr->wReserve = 721;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户注册失败,用户已经存在,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+					return FALSE;
+				}
+				if (!DBModule_MQUser_UserInsert(&st_UserInfo))
+				{
+					pSt_ProtocolHdr->wReserve = 722;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户注册失败,插入数据库失败,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+					return FALSE;
+				}
 			}
 			pSt_ProtocolHdr->wReserve = 0;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
@@ -169,14 +227,38 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			memcpy(&st_UserInfo, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERINFO));
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERDEL;
-			if (!DBModule_MQUser_UserDelete(&st_UserInfo))
+
+			if (_tcslen(st_ServiceCfg.st_XPass.tszPassUNReg) > 0)
 			{
-				pSt_ProtocolHdr->wReserve = 721;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户删除失败,删除数据库失败,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
-				return FALSE;
+				int nHTTPCode = 0;
+				APIHELP_HTTPPARAMENT st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+
+				st_HTTPParament.nTimeConnect = 2;
+
+				ProtocolModule_Packet_PassUser(&st_UserInfo, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL);
+				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassUNReg, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
+				if (200 != nHTTPCode)
+				{
+					pSt_ProtocolHdr->wReserve = 701;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注销失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					return FALSE;
+				}
 			}
+			else
+			{
+				if (!DBModule_MQUser_UserDelete(&st_UserInfo))
+				{
+					pSt_ProtocolHdr->wReserve = 721;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求用户删除失败,删除数据库失败,错误:%lX"), lpszClientType, lpszClientAddr, SessionModule_GetLastError());
+					return FALSE;
+				}
+			}
+
 			pSt_ProtocolHdr->wReserve = 0;
 			XENGINE_DBUSERKEY st_UserKey;
 			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
@@ -230,17 +312,13 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			memset(&st_DBQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 			memset(&st_DBIndex, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 
+			st_DBQueue.byMsgType = pSt_ProtocolHdr->byVersion;
 			st_DBQueue.nQueueSerial = st_MQProtocol.nSerial;
 			st_DBQueue.nQueueGetTime = st_MQProtocol.nGetTimer;
 			st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
 			_tcscpy(st_DBQueue.tszQueueName, st_MQProtocol.tszMQKey);
 			memcpy(st_DBQueue.tszMsgBuffer, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_DBQueue.nMsgLen);
-			if (st_MQProtocol.nPubTime > 0)
-			{
-				XENGINE_LIBTIMER st_LibTimer;
-				memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
-				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTimer);
-			}
+		
 			if (st_MQProtocol.nKeepTime > 0)
 			{
 				XENGINE_LIBTIMER st_LibTime;
@@ -261,9 +339,12 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				if (DBModule_MQData_Query(&st_DBIndex))
 				{
 					//找到了返回错误
-					pSt_ProtocolHdr->wReserve = 701;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					if (pSt_ProtocolHdr->byIsReply)
+					{
+						pSt_ProtocolHdr->wReserve = 701;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					}
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,主题:%s,序列:%lld,序列主题已经存在,插入数据库失败"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
 					return FALSE;
 				}
@@ -301,16 +382,22 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			//插入数据库
 			if (!DBModule_MQData_Insert(&st_DBQueue))
 			{
-				pSt_ProtocolHdr->wReserve = 702;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				if (pSt_ProtocolHdr->byIsReply)
+				{
+					pSt_ProtocolHdr->wReserve = 702;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				}
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,主题:%s,序列:%lld,投递数据报失败,插入数据库失败,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
 				return FALSE;
 			}
-			//返回成功
-			pSt_ProtocolHdr->wReserve = 0;
-			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			//返回成功没如果需要
+			if (pSt_ProtocolHdr->byIsReply)
+			{
+				pSt_ProtocolHdr->wReserve = 0;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			}
 			//是否需要通知
 			int nListCount = 0;
 			SESSION_NOTIFYCLIENT** ppSt_ListAddr;
@@ -387,6 +474,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				DBModule_MQUser_KeyUPDate(&st_UserKey);
 			}
 			pSt_ProtocolHdr->wReserve = 0;
+			pSt_ProtocolHdr->byVersion = st_MessageQueue.byMsgType;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, st_MessageQueue.tszMsgBuffer, st_MessageQueue.nMsgLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,主题:%s,序列:%lld,获取消息数据成功,消息大小:%d"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MessageQueue.nQueueSerial, st_MessageQueue.nMsgLen);
@@ -396,25 +484,35 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPCREATE;
 			if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
 			{
-				pSt_ProtocolHdr->wReserve = 761;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				if (pSt_ProtocolHdr->byIsReply)
+				{
+					pSt_ProtocolHdr->wReserve = 761;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				}
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,创建主题失败,主题名称:%s,无法继续,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, DBModule_GetLastError());
 				return FALSE;
 			}
-			pSt_ProtocolHdr->wReserve = 0;
-			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			SessionModule_Notify_Create(st_MQProtocol.tszMQKey);
+			if (pSt_ProtocolHdr->byIsReply)
+			{
+				pSt_ProtocolHdr->wReserve = 0;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			}
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,主题:%s,创建主题成功"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE;
-			pSt_ProtocolHdr->wReserve = 0;
+			
+			if (pSt_ProtocolHdr->byIsReply)
+			{
+				pSt_ProtocolHdr->wReserve = 0;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			}
 			DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
-			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			SessionModule_Notify_Destory(st_MQProtocol.tszMQKey);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,主题:%s,删除主题成功"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
 		}
@@ -424,9 +522,12 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 			{
-				pSt_ProtocolHdr->wReserve = 711;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				if (pSt_ProtocolHdr->byIsReply)
+				{
+					pSt_ProtocolHdr->wReserve = 711;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				}
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,订阅失败,HTTP不支持消息订阅"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
 				return FALSE;
 			}
@@ -439,17 +540,23 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			{
 				if (!SessionModule_Notify_Insert(st_MQProtocol.tszMQKey, lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP))
 				{
-					pSt_ProtocolHdr->wReserve = 710;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					if (pSt_ProtocolHdr->byIsReply)
+					{
+						pSt_ProtocolHdr->wReserve = 710;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					}
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,订阅主题失败,主题名称:%s,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, SessionModule_GetLastError());
 					return FALSE;
 				}
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,订阅主题成功,主题名称:%s"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
 			}
-			pSt_ProtocolHdr->wReserve = 0;
-			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			if (pSt_ProtocolHdr->byIsReply)
+			{
+				pSt_ProtocolHdr->wReserve = 0;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			}
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQSERIAL == pSt_ProtocolHdr->unOperatorCode)
 		{

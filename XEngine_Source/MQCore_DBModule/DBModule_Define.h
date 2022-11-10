@@ -28,6 +28,7 @@ typedef struct
 	__int64x nQueueSerial;                                                //包序列号
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
+	BYTE byMsgType;                                                       //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
 }XENGINE_DBMESSAGEQUEUE;
 typedef struct
 {
@@ -216,6 +217,20 @@ extern "C" BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo,
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+/********************************************************************
+函数名称：DMBodule_MQData_TimeClaer
+函数功能：清理超时通知
+ 参数.一：nTime
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：输入要清理的日期
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DMBodule_MQData_TimeClaer(time_t nTime = 0);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
