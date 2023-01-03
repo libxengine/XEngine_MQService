@@ -585,7 +585,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBI
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `XEngine_TimeRelease` (tszQueueName,nIDMsg,nIDTime) VALUES('%s',%lld,%lld)"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime) VALUES('%s',%lld,%lld)"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -624,9 +624,9 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 #ifdef _MSC_BUILD
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), time(NULL));
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `UserTime` WHERE nIDTime <= %lld"), time(NULL));
 #else
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `XEngine_TimeRelease` WHERE nIDTime <= %ld"), time(NULL));
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `UserTime` WHERE nIDTime <= %ld"), time(NULL));
 #endif
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
@@ -677,7 +677,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf_s(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+	_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -711,9 +711,9 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
 		nTime = time(NULL);
 	}
 #ifdef _MSC_BUILD
-	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %lld"), nTime);
+	_stprintf(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDTime <= %lld"), nTime);
 #else
-	_stprintf(tszSQLQuery, _T("DELETE FROM `XEngine_TimeRelease` WHERE nIDTime <= %ld"), nTime);
+	_stprintf(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDTime <= %ld"), nTime);
 #endif
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
