@@ -11,11 +11,6 @@ EXPORTS
 	DBModule_MQData_CreateTable
 	DBModule_MQData_DeleteTable
 
-	DBModule_MQData_TimeInsert
-	DBModule_MQData_TimeQuery
-	DBModule_MQData_TimeDelete
-	DMBodule_MQData_TimeClaer
-
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory
 	DBModule_MQUser_UserInsert
@@ -28,3 +23,8 @@ EXPORTS
 	DBModule_MQUser_KeyList
 	DBModule_MQUser_KeyDelete
 	DBModule_MQUser_KeyUPDate
+
+	DBModule_MQUser_TimeInsert
+	DBModule_MQUser_TimeQuery
+	DBModule_MQUser_TimeDelete
+	DBModule_MQUser_TimeClaer

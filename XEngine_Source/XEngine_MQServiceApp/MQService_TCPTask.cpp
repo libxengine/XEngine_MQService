@@ -371,7 +371,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
 				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, TRUE, &st_LibTime);
-				DBModule_MQData_TimeInsert(&st_DBTime);
+				DBModule_MQUser_TimeInsert(&st_DBTime);
 			}
 			//插入数据库
 			if (!DBModule_MQData_Insert(&st_DBQueue))
