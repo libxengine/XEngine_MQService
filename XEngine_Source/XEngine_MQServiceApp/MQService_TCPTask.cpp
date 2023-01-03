@@ -572,7 +572,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					pSt_ProtocolHdr->wReserve = 710;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,设置消息队列主题更新失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, SessionModule_GetLastError());
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,设置消息队列主题更新失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
 					return FALSE;
 				}
 			}
@@ -585,7 +585,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					pSt_ProtocolHdr->wReserve = 711;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,设置消息队列主题创建失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, SessionModule_GetLastError());
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,设置消息队列主题创建失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
 					return FALSE;
 				}
 			}
@@ -607,7 +607,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				pSt_ProtocolHdr->wReserve = 741;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,获取消息队列序列属性失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime == 1 ? "顺序" : "倒序", st_MQProtocol.nSerial, SessionModule_GetLastError());
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,获取消息队列序列属性失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime == 1 ? "顺序" : "倒序", st_MQProtocol.nSerial, DBModule_GetLastError());
 				return FALSE;
 			}
 			pSt_ProtocolHdr->wReserve = 0;
