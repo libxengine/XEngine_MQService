@@ -104,6 +104,20 @@ extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 /********************************************************************
+函数名称：DBModule_MQData_Modify
+函数功能：数据修改
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+/********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
  参数.一：lpszName

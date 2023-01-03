@@ -7,6 +7,7 @@ EXPORTS
 	DBModule_MQData_Destory
 	DBModule_MQData_Insert
 	DBModule_MQData_Query
+	DBModule_MQData_Modify
 	DBModule_MQData_GetSerial
 	DBModule_MQData_CreateTable
 	DBModule_MQData_DeleteTable
