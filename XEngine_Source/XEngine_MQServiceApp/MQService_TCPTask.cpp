@@ -620,6 +620,27 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,获取主题序列编号成功,主题名称:%s,队列个数:%lld,开始编号:%lld,结尾编号:%lld"), lpszClientType, lpszClientAddr, st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
 		}
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICMODIFY == pSt_ProtocolHdr->unOperatorCode)
+		{
+			XENGINE_MQTOPIC st_MQTopic;
+			memset(&st_MQTopic, '\0', sizeof(XENGINE_MQTOPIC));
+
+			memcpy(&st_MQTopic, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), sizeof(XENGINE_MQTOPIC));
+			if (!DBModule_MQData_ModifyTable(st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey))
+			{
+				pSt_ProtocolHdr->wReserve = 781;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,修改主题名称失败,原名称:%s,目标名:%s,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey, DBModule_GetLastError());
+				return FALSE;
+			}
+			pSt_ProtocolHdr->wReserve = 0;
+			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICMODIFY;
+
+			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s消息端:%s,修改主题名称成功,原名称:%s,目标名:%s"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey);
+		}
 		else
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("%s消息端:%s,子协议错误，子协议：%x"), lpszClientType, lpszClientAddr, pSt_ProtocolHdr->unOperatorCode);

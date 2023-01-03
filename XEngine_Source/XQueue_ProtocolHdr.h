@@ -25,6 +25,10 @@
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPCREATE 0x7005         //主题创建回复
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE 0x7006         //主题删除请求
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE 0x7007         //主题删除回复
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICMODIFY 0x7008    //主题名修改请求
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICMODIFY 0x7009    //主题名修改回复
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQMSGMODIFY 0x700A      //消息修改请求
+#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPMSGMODIFY 0x700B      //消息修改回复
 //Only TCP WEBSOCKET
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY 0x7010         //请求订阅
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPNOTIFY 0x7011         //订阅回复
@@ -48,7 +52,7 @@
 #pragma pack(push)
 #pragma pack(1)
 //消息队列服务协议
-typedef struct tag_XEngine_ProtocolXmq
+typedef struct 
 {
 	CHAR tszMQKey[256];                                                   //此消息的KEY，不能为空
 	__int64x nSerial;                                                     //包序列号
@@ -56,11 +60,15 @@ typedef struct tag_XEngine_ProtocolXmq
 	int nKeepTime;                                                        //保持时间,单位秒,-1 永久存在 0 一次就结束,>0 保存秒数
 	int nGetTimer;                                                        //可以获取的次数
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;
-typedef struct tag_XEngine_MQNumber
+typedef struct 
 {
 	TCHAR tszMQKey[256];                                                  //主题名		  
 	__int64x nCount;                                                      //总个数
 	__int64x nFirstNumber;                                                //起始编码
 	__int64x nLastNumber;                                                 //末尾编号
 }XENGINE_MQNUMBER, * LPXENGINE_MQNUMBER;
+typedef struct 
+{
+	TCHAR tszMQKey[256];                                               //原始主题名		
+}XENGINE_MQTOPIC, * LPXENGINE_MQTOPIC;
 #pragma pack(pop)

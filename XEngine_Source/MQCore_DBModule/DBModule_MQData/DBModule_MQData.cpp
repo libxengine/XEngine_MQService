@@ -455,3 +455,38 @@ BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 	}
 	return TRUE;
 }
+/********************************************************************
+函数名称：DBModule_MQData_ModifyTable
+函数功能：修改表名称
+ 参数.一：lpszSrcTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要修改的表名
+ 参数.二：lpszDstTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入修改到的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_stprintf_s(tszSQLQuery, _T("RENAME TABLE `%s` TO `%s`"), lpszSrcTable, lpszDstTable);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}

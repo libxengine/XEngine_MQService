@@ -160,6 +160,25 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
+/********************************************************************
+函数名称：DBModule_MQData_ModifyTable
+函数功能：修改表名称
+ 参数.一：lpszSrcTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要修改的表名
+ 参数.二：lpszDstTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入修改到的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/

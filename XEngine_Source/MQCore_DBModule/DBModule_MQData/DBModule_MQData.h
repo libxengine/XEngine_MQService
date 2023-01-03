@@ -24,6 +24,7 @@ public:
 	BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
 	BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 	BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
+	BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
 private:
 	XHDATA xhDBSQL;
 };

@@ -59,6 +59,10 @@ extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 {
 	return m_DBData.DBModule_MQData_DeleteTable(lpszQueueName);
 }
+extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable)
+{
+	return m_DBData.DBModule_MQData_ModifyTable(lpszSrcTable, lpszDstTable);
+}
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
