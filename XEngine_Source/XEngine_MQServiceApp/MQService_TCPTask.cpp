@@ -137,8 +137,6 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				st_UserInfo.nUserState = 1;
 				DBModule_MQUser_UserUPDate(&st_UserInfo);
 			}
-			pSt_ProtocolHdr->wReserve = 0;
-			
 			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 			{
 				//HTTP使用SESSION
@@ -157,6 +155,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				XENGINE_DBUSERKEY** ppSt_UserKey;
 				DBModule_MQUser_KeyList(st_UserInfo.tszUserName, &ppSt_UserKey, &nListCount);
 
+				pSt_ProtocolHdr->wReserve = 0;
 				XHANDLE xhUNRead = ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, XENGINE_MQAPP_NETTYPE_TCP == nNetType ? ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN : ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON);
 				//查找具体主题列表
 				for (int i = 0; i < nListCount; i++)
@@ -164,10 +163,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					int nDBCount = 0;
 					XENGINE_DBMESSAGEQUEUE** ppSt_DBMessage;
 					DBModule_MQData_List(ppSt_UserKey[i]->tszKeyName, ppSt_UserKey[i]->nKeySerial, &ppSt_DBMessage, &nDBCount);
-					for (int j = 0; j < nDBCount; j++)
-					{
-						ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount);
-					}
+					ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount);
 				}
 				ProtocolModule_Packet_UNReadDelete(xhUNRead, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
@@ -175,6 +171,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			}
 			else
 			{
+				pSt_ProtocolHdr->wReserve = 0;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
@@ -560,7 +557,7 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			{
 				if (!SessionModule_Notify_Insert(st_MQProtocol.tszMQKey, lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE_TCP))
 				{
-					if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+					if (pSt_ProtocolHdr->byIsReply)
 					{
 						pSt_ProtocolHdr->wReserve = 710;
 						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
