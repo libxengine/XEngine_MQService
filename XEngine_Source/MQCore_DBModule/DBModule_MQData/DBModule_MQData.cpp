@@ -230,6 +230,110 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	return TRUE;
 }
 /********************************************************************
+函数名称：DBModule_MQData_List
+函数功能：枚举指定主题序列号后的数据
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要处理的主题
+ 参数.二：nSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入主题序列号
+ 参数.三：pppSt_DBMessage
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出数据队列信息
+ 参数.四：pInt_ListCount
+  In/Out：Out
+  类型：整数型
+  可空：N
+  意思：输出数据队列大小
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == lpszQueueName)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	//查询
+	XHDATA xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	TCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	//名称为,消息名为必填
+	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial > %lld"), lpszQueueName, nSerial);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBMessage, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
+	for (__int64u i = 0; i < nllLine; i++)
+	{
+		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+		if (NULL != pptszResult[1])
+		{
+			_tcscpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[1]);
+		}
+		if (NULL != pptszResult[2])
+		{
+			(*pppSt_DBMessage)[i]->nQueueSerial = _ttoi64(pptszResult[2]);
+		}
+		if (NULL != pptszResult[3])
+		{
+			(*pppSt_DBMessage)[i]->nQueueGetTime = _ttoi64(pptszResult[3]);
+		}
+		if (NULL != pptszResult[4])
+		{
+			_tcscpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[4]);
+		}
+		if (NULL != pptszResult[5])
+		{
+			_tcscpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[5]);
+		}
+		if (NULL != pptszResult[6])
+		{
+			_tcscpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[6]);
+		}
+		if (NULL != pptszResult[7])
+		{
+			(*pppSt_DBMessage)[i]->nMsgLen = _ttoi(pptszResult[7]);
+		}
+		if (NULL != pptszResult[8])
+		{
+			(*pppSt_DBMessage)[i]->byMsgType = _ttoi(pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcscpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[9]);
+		}
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return TRUE;
+}
+/********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
  参数.一：lpszName
