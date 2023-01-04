@@ -153,6 +153,73 @@ extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_Pr
 备注：
 *********************************************************************/
 extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadCreate
+函数功能：未读消息打包创建函数
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的协议头
+ 参数.二：enPayType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：输入打包的负载类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType);
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadInsert
+函数功能：维度消息打包数据插入
+ 参数.一：xhToken
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：输入要操作的句柄
+ 参数.二：pppSt_DBMessage
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.三：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount);
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadDelete
+函数功能：删除数据并且导出
+ 参数.一：xhToken
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：输入要操作的句柄
+ 参数.二：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的数据
+ 参数.三：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出数据大小
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
