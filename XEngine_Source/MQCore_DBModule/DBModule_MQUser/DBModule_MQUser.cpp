@@ -475,8 +475,8 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERK
 		{
 			_tcscpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[5]);
 		}
-		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return TRUE;
 }
 /********************************************************************
