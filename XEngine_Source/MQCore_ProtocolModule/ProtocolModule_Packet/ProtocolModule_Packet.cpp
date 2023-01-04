@@ -508,6 +508,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		return FALSE;
 	}
 	Json::Value st_JsonSub;
+	Json::Value st_JsonSubArray;
 	for (int i = 0; i < nListCount; i++)
 	{
 		Json::Value st_JsonObject;
@@ -522,8 +523,11 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
 		st_JsonSub.append(st_JsonObject);
 	}
-	pSt_UNRead->st_JsonArray[(*pppSt_DBMessage)[0]->tszQueueName] = st_JsonSub;
-	pSt_UNRead->st_JsonArray[(*pppSt_DBMessage)[0]->tszQueueName] = st_JsonSub.size();
+
+	st_JsonSubArray["Array"] = st_JsonSub;
+	st_JsonSubArray["Name"] = (*pppSt_DBMessage)[0]->tszQueueName;
+	st_JsonSubArray["Count"] = st_JsonSub.size();
+	pSt_UNRead->st_JsonArray.append(st_JsonSubArray);
 	return TRUE;
 }
 /********************************************************************
