@@ -288,6 +288,7 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return FALSE;
 	}
+	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBMessage, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
 	for (__int64u i = 0; i < nllLine; i++)
 	{

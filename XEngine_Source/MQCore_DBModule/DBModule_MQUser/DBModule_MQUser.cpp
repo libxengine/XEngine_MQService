@@ -450,6 +450,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERK
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return FALSE;
 	}
+	*pInt_ListCount = nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
