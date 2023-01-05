@@ -109,9 +109,9 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY * pSt_UserKey)
 {
 	return m_DBUser.DBModule_MQUser_KeyQuery(pSt_UserKey);
 }
-extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount)
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount)
 {
-	return m_DBUser.DBModule_MQUser_KeyList(lpszUser, pppSt_UserKey, pInt_ListCount);
+	return m_DBUser.DBModule_MQUser_KeyList(lpszUser, lpszKeyName, pppSt_UserKey, pInt_ListCount);
 }
 extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY * pSt_UserKey)
 {

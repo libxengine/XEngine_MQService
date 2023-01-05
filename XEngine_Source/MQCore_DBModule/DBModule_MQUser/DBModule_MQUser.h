@@ -26,7 +26,7 @@ public:
 public:
 	BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
 	BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
-	BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
+	BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
 	BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 	BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
 public:

@@ -353,12 +353,17 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
   类型：常量字符指针
   可空：N
   意思：输入用户名
- 参数.二：pppSt_UserKey
+ 参数.二：lpszKeyName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查询的KEY名称
+ 参数.三：pppSt_UserKey
   In/Out：Out
   类型：三级指针
   可空：N
   意思：输出用户列表信息
- 参数.三：pInt_ListCount
+ 参数.四：pInt_ListCount
   In/Out：Out
   类型：整数型指针
   可空：N
@@ -368,7 +373,7 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyDelete
 函数功能：删除绑定的消息队列

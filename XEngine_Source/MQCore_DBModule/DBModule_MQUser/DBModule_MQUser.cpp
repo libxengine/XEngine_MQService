@@ -404,12 +404,17 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
   类型：常量字符指针
   可空：N
   意思：输入用户名
- 参数.二：pppSt_UserKey
+ 参数.二：lpszKeyName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查询的KEY名称
+ 参数.三：pppSt_UserKey
   In/Out：Out
   类型：三级指针
   可空：N
   意思：输出用户列表信息
- 参数.三：pInt_ListCount
+ 参数.四：pInt_ListCount
   In/Out：Out
   类型：整数型指针
   可空：N
@@ -419,11 +424,11 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount)
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount)
 {
 	DBModule_IsErrorOccur = FALSE;
 
-	if (NULL == lpszUser)
+	if ((NULL == lpszUser) || (NULL == lpszKeyName))
 	{
 		DBModule_IsErrorOccur = TRUE;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
@@ -437,7 +442,15 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERK
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
+	if (_tcslen(lpszKeyName) > 0)
+	{
+		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
+	}
+	else
+	{
+		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
+	}
+
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -450,7 +463,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERK
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return FALSE;
 	}
-	*pInt_ListCount = nllLine;
+	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
