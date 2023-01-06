@@ -458,7 +458,7 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
 		return FALSE;
 	}
-	memset(pSt_UNRead, '\0', sizeof(PROTOCOL_PACKETUNREAD));
+	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(PROTOCOL_PACKETUNREAD));
 
 	pSt_UNRead->nType = enPayType;
 	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
@@ -516,8 +516,8 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
 		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
 		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
-		st_JsonObject["nQueueSerial"] = (*pppSt_DBMessage)[i]->nQueueSerial;
-		st_JsonObject["nQueueGetTime"] = (*pppSt_DBMessage)[i]->nQueueGetTime;
+		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
+		st_JsonObject["nQueueGetTime"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueGetTime;
 		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
 		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
