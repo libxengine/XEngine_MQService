@@ -26,18 +26,12 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(LPVOID lParam)
 
 				memset(&st_HTTPReqparam, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
 
-				if (!RfcComponents_HttpServer_GetMemoryEx(xhHTTPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_HTTPReqparam, &ppszHdrList, &nHdrCount))
+				if (RfcComponents_HttpServer_GetMemoryEx(xhHTTPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_HTTPReqparam, &ppszHdrList, &nHdrCount))
 				{
-					DWORD dwRet = HttpServer_GetLastError();
-					if (ERROR_HELPCOMPONENTS_PACKETS_PROTOCOL_GET_ISNULL == dwRet)
-					{
-						XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("HTTP服务器获取消息失败，获取数据包失败，错误：%lX"), dwRet);
-					}
-					continue;
+					MessageQueue_Http_Handle(&st_HTTPReqparam, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, ppszHdrList, nHdrCount);
+					BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_OperatorMemory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
 				}
-				MessageQueue_Http_Handle(&st_HTTPReqparam, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, ppszHdrList, nHdrCount);
-				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
-				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
 			}
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);

@@ -126,12 +126,12 @@ int main(int argc, char** argv)
 		ServiceApp_Deamon(1);
 	}
 
-	if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, MessageQueue_CBTask_TimePublish))
+	if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
 		goto NETSERVICEEXIT;
 	}
-	if (!DBModule_MQUser_Init((DATABASE_MYSQL_CONNECTINFO *)&st_ServiceCfg.st_XSql))
+	if (!DBModule_MQUser_Init((DATABASE_MYSQL_CONNECTINFO *)&st_ServiceCfg.st_XSql, MessageQueue_CBTask_TimePublish))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
 		goto NETSERVICEEXIT;

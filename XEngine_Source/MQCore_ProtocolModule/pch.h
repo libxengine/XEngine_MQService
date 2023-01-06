@@ -21,7 +21,9 @@
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#include <XEngine_Include/XEngine_HelpComponents/DataBase_Define.h>
 #include "../XQueue_ProtocolHdr.h"
+#include "../MQCore_DBModule/DBModule_Define.h"
 #include "Protocol_Define.h"
 #include "Protocol_Error.h"
 /********************************************************************

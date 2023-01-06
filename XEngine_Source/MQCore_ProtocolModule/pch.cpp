@@ -47,6 +47,18 @@ extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO * pSt_P
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_PassUser(pSt_ProtocolUser, ptszMsgBuffer, pInt_MsgLen, nCode);
 }
+extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);
+}
+extern "C" BOOL ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int nListCount)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, pppSt_DBMessage, nListCount);
+}
+extern "C" BOOL ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR * ptszMsgBuffer, int* pInt_MsgLen)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadDelete(xhToken, ptszMsgBuffer, pInt_MsgLen);
+}
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/

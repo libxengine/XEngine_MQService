@@ -33,7 +33,7 @@ c c++Message Service
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V7.38或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V7.46或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -101,13 +101,16 @@ make FLAGS=CleanAll 清理编译
 ## 开发计划
 扩展获取消息的内容  
 数据库缓存功能  
-消息编辑  
 用户消息  
 消息属性生效  
 公众号和小程序  
-消息强推送  
+消息强推送(不限订阅,强制推送)  
+QOS(支持强回复确认)  
 功能开关  
 MQTT支持  
+支持时区设置  
+完善消息订阅(永存)  
+完善HTTP_CALL  
 
 ## 提交问题
 

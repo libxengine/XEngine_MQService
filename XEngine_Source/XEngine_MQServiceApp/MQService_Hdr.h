@@ -48,12 +48,12 @@ typedef std::string tstring;
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
-#include "../MQCore_ProtocolModule/Protocol_Define.h"
-#include "../MQCore_ProtocolModule/Protocol_Error.h"
 #include "../MQCore_SessionModule/Session_Define.h"
 #include "../MQCore_SessionModule/Session_Error.h"
 #include "../MQCore_DBModule/DBModule_Define.h"
 #include "../MQCore_DBModule/DBModule_Error.h"
+#include "../MQCore_ProtocolModule/Protocol_Define.h"
+#include "../MQCore_ProtocolModule/Protocol_Error.h"
 
 extern BOOL bIsRun;
 extern XLOG xhLog;

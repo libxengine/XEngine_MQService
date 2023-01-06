@@ -31,9 +31,9 @@ extern "C" DWORD DBModule_GetLastError(int* pInt_SysError)
 /*************************************************************************
 						消息队列导出函数
 **************************************************************************/
-extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam)
+extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
 {
-	return m_DBData.DBModule_MQData_Init(pSt_DBConnector, fpCall_TimePublish, lParam);
+	return m_DBData.DBModule_MQData_Init(pSt_DBConnector);
 }
 extern "C" BOOL DBModule_MQData_Destory()
 {
@@ -47,6 +47,14 @@ extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
 }
+extern "C" BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
+{
+	return m_DBData.DBModule_MQData_Modify(pSt_DBInfo);
+}
+extern "C" BOOL DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int* pInt_ListCount)
+{
+	return m_DBData.DBModule_MQData_List(lpszQueueName, nSerial, pppSt_DBMessage, pInt_ListCount);
+}
 extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x * pInt_DBCount, XENGINE_DBMESSAGEQUEUE * pSt_DBStart, XENGINE_DBMESSAGEQUEUE * pSt_DBEnd)
 {
 	return m_DBData.DBModule_MQData_GetSerial(lpszName, pInt_DBCount, pSt_DBStart, pSt_DBEnd);
@@ -59,28 +67,16 @@ extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 {
 	return m_DBData.DBModule_MQData_DeleteTable(lpszQueueName);
 }
-extern "C" BOOL DBModule_MQData_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable)
 {
-	return m_DBData.DBModule_MQData_TimeInsert(pSt_DBInfo);
-}
-extern "C" BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount)
-{
-	return m_DBData.DBModule_MQData_TimeQuery(pppSt_DBInfo, pInt_ListCount);
-}
-extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
-{
-	return m_DBData.DBModule_MQData_TimeDelete(pSt_DBInfo);
-}
-extern "C" BOOL DMBodule_MQData_TimeClaer(time_t nTime)
-{
-	return m_DBData.DMBodule_MQData_TimeClaer(nTime);
+	return m_DBData.DBModule_MQData_ModifyTable(lpszSrcTable, lpszDstTable);
 }
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
-extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector)
+extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam)
 {
-	return m_DBUser.DBModule_MQUser_Init(pSt_DBConnector);
+	return m_DBUser.DBModule_MQUser_Init(pSt_DBConnector, fpCall_TimePublish, lParam);
 }
 extern "C" BOOL DBModule_MQUser_Destory()
 {
@@ -113,9 +109,9 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY * pSt_UserKey)
 {
 	return m_DBUser.DBModule_MQUser_KeyQuery(pSt_UserKey);
 }
-extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount)
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount)
 {
-	return m_DBUser.DBModule_MQUser_KeyList(lpszUser, pppSt_UserKey, pInt_ListCount);
+	return m_DBUser.DBModule_MQUser_KeyList(lpszUser, lpszKeyName, pppSt_UserKey, pInt_ListCount);
 }
 extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY * pSt_UserKey)
 {
@@ -124,4 +120,23 @@ extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY * pSt_UserKey)
 extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY * pSt_UserKey)
 {
 	return m_DBUser.DBModule_MQUser_KeyUPDate(pSt_UserKey);
+}
+/*************************************************************************
+						定时发布导出函数
+**************************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+{
+	return m_DBUser.DBModule_MQUser_TimeInsert(pSt_DBInfo);
+}
+extern "C" BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount)
+{
+	return m_DBUser.DBModule_MQUser_TimeQuery(pppSt_DBInfo, pInt_ListCount);
+}
+extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+{
+	return m_DBUser.DBModule_MQUser_TimeDelete(pSt_DBInfo);
+}
+extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime)
+{
+	return m_DBUser.DBModule_MQUser_TimeClaer(nTime);
 }

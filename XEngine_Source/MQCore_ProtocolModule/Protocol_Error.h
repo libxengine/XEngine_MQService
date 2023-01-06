@@ -10,6 +10,7 @@
 //    Purpose:     导出的错误
 //    History:
 *********************************************************************/
-#define ERROR_MQ_MODULE_PROTOCOL_PARAMENT 0x0030001
-#define ERROR_MQ_MODULE_PROTOCOL_PARSE 0x0030002
-#define ERROR_MQ_MODULE_PROTOCOL_MALLOC 0x0030003
+#define ERROR_MQ_MODULE_PROTOCOL_PARAMENT 0x0030001                   //参数错误
+#define ERROR_MQ_MODULE_PROTOCOL_PARSE 0x0030002                      //解析失败
+#define ERROR_MQ_MODULE_PROTOCOL_MALLOC 0x0030003                     //申请内存失败
+#define ERROR_MQ_MODULE_PROTOCOL_NOTFOUND 0x0030004                   //没有找到

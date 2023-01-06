@@ -1,3 +1,31 @@
+XEngine_MQService V3.5.0.1001
+
+增加:未读消息协议处理支持
+增加:主题名称修改功能
+增加:修改消息功能
+修改:tcp,http,websocket获取任务方法
+修改:移动定时发布任务表到user数据库
+修改:定时任务表名称为UserTime
+修改:http请求现在会响应数据了
+修改:协议定义不正确的问题
+修改:扩展tcp task 发送缓冲区大小
+修复:获取错误码不正确
+修复:http解析的时候可以不解析所有mq协议字段了
+修复:key list释放内存不正确的问题
+
+added:unread message protocol process support
+added:topic name modify function
+added:modify message support
+modify:get task method for tcp and http and websocket
+modify:move time-release table to user from data
+modify:time-release table name to UserTime
+modify:http request will be responese now
+modify:protocol define is incorrent
+modify:extend size for tcp task send buffer
+fixed:get error code
+fixed:http parse can be done without parse all mqprotocol fields
+fixed:key list free memory is incorrent
+======================================================================================
 XEngine_MQService V3.4.0.1001
 
 添加:为数据库表添加数据类型字段

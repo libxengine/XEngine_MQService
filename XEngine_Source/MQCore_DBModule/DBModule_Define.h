@@ -60,22 +60,12 @@ extern "C" DWORD DBModule_GetLastError(int *pInt_SysError = NULL);
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
- 参数.二：fpCall_TimePublish
-  In/Out：In
-  类型：回调函数
-  可空：N
-  意思：定时消息发布回调函数
- 参数.三：lParam
-  In/Out：In
-  类型：无类型指针
-  可空：Y
-  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam = NULL);
+extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
 /********************************************************************
 函数名称：DBModule_MQData_Destory
 函数功能：销毁数据库管理器
@@ -113,6 +103,49 @@ extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQData_Modify
+函数功能：数据修改
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQData_List
+函数功能：枚举指定主题序列号后的数据
+ 参数.一：lpszQueueName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要处理的主题
+ 参数.二：nSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入主题序列号
+ 参数.三：pppSt_DBMessage
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出数据队列信息
+ 参数.四：pInt_ListCount
+  In/Out：Out
+  类型：整数型
+  可空：N
+  意思：输出数据队列大小
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
@@ -171,66 +204,24 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
 *********************************************************************/
 extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
 /********************************************************************
-函数名称：DBModule_MQData_TimeInsert
-函数功能：定时发布插入
- 参数.一：pSt_DBInfo
+函数名称：DBModule_MQData_ModifyTable
+函数功能：修改表名称
+ 参数.一：lpszSrcTable
   In/Out：In
-  类型：数据结构指针
+  类型：常量字符指针
   可空：N
-  意思：要操作的数据信息
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL DBModule_MQData_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
-/********************************************************************
-函数名称：DBModule_MQData_TimeQuery
-函数功能：定时发布查询
- 参数.一：pppSt_DBInfo
-  In/Out：Out
-  类型：三级指针
-  可空：N
-  意思：导出的列表
- 参数.二：pInt_ListCount
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：导出的个数
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL DBModule_MQData_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
-/********************************************************************
-函数名称：DBModule_MQData_TimeDelete
-函数功能：定时发布删除
- 参数.一：pSt_DBInfo
+  意思：输入要修改的表名
+ 参数.二：lpszDstTable
   In/Out：In
-  类型：数据结构指针
+  类型：常量字符指针
   可空：N
-  意思：要操作的数据信息
+  意思：输入修改到的名称
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
-/********************************************************************
-函数名称：DMBodule_MQData_TimeClaer
-函数功能：清理超时通知
- 参数.一：nTime
-  In/Out：In
-  类型：整数型
-  可空：Y
-  意思：输入要清理的日期
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL DMBodule_MQData_TimeClaer(time_t nTime = 0);
+extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
@@ -242,12 +233,22 @@ extern "C" BOOL DMBodule_MQData_TimeClaer(time_t nTime = 0);
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
+ 参数.二：fpCall_TimePublish
+  In/Out：In
+  类型：回调函数
+  可空：N
+  意思：定时消息发布回调函数
+ 参数.三：lParam
+  In/Out：In
+  类型：无类型指针
+  可空：Y
+  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
+extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam = NULL);
 /********************************************************************
 函数名称：DBModule_MQUser_Destory
 函数功能：销毁数据库管理器
@@ -352,12 +353,17 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
   类型：常量字符指针
   可空：N
   意思：输入用户名
- 参数.二：pppSt_UserKey
+ 参数.二：lpszKeyName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要查询的KEY名称
+ 参数.三：pppSt_UserKey
   In/Out：Out
   类型：三级指针
   可空：N
   意思：输出用户列表信息
- 参数.三：pInt_ListCount
+ 参数.四：pInt_ListCount
   In/Out：Out
   类型：整数型指针
   可空：N
@@ -367,7 +373,7 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
+extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyDelete
 函数功能：删除绑定的消息队列
@@ -396,3 +402,67 @@ extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
+/*************************************************************************
+						定时发布导出函数
+**************************************************************************/
+/********************************************************************
+函数名称：DBModule_MQUser_TimeInsert
+函数功能：定时发布插入
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_TimeQuery
+函数功能：定时发布查询
+ 参数.一：pppSt_DBInfo
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：导出的列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：导出的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount);
+/********************************************************************
+函数名称：DBModule_MQUser_TimeDelete
+函数功能：定时发布删除
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_TimeClaer
+函数功能：清理超时通知
+ 参数.一：nTime
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：输入要清理的日期
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
