@@ -422,3 +422,168 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	return TRUE;
 }
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadCreate
+函数功能：未读消息打包创建函数
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要打包的协议头
+ 参数.二：enPayType
+  In/Out：In
+  类型：枚举型
+  可空：N
+  意思：输入打包的负载类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_ProtocolHdr)
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return FALSE;
+	}
+	//申请内存
+	PROTOCOL_PACKETUNREAD* pSt_UNRead = new PROTOCOL_PACKETUNREAD;
+	if (NULL == pSt_UNRead)
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
+		return FALSE;
+	}
+	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(PROTOCOL_PACKETUNREAD));
+
+	pSt_UNRead->nType = enPayType;
+	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
+	{
+		pSt_UNRead->st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	}
+	else
+	{
+		pSt_UNRead->st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
+		pSt_UNRead->st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
+		pSt_UNRead->st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
+	}
+	return pSt_UNRead;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadInsert
+函数功能：维度消息打包数据插入
+ 参数.一：xhToken
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：输入要操作的句柄
+ 参数.二：pppSt_DBMessage
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.三：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
+	if (NULL == pSt_UNRead)
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
+		return FALSE;
+	}
+	Json::Value st_JsonSub;
+	Json::Value st_JsonSubArray;
+	for (int i = 0; i < nListCount; i++)
+	{
+		Json::Value st_JsonObject;
+		st_JsonObject["tszQueueName"] = (*pppSt_DBMessage)[i]->tszQueueName;
+		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
+		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
+		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
+		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
+		st_JsonObject["nQueueGetTime"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueGetTime;
+		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
+		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
+		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
+		st_JsonSub.append(st_JsonObject);
+	}
+
+	st_JsonSubArray["Array"] = st_JsonSub;
+	st_JsonSubArray["Name"] = (*pppSt_DBMessage)[0]->tszQueueName;
+	st_JsonSubArray["Count"] = st_JsonSub.size();
+	pSt_UNRead->st_JsonArray.append(st_JsonSubArray);
+	return TRUE;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_UNReadDelete
+函数功能：删除数据并且导出
+ 参数.一：xhToken
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：输入要操作的句柄
+ 参数.二：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的数据
+ 参数.三：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出数据大小
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+{
+	Protocol_IsErrorOccur = FALSE;
+
+	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
+	if (NULL == pSt_UNRead)
+	{
+		Protocol_IsErrorOccur = TRUE;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
+		return FALSE;
+	}
+	Json::StreamWriterBuilder st_JsonBuilder;
+	st_JsonBuilder["emitUTF8"] = true;
+
+	pSt_UNRead->st_JsonRoot["Array"] = pSt_UNRead->st_JsonArray;
+	pSt_UNRead->st_JsonRoot["Count"] = pSt_UNRead->st_JsonArray.size();
+
+	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
+	{
+		pSt_UNRead->st_ProtocolHdr.unPacketSize = Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).length();
+		memcpy(ptszMsgBuffer, &pSt_UNRead->st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).c_str(), pSt_UNRead->st_ProtocolHdr.unPacketSize);
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + pSt_UNRead->st_ProtocolHdr.unPacketSize;
+	}
+	else
+	{
+		*pInt_MsgLen = Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).length();
+		memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).c_str(), *pInt_MsgLen);
+	}
+
+	delete pSt_UNRead;
+	pSt_UNRead = NULL;
+	return TRUE;
+}

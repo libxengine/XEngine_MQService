@@ -17,7 +17,7 @@ public:
 	CDBModule_MQUser();
 	~CDBModule_MQUser();
 public:
-	BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
+	BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam = NULL);
 	BOOL DBModule_MQUser_Destory();
 	BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 	BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
@@ -26,9 +26,22 @@ public:
 public:
 	BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
 	BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
-	BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
+	BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
 	BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 	BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
+public:
+	BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+	BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
+	BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+	BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+protected:
+	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(LPVOID lParam);
 private:
+	shared_ptr<std::thread> pSTDThread;
+private:
+	LPVOID m_lParam;
+	CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH lpCall_TimePublish;
+private:
+	BOOL bIsRun;
 	XHDATA xhDBSQL;
 };
