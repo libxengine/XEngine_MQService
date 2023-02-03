@@ -105,20 +105,20 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				int nRVLen = 0;
 				int nHTTPCode = 0;
 				TCHAR* ptszSDBuffer = NULL;
-				APIHELP_HTTPPARAMENT st_HTTPParament;
+				NETHELP_HTTPCLIENT st_HTTPParament;
 
-				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
 
 				st_HTTPParament.nTimeConnect = 2;
 
 				ProtocolModule_Packet_PassAuth(&st_ProtocolAuth, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG);
-				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassLogin, tszSDBuffer, &nHTTPCode, &ptszSDBuffer, &nSDLen, NULL, NULL, &st_HTTPParament);
+				APIClient_Http_Request(_T("POST"), st_ServiceCfg.st_XPass.tszPassLogin, tszSDBuffer, &nHTTPCode, &ptszSDBuffer, &nSDLen, NULL, NULL, &st_HTTPParament);
 				if (200 != nHTTPCode)
 				{
 					pSt_ProtocolHdr->wReserve = 701;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程验证失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程验证失败,HTTPCode:%d"), lpszClientType, lpszClientAddr, nHTTPCode);
 					return FALSE;
 				}
 				ProtocolModule_Parse_Http(ptszSDBuffer, nSDLen, NULL, (TCHAR*)&st_UserInfo, &nRVLen);
@@ -173,19 +173,19 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			if (_tcslen(st_ServiceCfg.st_XPass.tszPassRegister) > 0)
 			{
 				int nHTTPCode = 0;
-				APIHELP_HTTPPARAMENT st_HTTPParament;
-				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+				NETHELP_HTTPCLIENT st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
 
 				st_HTTPParament.nTimeConnect = 2;
 
 				ProtocolModule_Packet_PassUser(&st_UserInfo, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG);
-				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassRegister, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
+				APIClient_Http_Request(_T("POST"), st_ServiceCfg.st_XPass.tszPassRegister, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
 				if (200 != nHTTPCode)
 				{
 					pSt_ProtocolHdr->wReserve = 701;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注册失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注册失败,HTTPCode:%d"), lpszClientType, lpszClientAddr, nHTTPCode);
 					return FALSE;
 				}
 			}
@@ -224,19 +224,19 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			if (_tcslen(st_ServiceCfg.st_XPass.tszPassUNReg) > 0)
 			{
 				int nHTTPCode = 0;
-				APIHELP_HTTPPARAMENT st_HTTPParament;
-				memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+				NETHELP_HTTPCLIENT st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
 
 				st_HTTPParament.nTimeConnect = 2;
 
 				ProtocolModule_Packet_PassUser(&st_UserInfo, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL);
-				APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassUNReg, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
+				APIClient_Http_Request(_T("POST"), st_ServiceCfg.st_XPass.tszPassUNReg, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
 				if (200 != nHTTPCode)
 				{
 					pSt_ProtocolHdr->wReserve = 701;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注销失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程注销失败,错误:%lX,HTTPCode:%d"), lpszClientType, lpszClientAddr, nHTTPCode);
 					return FALSE;
 				}
 			}

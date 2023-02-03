@@ -28,5 +28,5 @@ public:
 	BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
 	BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
 private:
-	XHDATA xhDBSQL;
+	XNETHANDLE xhDBSQL;
 };

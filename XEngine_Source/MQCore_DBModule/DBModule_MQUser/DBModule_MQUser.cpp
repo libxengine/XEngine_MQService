@@ -162,7 +162,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
@@ -360,7 +360,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
@@ -435,7 +435,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKey
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
@@ -631,7 +631,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	DBModule_IsErrorOccur = FALSE;
 
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 	TCHAR tszSQLStatement[1024];

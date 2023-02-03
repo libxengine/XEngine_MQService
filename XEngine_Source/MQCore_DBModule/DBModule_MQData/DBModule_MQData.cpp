@@ -134,7 +134,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
@@ -268,7 +268,7 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
@@ -373,7 +373,7 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		return FALSE;
 	}
 	//查询
-	XHDATA xhTable = 0;
+	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 	TCHAR** pptszResult;
