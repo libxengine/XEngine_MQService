@@ -101,7 +101,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
     TCHAR tszSQLStatement[10240];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
         DBModule_IsErrorOccur = TRUE;
@@ -225,7 +225,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '%s',nDataLen = %d,nDataType = %d WHERE tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	_stprintf(tszSQLStatement, _T("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '%s',nDataLen = %d,nDataType = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
