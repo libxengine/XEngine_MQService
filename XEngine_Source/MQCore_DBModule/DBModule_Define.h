@@ -21,6 +21,7 @@ typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCTST
 typedef struct  
 {
 	TCHAR tszMsgBuffer[8192];                                             //消息内容
+	TCHAR tszUserName[256];                                               //谁发布的消息
 	TCHAR tszQueueName[256];                                              //此消息的KEY
 	TCHAR tszQueueLeftTime[64];                                           //过期时间
 	TCHAR tszQueuePublishTime[64];                                        //发布时间
