@@ -4,7 +4,7 @@
 #include <json/json.h>
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
-#pragma comment(lib,"x86/XEngine_NetHelp/NetHelp_APIHelp")
+#pragma comment(lib,"x86/XEngine_NetHelp/NetHelp_APIClient")
 #pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #else
 #include <stdio.h>
@@ -16,11 +16,11 @@
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
-#include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
+#include <XEngine_Include/XEngine_NetHelp/APIClient_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lNetHelp_APIHelp -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lNetHelp_APIClient -ljsoncpp
 
 SOCKET m_Socket;
 XNETHANDLE xhToken = 0;
@@ -48,7 +48,7 @@ void MQ_Authorize()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -89,7 +89,7 @@ void MQ_UNRead()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -117,7 +117,7 @@ void MQ_Create()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -156,7 +156,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -186,7 +186,7 @@ void MQ_GetNumber()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -217,7 +217,7 @@ void MQ_Get()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -257,7 +257,7 @@ void MQ_ModifyMsg()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -292,7 +292,7 @@ void MQ_ModifyTopic()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
@@ -321,7 +321,7 @@ void MQ_Delete()
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
 	TCHAR* ptszMsgBody = NULL;
-	if (!APIHelp_HttpRequest_Custom(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
 		printf("发送投递失败！\n");
 		return;
