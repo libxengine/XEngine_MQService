@@ -140,3 +140,18 @@ extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime)
 {
 	return m_DBUser.DBModule_MQUser_TimeClaer(nTime);
 }
+/*************************************************************************
+						主题所有者导出函数
+**************************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerInsert(pSt_DBOwner);
+}
+extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerDelete(pSt_DBOwner);
+}
+extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerQuery(pSt_DBOwner);
+}

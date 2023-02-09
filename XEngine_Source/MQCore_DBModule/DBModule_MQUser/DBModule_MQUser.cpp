@@ -738,6 +738,125 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
 	}
 	return TRUE;
 }
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerInsert
+函数功能：主题所有者插入
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_DBOwner)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	TCHAR tszSQLStatement[10240];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf(tszSQLStatement, _T("INSERT IGNORE INTO `KeyOwner` (tszUserName,tszKeyName) VALUES('%s','%s')"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerDelete
+函数功能：主题所有者删除
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	if (NULL == pSt_DBOwner)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+	__int64u nAffectRow = 0;
+	TCHAR tszSQLStatement[10240];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nAffectRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nAffectRow <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
+		return FALSE;
+	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerQuery
+函数功能：主题所有者查询
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	//查询
+	XNETHANDLE xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+	TCHAR tszSQLStatement[1024];
+
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_stprintf(tszSQLStatement, _T("SELECT * FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return FALSE;
+	}
+	return TRUE;
+}
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////

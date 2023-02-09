@@ -46,6 +46,12 @@ typedef struct
 	TCHAR tszCreateTime[64];                                              //创建的时间
 	__int64x nKeySerial;                                                  //包序列号
 }XENGINE_DBUSERKEY;
+//主题所有者
+typedef struct
+{
+	TCHAR tszQueueName[256];                                              //主题名称
+	TCHAR tszUserName[256];                                               //主题所有者
+}XENGINE_DBTOPICOWNER;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
@@ -467,3 +473,48 @@ extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+/*************************************************************************
+						主题所有者导出函数
+**************************************************************************/
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerInsert
+函数功能：主题所有者插入
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerDelete
+函数功能：主题所有者删除
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerQuery
+函数功能：主题所有者查询
+ 参数.一：pSt_DBOwner
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：要操作的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);

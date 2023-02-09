@@ -31,3 +31,7 @@ EXPORTS
 	DBModule_MQUser_TimeQuery
 	DBModule_MQUser_TimeDelete
 	DBModule_MQUser_TimeClaer
+
+	DBModule_MQUser_OwnerInsert
+	DBModule_MQUser_OwnerDelete
+	DBModule_MQUser_OwnerQuery

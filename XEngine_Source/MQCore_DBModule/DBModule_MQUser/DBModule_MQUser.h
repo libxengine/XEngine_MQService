@@ -34,6 +34,10 @@ public:
 	BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
 	BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+public:
+	BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+	BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+	BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 protected:
 	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(LPVOID lParam);
 private:
