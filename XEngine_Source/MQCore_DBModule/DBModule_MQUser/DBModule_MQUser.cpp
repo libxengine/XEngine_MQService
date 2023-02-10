@@ -599,7 +599,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBI
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime) VALUES('%s',%lld,%lld)"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
+	_stprintf(tszSQLStatement, _T("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,tszCreateTime) VALUES('%s',%lld,%lld,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -665,6 +665,10 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 		if (NULL != pptszResult[2])
 		{
 			(*pppSt_DBInfo)[i]->nIDTime = _ttoi64(pptszResult[2]);
+		}
+		if (NULL != pptszResult[3])
+		{
+			_tcscpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[3]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
@@ -764,7 +768,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBO
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT IGNORE INTO `KeyOwner` (tszUserName,tszKeyName) VALUES('%s','%s')"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+	_stprintf(tszSQLStatement, _T("INSERT IGNORE INTO `KeyOwner` (tszUserName,tszKeyName,tszCreateTime) VALUES('%s','%s',now())"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = TRUE;

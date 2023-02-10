@@ -34,6 +34,7 @@ typedef struct
 typedef struct
 {
 	TCHAR tszQueueName[256];                                              //此消息的KEY
+	TCHAR tszCreateTime[64];                                              //创建时间
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
 }XENGINE_DBTIMERELEASE;
@@ -51,6 +52,7 @@ typedef struct
 {
 	TCHAR tszQueueName[256];                                              //主题名称
 	TCHAR tszUserName[256];                                               //主题所有者
+	TCHAR tszCreateTime[64];                                              //创建时间
 }XENGINE_DBTOPICOWNER;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
