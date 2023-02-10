@@ -226,10 +226,18 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
 	_stprintf(tszSQLStatement, _T("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '%s',nDataLen = %d,nDataType = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
-	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+
+	__int64u nRows = 0;
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRows))
 	{
 		DBModule_IsErrorOccur = TRUE;
 		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+	if (nRows <= 0)
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
 		return FALSE;
 	}
 	return TRUE;
