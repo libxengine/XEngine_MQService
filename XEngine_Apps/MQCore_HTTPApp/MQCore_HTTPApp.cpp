@@ -94,7 +94,7 @@ void MQ_UNRead()
 		printf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Create:%s\n", ptszMsgBody);
+	printf("MQ_UNRead:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_Create()
