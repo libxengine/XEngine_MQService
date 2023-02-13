@@ -467,15 +467,40 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 					return FALSE;
 				}
 				//得到消息
-				st_MessageQueue.nQueueSerial = st_UserKey.nKeySerial;
-				_tcscpy(st_MessageQueue.tszQueueName, st_MQProtocol.tszMQKey);
-				if (!DBModule_MQData_Query(&st_MessageQueue))
+				while (TRUE)
 				{
-					pSt_ProtocolHdr->wReserve = 724;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,序列:%lld,获取消息数据失败,无法继续,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
-					return FALSE;
+					st_MessageQueue.nQueueSerial = st_UserKey.nKeySerial;
+					_tcscpy(st_MessageQueue.tszQueueName, st_MQProtocol.tszMQKey);
+					if (!DBModule_MQData_Query(&st_MessageQueue))
+					{
+						pSt_ProtocolHdr->wReserve = 724;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+						XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s消息端:%s,主题:%s,序列:%lld,获取消息数据失败,无法继续,错误：%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
+						return FALSE;
+					}
+					//跳过定时任务
+					if (_tcslen(st_MessageQueue.tszQueuePublishTime) > 0)
+					{
+						st_UserKey.nKeySerial++;
+						continue;
+					}
+					//跳过过期任务
+					if (_tcslen(st_MessageQueue.tszQueueLeftTime) > 0)
+					{
+						__int64x nTimeDiff = 0;
+						TCHAR tszTimeEnd[128];
+						memset(tszTimeEnd, '\0', sizeof(tszTimeEnd));
+
+						BaseLib_OperatorTime_TimeToStr(tszTimeEnd);
+						BaseLib_OperatorTimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeEnd, &nTimeDiff, 3);
+						if (nTimeDiff > 0)
+						{
+							st_UserKey.nKeySerial++;
+							continue;
+						}
+					}
+					break;
 				}
 				st_MQProtocol.nSerial = st_UserKey.nKeySerial;
 				//移动序列号
