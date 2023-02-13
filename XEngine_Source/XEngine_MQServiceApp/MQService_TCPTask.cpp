@@ -254,10 +254,16 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 
 			pSt_ProtocolHdr->wReserve = 0;
 			XENGINE_DBUSERKEY st_UserKey;
+			XENGINE_DBTOPICOWNER st_DBOwner;
+
 			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
+			memset(&st_DBOwner, '\0', sizeof(XENGINE_DBTOPICOWNER));
 
 			_tcscpy(st_UserKey.tszUserName, st_UserInfo.tszUserName);
+			_tcscpy(st_DBOwner.tszUserName, st_UserInfo.tszUserName);
+
 			DBModule_MQUser_KeyDelete(&st_UserKey);
+			DBModule_MQUser_OwnerDelete(&st_DBOwner);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求用户删除成功,用户名:%s"), lpszClientType, lpszClientAddr, st_UserInfo.tszUserName);

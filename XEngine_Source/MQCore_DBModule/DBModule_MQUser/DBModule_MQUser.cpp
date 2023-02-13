@@ -898,19 +898,33 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBO
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
-	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nAffectRow))
+	if ((_tcslen(pSt_DBOwner->tszUserName) > 0) && (_tcslen(pSt_DBOwner->tszQueueName) > 0))
 	{
-		DBModule_IsErrorOccur = TRUE;
-		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nAffectRow))
+		{
+			DBModule_IsErrorOccur = TRUE;
+			DBModule_dwErrorCode = DataBase_GetLastError();
+			return FALSE;
+		}
+		if (nAffectRow <= 0)
+		{
+			DBModule_IsErrorOccur = TRUE;
+			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
+			return FALSE;
+		}
 	}
-	if (nAffectRow <= 0)
+	else
 	{
-		DBModule_IsErrorOccur = TRUE;
-		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
-		return FALSE;
+		_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s'"), pSt_DBOwner->tszUserName);
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+		{
+			DBModule_IsErrorOccur = TRUE;
+			DBModule_dwErrorCode = DataBase_GetLastError();
+			return FALSE;
+		}
 	}
+	
 	return TRUE;
 }
 /********************************************************************
