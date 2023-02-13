@@ -442,13 +442,17 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKey
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	if (_tcslen(lpszKeyName) > 0)
+	if ((_tcslen(lpszUser) > 0) && (_tcslen(lpszKeyName) > 0))
 	{
 		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
 	}
-	else
+	else if ((_tcslen(lpszUser) > 0) && (_tcslen(lpszKeyName) <= 0))
 	{
 		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
+	}
+	else if ((_tcslen(lpszUser) <= 0) && (_tcslen(lpszKeyName) > 0))
+	{
+		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
 	}
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))

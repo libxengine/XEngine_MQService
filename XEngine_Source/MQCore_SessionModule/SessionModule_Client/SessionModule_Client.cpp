@@ -193,6 +193,55 @@ BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr,
 	return TRUE;
 }
 /********************************************************************
+函数名称：SessionModule_Client_GetAddr
+函数功能：获取用户地址
+ 参数.一：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：ptszUserAddr
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出用户地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CSessionModule_Client::SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR* ptszUserAddr)
+{
+	Session_IsErrorOccur = FALSE;
+
+	if (NULL == lpszUserName)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return FALSE;
+	}
+	BOOL bFound = FALSE;
+	st_Locker.lock_shared();
+	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
+	{
+		if (0 == _tcsncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcslen(lpszUserName)))
+		{
+			bFound = TRUE;
+			_tcscpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
+			break;
+		}
+	}
+	st_Locker.unlock_shared();
+
+	if (!bFound)
+	{
+		Session_IsErrorOccur = TRUE;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		return FALSE;
+	}
+	return TRUE;
+}
+/********************************************************************
 函数名称：SessionModule_Client_GetType
 函数功能：通过客户端获得连接的网络类型
  参数.一：lpszSessionStr
