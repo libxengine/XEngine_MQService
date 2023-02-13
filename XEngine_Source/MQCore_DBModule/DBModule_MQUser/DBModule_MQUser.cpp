@@ -597,7 +597,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, L
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `UserKey` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSourceTable, lpszDestTable);
+	_stprintf(tszSQLQuery, _T("UPDATE `UserKey` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -802,7 +802,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, 
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `UserTime` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSourceTable, lpszDestTable);
+	_stprintf(tszSQLQuery, _T("UPDATE `UserTime` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;
@@ -956,7 +956,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable,
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `KeyOwner` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszSourceTable, lpszDestTable);
+	_stprintf(tszSQLQuery, _T("UPDATE `KeyOwner` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;

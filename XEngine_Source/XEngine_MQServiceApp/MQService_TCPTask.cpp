@@ -694,6 +694,9 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				return FALSE;
 			}
 			pSt_ProtocolHdr->wReserve = 0;
+			DBModule_MQUser_KeyTopicUPDate(st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey);
+			DBModule_MQUser_TimeTopicUPDate(st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey);
+			DBModule_MQUser_OwnerTopicUPDate(st_MQProtocol.tszMQKey, st_MQTopic.tszMQKey);
 
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
