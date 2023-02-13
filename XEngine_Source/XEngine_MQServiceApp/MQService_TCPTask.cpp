@@ -600,10 +600,10 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			}
 		}
-		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQSERIAL == pSt_ProtocolHdr->unOperatorCode)
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->wReserve = 0;
-			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPSERIAL;
+			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICBIND;
 
 			XENGINE_DBUSERKEY st_Userkey;
 			memset(&st_Userkey, '\0', sizeof(XENGINE_DBUSERKEY));
