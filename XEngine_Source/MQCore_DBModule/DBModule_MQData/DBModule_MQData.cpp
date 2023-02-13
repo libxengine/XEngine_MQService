@@ -648,6 +648,15 @@ BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
+	_stprintf(tszSQLQuery, _T("UPDATE `%s` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSrcTable, lpszDstTable, lpszSrcTable);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 	_stprintf_s(tszSQLQuery, _T("RENAME TABLE `%s` TO `%s`"), lpszSrcTable, lpszDstTable);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
@@ -656,5 +665,6 @@ BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return FALSE;
 	}
+	
 	return TRUE;
 }
