@@ -428,7 +428,7 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKey
 {
 	DBModule_IsErrorOccur = FALSE;
 
-	if ((NULL == lpszUser) || (NULL == lpszKeyName))
+	if ((NULL == lpszUser) && (NULL == lpszKeyName))
 	{
 		DBModule_IsErrorOccur = TRUE;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
@@ -442,15 +442,15 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKey
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	if ((_tcslen(lpszUser) > 0) && (_tcslen(lpszKeyName) > 0))
+	if ((NULL != lpszUser) && (NULL != lpszKeyName))
 	{
 		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
 	}
-	else if ((_tcslen(lpszUser) > 0) && (_tcslen(lpszKeyName) <= 0))
+	else if ((NULL != lpszUser) && (NULL == lpszKeyName))
 	{
 		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
 	}
-	else if ((_tcslen(lpszUser) <= 0) && (_tcslen(lpszKeyName) > 0))
+	else if ((NULL == lpszUser) && (NULL != lpszKeyName))
 	{
 		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
 	}

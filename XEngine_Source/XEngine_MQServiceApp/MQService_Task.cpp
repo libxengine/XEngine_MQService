@@ -40,7 +40,11 @@ void CALLBACK MessageQueue_CBTask_TimePublish(LPCTSTR lpszQueueName, __int64x nI
 		int nNetType = 0;
 		TCHAR tszUserAddr[128];
 		memset(tszUserAddr, '\0', sizeof(tszUserAddr));
-
+		//跳过自己
+		if (0 == _tcsncmp(st_DBInfo.tszUserName, ppSt_ListUser[i]->tszUserName, _tcslen(st_DBInfo.tszUserName)))
+		{
+			continue;
+		}
 		SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 		SessionModule_Client_GetType(tszUserAddr, &nNetType);
 		ProtocolModule_Packet_Common(nNetType, &st_ProtocolHdr, &st_MQProtocol, tszMsgBuffer, &nMsgLen, st_DBInfo.tszMsgBuffer, st_DBInfo.nMsgLen);
