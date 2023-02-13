@@ -519,13 +519,23 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
 	TCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	if (_tcslen(pSt_UserKey->tszKeyName) <= 0)
+	if ((_tcslen(pSt_UserKey->tszKeyName) > 0) && (_tcslen(pSt_UserKey->tszUserName) > 0))
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	}
+	else if ((_tcslen(pSt_UserKey->tszKeyName) > 0) && (_tcslen(pSt_UserKey->tszUserName) <= 0))
+	{
+		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyName = '%s'"), pSt_UserKey->tszKeyName);
+	}
+	else if ((_tcslen(pSt_UserKey->tszKeyName) <= 0) && (_tcslen(pSt_UserKey->tszUserName) > 0))
 	{
 		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s'"), pSt_UserKey->tszUserName);
 	}
 	else
 	{
-		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
 	}
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
@@ -730,7 +740,21 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+	if (pSt_DBInfo->nIDMsg > 0)
+	{
+		_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+	}
+	else if (_tcslen(pSt_DBInfo->tszQueueName) > 0)
+	{
+		_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE tszQueueName = '%s'"), pSt_DBInfo->tszQueueName);
+	}
+	else
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return FALSE;
+	}
+
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
 		DBModule_IsErrorOccur = TRUE;

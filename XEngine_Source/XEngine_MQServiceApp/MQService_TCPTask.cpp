@@ -522,10 +522,17 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE;
 			//清理所有者
 			XENGINE_DBTOPICOWNER st_DBOwner;
+			XENGINE_DBUSERKEY st_UserKey;
+			XENGINE_DBTIMERELEASE st_DBInfo;
+
 			memset(&st_DBOwner, '\0', sizeof(XENGINE_DBTOPICOWNER));
+			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
+			memset(&st_DBInfo, '\0', sizeof(XENGINE_DBTIMERELEASE));
 
 			_tcscpy(st_DBOwner.tszUserName, tszUserName);
 			_tcscpy(st_DBOwner.tszQueueName, st_MQProtocol.tszMQKey);
+			_tcscpy(st_UserKey.tszKeyName, st_MQProtocol.tszMQKey);
+			_tcscpy(st_DBInfo.tszQueueName, st_MQProtocol.tszMQKey);
 
 			if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
 			{
@@ -541,6 +548,8 @@ BOOL MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCTSTR lpszC
 			//清楚数据库
 			SessionModule_Notify_Destory(st_MQProtocol.tszMQKey);
 			DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
+			DBModule_MQUser_KeyDelete(&st_UserKey);
+			DBModule_MQUser_TimeDelete(&st_DBInfo);
 			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
 			{
 				pSt_ProtocolHdr->wReserve = 0;
