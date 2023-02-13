@@ -411,6 +411,25 @@ extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
+/********************************************************************
+函数名称：DBModule_MQUser_KeyTopicUPDate
+函数功能：更新队列信息表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
 /*************************************************************************
 						定时发布导出函数
 **************************************************************************/
@@ -475,6 +494,25 @@ extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+/********************************************************************
+函数名称：DBModule_MQUser_TimeTopicUPDate
+函数功能：更新定时发布表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
 /*************************************************************************
 						主题所有者导出函数
 **************************************************************************/
@@ -520,3 +558,22 @@ extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 备注：
 *********************************************************************/
 extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerTopicUPDate
+函数功能：更新所有者表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);

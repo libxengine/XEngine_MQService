@@ -572,6 +572,41 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey)
 
 	return TRUE;
 }
+/********************************************************************
+函数名称：DBModule_MQUser_KeyTopicUPDate
+函数功能：更新队列信息表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_stprintf(tszSQLQuery, _T("UPDATE `UserKey` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSourceTable, lpszDestTable);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	return TRUE;
+}
 //////////////////////////////////////////////////////////////////////////
 /********************************************************************
 函数名称：DBModule_MQUser_TimeInsert
@@ -743,6 +778,41 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
 	return TRUE;
 }
 /********************************************************************
+函数名称：DBModule_MQUser_TimeTopicUPDate
+函数功能：更新定时发布表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_stprintf(tszSQLQuery, _T("UPDATE `UserTime` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSourceTable, lpszDestTable);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
+	return TRUE;
+}
+/********************************************************************
 函数名称：DBModule_MQUser_OwnerInsert
 函数功能：主题所有者插入
  参数.一：pSt_DBOwner
@@ -859,6 +929,41 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOw
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return FALSE;
 	}
+	return TRUE;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_OwnerTopicUPDate
+函数功能：更新所有者表
+ 参数.一：lpszSourceTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入原始表名
+ 参数.二：lpszDestTable
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入目标表名
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+BOOL CDBModule_MQUser::DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	DBModule_IsErrorOccur = FALSE;
+
+	TCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_stprintf(tszSQLQuery, _T("UPDATE `KeyOwner` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszSourceTable, lpszDestTable);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = TRUE;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return FALSE;
+	}
+
 	return TRUE;
 }
 //////////////////////////////////////////////////////////////////////////
