@@ -1,3 +1,39 @@
+XEngine_MQService V3.6.0.1001
+
+增加:主题所有者数据支持
+增加:为发布表增加时间字段
+修改:匹配XEngine到V7.48
+修改:消息数据库增加用户字段用于消息验证
+修改:主题修改需要验证用户了
+修改:消息修改需要验证用户
+修改:修改主题定时表和key和所有者表现在会一起修改了
+修改:改编表名称也会改变字段名了
+修改:删除消息表也会删除userkey和time表相对应的数据了
+修改:请求序列协议修改为绑定主题协议功能
+修改:协议名称统一
+修改:定时发布任务现在不会发布给自己了
+修改:获取消息会跳过超时和定时发布的消息了
+修复:错误码不正确的问题
+修复:未读消息初始化错误
+删除:会话通知代码
+
+added:topic owner
+added:create time for publish time
+modify:match xengine v7.48
+modify:message database added user field and use to message verification
+modify:topic name need ver user
+modify:message modify need to ver user
+modify:bucket name for timerelease and key and owner
+modify:change table name that to be change field name
+modify:can be delete userkey and timerelease datas when delete table
+modify:req serial protocol to bind topic
+modify:protocol name
+modify:release time task does not to notify user
+modify:break time task and left task when get message
+fixed:error code is incorrent
+fixed:unread memset is incorrent
+delete:unused notify code
+======================================================================================
 XEngine_MQService V3.5.0.1001
 
 增加:未读消息协议处理支持

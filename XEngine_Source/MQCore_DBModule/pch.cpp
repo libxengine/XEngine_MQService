@@ -121,6 +121,10 @@ extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY * pSt_UserKey)
 {
 	return m_DBUser.DBModule_MQUser_KeyUPDate(pSt_UserKey);
 }
+extern "C" BOOL DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	return m_DBUser.DBModule_MQUser_KeyTopicUPDate(lpszSourceTable, lpszDestTable);
+}
 /*************************************************************************
 						定时发布导出函数
 **************************************************************************/
@@ -139,4 +143,27 @@ extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
 extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime)
 {
 	return m_DBUser.DBModule_MQUser_TimeClaer(nTime);
+}
+extern "C" BOOL DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	return m_DBUser.DBModule_MQUser_TimeTopicUPDate(lpszSourceTable, lpszDestTable);
+}
+/*************************************************************************
+						主题所有者导出函数
+**************************************************************************/
+extern "C" BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerInsert(pSt_DBOwner);
+}
+extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerDelete(pSt_DBOwner);
+}
+extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER * pSt_DBOwner)
+{
+	return m_DBUser.DBModule_MQUser_OwnerQuery(pSt_DBOwner);
+}
+extern "C" BOOL DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+{
+	return m_DBUser.DBModule_MQUser_OwnerTopicUPDate(lpszSourceTable, lpszDestTable);
 }

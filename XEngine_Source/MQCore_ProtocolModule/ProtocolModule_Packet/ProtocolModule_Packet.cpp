@@ -458,7 +458,7 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
 		return FALSE;
 	}
-	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(PROTOCOL_PACKETUNREAD));
+	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
 	pSt_UNRead->nType = enPayType;
 	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)

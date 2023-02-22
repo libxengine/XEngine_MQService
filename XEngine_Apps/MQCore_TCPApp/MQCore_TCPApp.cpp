@@ -184,7 +184,7 @@ void MQ_Create()
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQCREATE;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.byIsReply = TRUE;           //获得处理返回结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -369,6 +369,12 @@ void MQ_TimePublish()
 		printf("接受数据失败！\n");
 		return;
 	}
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(st_XMQProtocol));
+
+	printf("接受到通知消息,主题:%s,序列:%lld,长度：%d，内容：%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_ProtocolHdr.unPacketSize - sizeof(XENGINE_PROTOCOL_XMQ), ptszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 
@@ -425,7 +431,7 @@ void MQ_GetNumber()
 		}
 	}
 }
-void MQ_GetSerial()
+void MQ_BindTopic()
 {
 	int nLen = 0;
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
@@ -438,7 +444,7 @@ void MQ_GetSerial()
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQSERIAL;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.byIsReply = TRUE;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -493,7 +499,7 @@ void MQ_DeleteTopic()
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.byIsReply = TRUE;       //不获取结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -512,47 +518,6 @@ void MQ_DeleteTopic()
 	}
 }
 
-//订阅
-void MQ_Subscribe()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	TCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.wReserve = 1;            //1为请求订阅
-	st_ProtocolHdr.byIsReply = TRUE;
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		printf("发送投递失败！\n");
-		return;
-	}
-	nLen = 0;
-	CHAR* ptszMsgBuffer = NULL;
-	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
-	{
-		printf("接受数据失败！\n");
-		return;
-	}
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-}
 int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
@@ -575,12 +540,11 @@ int main(int argc, char** argv)
 	{
 		MQ_Post(lpszMsgBuffer);
 	}
-	MQ_GetSerial();
 	MQ_GetNumber();
+	MQ_BindTopic();
 	MQ_Get();
 	MQ_Get();
 	MQ_Get();
-	MQ_Subscribe();
 	MQ_TimePublish();
 	MQ_DeleteTopic();
 	MQ_DeleteUser();

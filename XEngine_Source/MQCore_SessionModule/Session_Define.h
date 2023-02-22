@@ -21,14 +21,6 @@ typedef enum
 	ENUM_MQCORE_SESSION_CLIENT_TYPE_HTTP = 3
 }ENUM_MQCORE_SESSION_CLIENT_TYPE;
 //////////////////////////////////////////////////////////////////////////
-//                        导出的数据结构
-//////////////////////////////////////////////////////////////////////////
-typedef struct
-{
-	TCHAR tszNotifyAddr[128];
-	ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType;
-}SESSION_NOTIFYCLIENT, * LPSESSION_NOTIFYCLIENT;
-//////////////////////////////////////////////////////////////////////////
 //                        导出回调函数
 //////////////////////////////////////////////////////////////////////////
 typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCSTR lpszClientAddr, LPCTSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, LPVOID lParam);
@@ -130,6 +122,25 @@ extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
 ************************************************************************/
 extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
 /********************************************************************
+函数名称：SessionModule_Client_GetAddr
+函数功能：获取用户地址
+ 参数.一：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：ptszUserAddr
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出用户地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" BOOL SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR* ptszUserAddr);
+/********************************************************************
 函数名称：SessionModule_Client_GetType
 函数功能：通过客户端获得连接的网络类型
  参数.一：lpszSessionStr
@@ -162,120 +173,3 @@ extern "C" BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_N
 备注：
 *********************************************************************/
 extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr);
-/************************************************************************/
-/*                        订阅                                          */
-/************************************************************************/
-/********************************************************************
-函数名称：SessionModule_Notify_Create
-函数功能：创建主题
- 参数.一：lpszTopicName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入主题名
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Notify_Create(LPCTSTR lpszTopicName);
-/********************************************************************
-函数名称：SessionModule_Notify_Destory
-函数功能：销毁一个主题
- 参数.一：lpszTopicName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入主题名
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Notify_Destory(LPCTSTR lpszTopicName);
-/************************************************************************
-函数名称：SessionModule_Notify_Insert
-函数功能：插入一个订阅客户端到指定主题
- 参数.一：lpszTopicStr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入主题名
- 参数.二：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要插入的客户端
- 参数.三：enClientType
-  In/Out：In
-  类型：枚举型
-  可空：N
-  意思：客户端类型
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-************************************************************************/
-extern "C" BOOL SessionModule_Notify_Insert(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
-/************************************************************************
-函数名称：SessionModule_Notify_Delete
-函数功能：从一个主题中删除一个订阅客户端
- 参数.一：lpszTopicStr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入主题名
- 参数.二：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要删除的客户端
- 参数.三：enClientType
-  In/Out：In
-  类型：枚举型
-  可空：N
-  意思：客户端类型
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-************************************************************************/
-extern "C" BOOL SessionModule_Notify_Delete(LPCTSTR lpszTopicStr, LPCTSTR lpszClientAddr, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType);
-/********************************************************************
-函数名称：SessionModule_Notify_GetList
-函数功能：获取主题对应的订阅列表
- 参数.一：lpszTopicStr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入主题名
- 参数.二：pppSt_ListClient
-  In/Out：Out
-  类型：三级指针
-  可空：N
-  意思：输出客户端地址列表
- 参数.三：pInt_ListCount
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：输出列表个数
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Notify_GetList(LPCTSTR lpszTopicStr, SESSION_NOTIFYCLIENT *** pppSt_ListClient, int* pInt_ListCount);
-/********************************************************************
-函数名称：SessionModule_Notify_DelClient
-函数功能：删除指定客户端的订阅内容
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要删除的客户端
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" BOOL SessionModule_Notify_DelClient(LPCTSTR lpszClientAddr);
