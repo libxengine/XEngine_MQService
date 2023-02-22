@@ -5,7 +5,6 @@
     "nTCPPort":5200,
     "nHttpPort":5201,
     "nWSPort":5202,
-    "nRPCPort":5203,
     "XMax":{
         "nMaxClient":10000,
         "nMaxQueue":10000,
@@ -24,10 +23,10 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLAddr":"192.168.1.12",
+        "SQLAddr":"192.168.1.10",
         "SQLPort":3306,
-        "SQLUser":"ruiyue",
-        "SQLPass":"123123Ruiyue"
+        "SQLUser":"root",
+        "SQLPass":"123123aa"
     },
     "XPass":{
         "nTimeout":2,
@@ -37,6 +36,7 @@
         "tszPassLogout":""
     },
     "XVer":[
+        "3.6.0.1001 Build20230222",
         "3.5.0.1001 Build20230106",
         "3.4.0.1001 Build20221110",
         "3.3.0.1001 Build20220805",
