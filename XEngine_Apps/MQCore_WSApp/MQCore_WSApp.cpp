@@ -105,7 +105,7 @@ void MQ_Create()
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonMQProtocol;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQCREATE;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
@@ -177,7 +177,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 }
 
 
-void MQ_GetSerial()
+void MQ_BindTopic()
 {
 	int nLen = 0;
 	TCHAR tszMsgBuffer[2048];
@@ -187,7 +187,7 @@ void MQ_GetSerial()
 	Json::Value st_JsonMQProtocol;
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQSERIAL;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
@@ -283,42 +283,6 @@ void MQ_Get()
 	printf("MQ_Get:%s\n", tszMsgBuffer);
 }
 
-//订阅
-void MQ_Subscribe()
-{
-	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	Json::Value st_JsonRoot;
-	Json::Value st_JsonMQProtocol;
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNOTIFY;
-	st_JsonRoot["wReserve"] = 1;       //1为请求订阅
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-
-	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-
-	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-
-	nLen = st_JsonRoot.toStyledString().length();
-	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
-
-	if (!MQ_SendPacket(tszMsgBuffer, nLen))
-	{
-		printf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
-	{
-		printf("接受数据失败！\n");
-		return;
-	}
-	printf("MQ_Subscribe:%s\n", tszMsgBuffer);
-}
-
 int main()
 {
 #ifdef _WINDOWS
@@ -370,10 +334,9 @@ int main()
 	MQ_Authorize();
 	MQ_Create();
 	MQ_Post("123hello");
-	MQ_GetSerial();
 	MQ_GetNumber();
+	MQ_BindTopic();
 	MQ_Get();
-	MQ_Subscribe();
 
 #ifdef _WINDOWS
 	WSACleanup();

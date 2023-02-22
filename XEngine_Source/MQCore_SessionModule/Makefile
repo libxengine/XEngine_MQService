@@ -8,7 +8,7 @@ LOADBIN =
 LIB = 
 LIBEX = -ldl -lpthread
 LOADSO = -Wl,-rpath=
-LIBINCLUDE = SessionModule_Client.o SessionModule_Notify.o pch.o
+LIBINCLUDE = SessionModule_Client.o pch.o
 
 ifeq ($(shell uname),Darwin)
 	SHAREDLL = dylib
@@ -39,8 +39,6 @@ all:$(LIBINCLUDE)
 
 SessionModule_Client.o:./SessionModule_Client/SessionModule_Client.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Client/SessionModule_Client.cpp 
-SessionModule_Notify.o:./SessionModule_Notify/SessionModule_Notify.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Notify/SessionModule_Notify.cpp
 
 pch.o:./pch.cpp                 		       	    
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./pch.cpp

@@ -22,10 +22,6 @@
 #include <unordered_map>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
-#include <XEngine_Include/XEngine_ProtocolHdr.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_ProtocolHdr.h>
 using namespace std;
 #ifdef _UNICODE
 typedef std::wstring tstring;
@@ -49,7 +45,3 @@ typedef std::string tstring;
 *********************************************************************/
 extern BOOL Session_IsErrorOccur;
 extern DWORD Session_dwErrorCode;
-
-#ifdef _WINDOWS
-#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
-#endif

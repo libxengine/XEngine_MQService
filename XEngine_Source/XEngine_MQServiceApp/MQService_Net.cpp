@@ -108,29 +108,28 @@ void XEngine_MQXService_Close(LPCTSTR lpszClientAddr, int nIPProto, BOOL bHeart)
             int nSDLen = 0;
 			int nHTTPCode = 0;
 			TCHAR tszSDBuffer[1024];
-			APIHELP_HTTPPARAMENT st_HTTPParament;
+            NETHELP_HTTPCLIENT st_HTTPParament;
 			XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
 
             memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-			memset(&st_HTTPParament, '\0', sizeof(APIHELP_HTTPPARAMENT));
+			memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
             memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 			st_HTTPParament.nTimeConnect = 2;
 
 			ProtocolModule_Packet_PassAuth(&st_ProtocolAuth, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT);
-			APIHelp_HttpRequest_Custom(_T("POST"), st_ServiceCfg.st_XPass.tszPassLogout, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
+			APIClient_Http_Request(_T("POST"), st_ServiceCfg.st_XPass.tszPassLogout, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
 			if (200 == nHTTPCode)
 			{
-                XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程关闭连接失败,错误:%lX,HTTPCode:%d"), nIPProto, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+                XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _T("%s客户端:%s,请求远程关闭连接成功"), nIPProto, lpszClientAddr);
 			}
             else
             {
-                XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程关闭连接失败,错误:%lX,HTTPCode:%d"), nIPProto, lpszClientAddr, APIHelp_GetLastError(), nHTTPCode);
+                XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _T("%s客户端:%s,请求远程关闭连接失败,HTTPCode:%d"), nIPProto, lpszClientAddr, nHTTPCode);
             }
         }
         DBModule_MQUser_UserUPDate(&st_UserInfo);
     }
-    SessionModule_Notify_DelClient(lpszClientAddr);
     SessionModule_Client_Delete(lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////

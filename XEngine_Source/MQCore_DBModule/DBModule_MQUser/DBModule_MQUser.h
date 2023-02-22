@@ -29,11 +29,18 @@ public:
 	BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount);
 	BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 	BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
+	BOOL DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
 public:
 	BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
 	BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+	BOOL DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
+public:
+	BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+	BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+	BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+	BOOL DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
 protected:
 	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(LPVOID lParam);
 private:
@@ -43,5 +50,5 @@ private:
 	CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH lpCall_TimePublish;
 private:
 	BOOL bIsRun;
-	XHDATA xhDBSQL;
+	XNETHANDLE xhDBSQL;
 };

@@ -29,6 +29,7 @@ public:
     BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType);
     BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
     BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
+    BOOL SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR* ptszUserAddr);
     BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType);
     BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr);
 protected:

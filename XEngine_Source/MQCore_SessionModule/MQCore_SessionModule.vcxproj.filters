@@ -19,12 +19,6 @@
     <Filter Include="源文件\SessionModule_Client">
       <UniqueIdentifier>{c7883222-ba6a-4681-af59-553676384789}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\SessionModule_Notify">
-      <UniqueIdentifier>{63c007ec-b8c8-4015-b0c0-616b6885cf8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\SessionModule_Notify">
-      <UniqueIdentifier>{0d02b2a6-4fc5-4c48-afeb-28053ac7e1df}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -42,9 +36,6 @@
     <ClInclude Include="Session_Error.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SessionModule_Notify\SessionModule_Notify.h">
-      <Filter>头文件\SessionModule_Notify</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -55,9 +46,6 @@
     </ClCompile>
     <ClCompile Include="SessionModule_Client\SessionModule_Client.cpp">
       <Filter>源文件\SessionModule_Client</Filter>
-    </ClCompile>
-    <ClCompile Include="SessionModule_Notify\SessionModule_Notify.cpp">
-      <Filter>源文件\SessionModule_Notify</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
