@@ -106,7 +106,7 @@ void MQ_Create()
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonMQProtocol;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQCREATE;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 	st_JsonRoot["xhToken"] = xhToken;
 
@@ -165,7 +165,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
-void MQ_GetNumber()
+void MQ_BindTopic()
 {
 	int nLen = 0;
 	TCHAR tszMsgBuffer[2048];
@@ -175,10 +175,11 @@ void MQ_GetNumber()
 	Json::Value st_JsonMQProtocol;
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 	st_JsonRoot["xhToken"] = xhToken;
 
+	st_JsonMQProtocol["nSerial"] = 1; //设置为1开始读取
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 
@@ -209,7 +210,6 @@ void MQ_Get()
 	st_JsonRoot["xhToken"] = xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 1;
 
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 
@@ -240,7 +240,7 @@ void MQ_ModifyMsg()
 	st_JsonRoot["xhToken"] = xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 1;             //序列号,0服务会自动处理
+	st_JsonMQProtocol["nSerial"] = 1;             //序列号
 	st_JsonMQProtocol["nKeepTime"] = -1;       
 	st_JsonMQProtocol["nGetTimer"] = 0;
 
@@ -310,7 +310,7 @@ void MQ_Delete()
 	Json::Value st_JsonMQProtocol;
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 	st_JsonRoot["xhToken"] = xhToken;
 
@@ -341,7 +341,7 @@ int main()
 	MQ_UNRead();
 	MQ_Create();
 	MQ_Post("123hello");
-	MQ_GetNumber();
+	MQ_BindTopic();
 	MQ_Get();
 	MQ_ModifyMsg();
 	MQ_ModifyTopic();
