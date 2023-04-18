@@ -113,8 +113,8 @@ bool CSessionModule_Client::SessionModule_Client_Create(LPCXSTR lpszClientAddr, 
 
 	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nTimeStart = time(NULL);
-	_tcscpy(st_SessionInfo.tszUserName, lpszUserName);
-	_tcscpy(st_SessionInfo.tszUserAddr, lpszClientAddr);
+	_tcsxcpy(st_SessionInfo.tszUserName, lpszUserName);
+	_tcsxcpy(st_SessionInfo.tszUserAddr, lpszClientAddr);
 
     st_Locker.lock();
 	stl_MapSession.insert(make_pair(lpszClientAddr, st_SessionInfo));
@@ -166,7 +166,7 @@ bool CSessionModule_Client::SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
   意思：是否成功
 备注：
 ************************************************************************/
-bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptszUserName /* = NULL */)
+bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptszUserName /* = NULL */)
 {
 	Session_IsErrorOccur = false;
 
@@ -187,7 +187,7 @@ bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr,
 	}
 	if (NULL != ptszUserName)
 	{
-		_tcscpy(ptszUserName, stl_MapIterator->second.tszUserName);
+		_tcsxcpy(ptszUserName, stl_MapIterator->second.tszUserName);
 	}
 	st_Locker.unlock_shared();
 	return true;
@@ -210,7 +210,7 @@ bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr,
   意思：是否成功
 备注：
 *********************************************************************/
-bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR* ptszUserAddr)
+bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr)
 {
 	Session_IsErrorOccur = false;
 
@@ -224,10 +224,10 @@ bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, T
 	st_Locker.lock_shared();
 	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
 	{
-		if (0 == _tcsncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcslen(lpszUserName)))
+		if (0 == _tcsxncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcsxlen(lpszUserName)))
 		{
 			bFound = true;
-			_tcscpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
+			_tcsxcpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
 			break;
 		}
 	}

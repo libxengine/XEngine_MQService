@@ -23,11 +23,11 @@ typedef enum
 //////////////////////////////////////////////////////////////////////////
 //                        导出回调函数
 //////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam);
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD SessionModule_GetLastError(int* pInt_SysError = NULL);
+extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError = NULL);
 /************************************************************************/
 /*                        客户端会话                                    */
 /************************************************************************/
@@ -120,7 +120,7 @@ extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
   意思：是否成功
 备注：
 ************************************************************************/
-extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
+extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptszUserName = NULL);
 /********************************************************************
 函数名称：SessionModule_Client_GetAddr
 函数功能：获取用户地址
@@ -139,7 +139,7 @@ extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptsz
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR* ptszUserAddr);
+extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr);
 /********************************************************************
 函数名称：SessionModule_Client_GetType
 函数功能：通过客户端获得连接的网络类型

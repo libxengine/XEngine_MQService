@@ -44,4 +44,4 @@ typedef std::string tstring;
 //    History:
 *********************************************************************/
 extern bool Session_IsErrorOccur;
-extern DWORD Session_dwErrorCode;
+extern XLONG Session_dwErrorCode;

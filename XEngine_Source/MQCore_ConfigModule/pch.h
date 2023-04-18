@@ -43,7 +43,7 @@ typedef std::string tstring;
 //    History:
 *********************************************************************/
 extern bool Config_IsErrorOccur;
-extern DWORD Config_dwErrorCode;
+extern XLONG Config_dwErrorCode;
 
 #ifdef _MSC_BUILD
 #ifdef _DEBUG

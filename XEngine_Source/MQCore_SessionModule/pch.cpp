@@ -12,13 +12,13 @@
 //    History:
 *********************************************************************/
 bool Session_IsErrorOccur = false;
-DWORD Session_dwErrorCode = 0;
+XLONG Session_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////////
 CSessionModule_Client m_SessionClient;
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数实现
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD SessionModule_GetLastError(int* pInt_SysError)
+extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError)
 {
 	if (NULL != pInt_SysError)
 	{
@@ -45,11 +45,11 @@ extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
-extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR * ptszUserName)
+extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR * ptszUserName)
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
 }
-extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR * ptszUserAddr)
+extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR * ptszUserAddr)
 {
 	return m_SessionClient.SessionModule_Client_GetAddr(lpszUserName, ptszUserAddr);
 }

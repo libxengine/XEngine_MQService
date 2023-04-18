@@ -20,8 +20,8 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 			{
 				int nMsgLen = 0;
 				int nHdrCount = 0;
-				CHAR** ppszHdrList;
-				CHAR* ptszMsgBuffer = NULL;
+				XCHAR** ppszHdrList;
+				XCHAR* ptszMsgBuffer = NULL;
 				RFCCOMPONENTS_HTTP_REQPARAM st_HTTPReqparam;
 
 				memset(&st_HTTPReqparam, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
@@ -38,13 +38,13 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 	}
 	return 0;
 }
-bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, TCHAR** pptszListHdr, int nHdrCount)
+bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR** pptszListHdr, int nHdrCount)
 {
-	LPCXSTR lpszMethod = _T("POST");
-	if (0 == _tcsnicmp(lpszMethod, pSt_HTTPParam->tszHttpMethod, _tcslen(lpszMethod)))
+	LPCXSTR lpszMethod = _X("POST");
+	if (0 == _tcsxnicmp(lpszMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszMethod)))
 	{
 		int nPLen = 0;
-		TCHAR tszMsgBuffer[4096];
+		XCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;
 
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -55,7 +55,7 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("HTTP消息端:%s,协议错误"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("HTTP消息端:%s,协议错误"), lpszClientAddr);
 	}
 	return true;
 }

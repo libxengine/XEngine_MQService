@@ -12,8 +12,8 @@
 *********************************************************************/
 typedef struct
 {
-    TCHAR tszUserAddr[128];                                             //用户地址
-    TCHAR tszUserName[128];                                             //登录的用户名
+    XCHAR tszUserAddr[128];                                             //用户地址
+    XCHAR tszUserName[128];                                             //登录的用户名
     time_t nTimeStart;                                                  //时间
     int nNetType;                                                       //网络类型
 }XENGINE_SESSIONINFO, * LPXENGINE_SESSIONINFO;
@@ -28,8 +28,8 @@ public:
     bool SessionModule_Client_Destory();
     bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType);
     bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
-    bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
-    bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR* ptszUserAddr);
+    bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptszUserName = NULL);
+    bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr);
     bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
     bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr);
 protected:

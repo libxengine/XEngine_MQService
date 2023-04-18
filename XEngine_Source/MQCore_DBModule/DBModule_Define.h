@@ -20,44 +20,44 @@ typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCXST
 //消息队列
 typedef struct  
 {
-	TCHAR tszMsgBuffer[8192];                                             //消息内容
-	TCHAR tszUserName[256];                                               //谁发布的消息
-	TCHAR tszQueueName[256];                                              //此消息的KEY
-	TCHAR tszQueueLeftTime[64];                                           //过期时间
-	TCHAR tszQueuePublishTime[64];                                        //发布时间
-	TCHAR tszQueueCreateTime[64];                                         //创建时间
+	XCHAR tszMsgBuffer[8192];                                             //消息内容
+	XCHAR tszUserName[256];                                               //谁发布的消息
+	XCHAR tszQueueName[256];                                              //此消息的KEY
+	XCHAR tszQueueLeftTime[64];                                           //过期时间
+	XCHAR tszQueuePublishTime[64];                                        //发布时间
+	XCHAR tszQueueCreateTime[64];                                         //创建时间
 	__int64x nQueueSerial;                                                //包序列号
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
-	BYTE byMsgType;                                                       //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
+	XBYTE byMsgType;                                                       //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
 }XENGINE_DBMESSAGEQUEUE;
 typedef struct
 {
-	TCHAR tszQueueName[256];                                              //此消息的KEY
-	TCHAR tszCreateTime[64];                                              //创建时间
+	XCHAR tszQueueName[256];                                              //此消息的KEY
+	XCHAR tszCreateTime[64];                                              //创建时间
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
 }XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct
 {
-	TCHAR tszUserName[MAX_PATH];                                          //用户名
-	TCHAR tszKeyName[MAX_PATH];                                           //绑定的KEY
-	TCHAR tszUPTime[64];                                                  //最后更新时间
-	TCHAR tszCreateTime[64];                                              //创建的时间
+	XCHAR tszUserName[MAX_PATH];                                          //用户名
+	XCHAR tszKeyName[MAX_PATH];                                           //绑定的KEY
+	XCHAR tszUPTime[64];                                                  //最后更新时间
+	XCHAR tszCreateTime[64];                                              //创建的时间
 	__int64x nKeySerial;                                                  //包序列号
 }XENGINE_DBUSERKEY;
 //主题所有者
 typedef struct
 {
-	TCHAR tszQueueName[256];                                              //主题名称
-	TCHAR tszUserName[256];                                               //主题所有者
-	TCHAR tszCreateTime[64];                                              //创建时间
+	XCHAR tszQueueName[256];                                              //主题名称
+	XCHAR tszUserName[256];                                               //主题所有者
+	XCHAR tszCreateTime[64];                                              //创建时间
 }XENGINE_DBTOPICOWNER;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD DBModule_GetLastError(int *pInt_SysError = NULL);
+extern "C" XLONG DBModule_GetLastError(int *pInt_SysError = NULL);
 /*************************************************************************
                         消息队列导出函数
 **************************************************************************/

@@ -53,7 +53,7 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -114,7 +114,7 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 
 		if (!st_JsonMQProtocol["tszMQKey"].isNull())
 		{
-			_tcscpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
+			_tcsxcpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		}
 		if (!st_JsonMQProtocol["nSerial"].isNull())
 		{
@@ -138,8 +138,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 	if (!st_JsonRoot["st_Auth"].isNull())
 	{
 		Json::Value st_JsonAuth = st_JsonRoot["st_Auth"];
-		_tcscpy(st_ProtocolAuth.tszUserName, st_JsonAuth["tszUserName"].asCString());
-		_tcscpy(st_ProtocolAuth.tszUserPass, st_JsonAuth["tszUserPass"].asCString());
+		_tcsxcpy(st_ProtocolAuth.tszUserName, st_JsonAuth["tszUserName"].asCString());
+		_tcsxcpy(st_ProtocolAuth.tszUserPass, st_JsonAuth["tszUserPass"].asCString());
 
 		if (!st_JsonAuth["enClientType"].isNull())
 		{
@@ -173,15 +173,15 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 		}
 		if (!st_JsonUser["tszUserName"].isNull())
 		{
-			_tcscpy(st_ProtocolInfo.tszUserName, st_JsonUser["tszUserName"].asCString());
+			_tcsxcpy(st_ProtocolInfo.tszUserName, st_JsonUser["tszUserName"].asCString());
 		}
 		if (!st_JsonUser["tszUserPass"].isNull())
 		{
-			_tcscpy(st_ProtocolInfo.tszUserPass, st_JsonUser["tszUserPass"].asCString());
+			_tcsxcpy(st_ProtocolInfo.tszUserPass, st_JsonUser["tszUserPass"].asCString());
 		}
 		if (!st_JsonUser["tszEMailAddr"].isNull())
 		{
-			_tcscpy(st_ProtocolInfo.tszEMailAddr, st_JsonUser["tszEMailAddr"].asCString());
+			_tcsxcpy(st_ProtocolInfo.tszEMailAddr, st_JsonUser["tszEMailAddr"].asCString());
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERINFO);
 	}

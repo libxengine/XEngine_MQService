@@ -36,7 +36,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     Json::Value st_JsonRoot;
     Json::CharReaderBuilder st_JsonBuilder;
 
-    FILE* pSt_File = _tfopen(lpszConfigFile, _T("rb"));
+    FILE* pSt_File = _xtfopen(lpszConfigFile, _X("rb"));
     if (NULL == pSt_File)
     {
         Config_IsErrorOccur = true;
@@ -44,7 +44,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         return false;
     }
     int nCount = 0;
-    TCHAR tszMsgBuffer[4096];
+    XCHAR tszMsgBuffer[4096];
     while (1)
     {
         int nRet = fread(tszMsgBuffer + nCount, 1, 2048, pSt_File);
@@ -63,8 +63,8 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
         return false;
     }
-    _tcscpy(pSt_ServerConfig->tszIPAddr,st_JsonRoot["tszIPAddr"].asCString());
-    _tcscpy(pSt_ServerConfig->tszTopic, st_JsonRoot["tszTopic"].asCString());
+    _tcsxcpy(pSt_ServerConfig->tszIPAddr,st_JsonRoot["tszIPAddr"].asCString());
+    _tcsxcpy(pSt_ServerConfig->tszTopic, st_JsonRoot["tszTopic"].asCString());
     pSt_ServerConfig->bDeamon = st_JsonRoot["bDeamon"].asInt();
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
@@ -113,9 +113,9 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     }
     Json::Value st_JsonXSql = st_JsonRoot["XSql"];
     pSt_ServerConfig->st_XSql.nSQLPort = st_JsonXSql["SQLPort"].asInt();
-    _tcscpy(pSt_ServerConfig->st_XSql.tszSQLAddr,st_JsonXSql["SQLAddr"].asCString());
-    _tcscpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
-    _tcscpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
+    _tcsxcpy(pSt_ServerConfig->st_XSql.tszSQLAddr,st_JsonXSql["SQLAddr"].asCString());
+    _tcsxcpy(pSt_ServerConfig->st_XSql.tszSQLUser,st_JsonXSql["SQLUser"].asCString());
+    _tcsxcpy(pSt_ServerConfig->st_XSql.tszSQLPass,st_JsonXSql["SQLPass"].asCString());
 
 	if (st_JsonRoot["XPass"].empty() || (5 != st_JsonRoot["XPass"].size()))
 	{
@@ -125,10 +125,10 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	}
 	Json::Value st_JsonXPass = st_JsonRoot["XPass"];
     pSt_ServerConfig->st_XPass.nTimeout = st_JsonXPass["nTimeout"].asInt();
-    _tcscpy(pSt_ServerConfig->st_XPass.tszPassLogin, st_JsonXPass["tszPassLogin"].asCString());
-	_tcscpy(pSt_ServerConfig->st_XPass.tszPassLogout, st_JsonXPass["tszPassLogout"].asCString());
-	_tcscpy(pSt_ServerConfig->st_XPass.tszPassRegister, st_JsonXPass["tszPassRegister"].asCString());
-	_tcscpy(pSt_ServerConfig->st_XPass.tszPassUNReg, st_JsonXPass["tszPassUNReg"].asCString());
+    _tcsxcpy(pSt_ServerConfig->st_XPass.tszPassLogin, st_JsonXPass["tszPassLogin"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassLogout, st_JsonXPass["tszPassLogout"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassRegister, st_JsonXPass["tszPassRegister"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassUNReg, st_JsonXPass["tszPassUNReg"].asCString());
 
 	if (st_JsonRoot["XVer"].empty())
 	{

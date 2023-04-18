@@ -12,13 +12,13 @@
 //    History:
 *********************************************************************/
 bool Config_IsErrorOccur = false;
-DWORD Config_dwErrorCode = 0;
+XLONG Config_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////
 CConfig_Json m_ConfigJson;
 //////////////////////////////////////////////////////////////////////
 //                        导出函数定义
 //////////////////////////////////////////////////////////////////////
-extern "C" DWORD Config_GetLastError(int* pInt_ErrorCode)
+extern "C" XLONG Config_GetLastError(int* pInt_ErrorCode)
 {
 	if (pInt_ErrorCode != NULL)
 	{

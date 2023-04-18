@@ -15,8 +15,8 @@
 //////////////////////////////////////////////////////////////////////////
 typedef struct tag_XEngine_ServerConfig
 {
-    TCHAR tszIPAddr[128];
-    TCHAR tszTopic[128];
+    XCHAR tszIPAddr[128];
+    XCHAR tszTopic[128];
     bool bDeamon;
     int nTCPPort;
     int nHttpPort;
@@ -43,18 +43,18 @@ typedef struct tag_XEngine_ServerConfig
     }st_XLog;
     struct
     {
-        TCHAR tszSQLAddr[128];
-        TCHAR tszSQLUser[128];
-        TCHAR tszSQLPass[128];
-        TCHAR tszDBName[128];                                                
+        XCHAR tszSQLAddr[128];
+        XCHAR tszSQLUser[128];
+        XCHAR tszSQLPass[128];
+        XCHAR tszDBName[128];                                                
         int nSQLPort;
     }st_XSql;
     struct  
     {
-        TCHAR tszPassRegister[MAX_PATH];
-        TCHAR tszPassUNReg[MAX_PATH];
-        TCHAR tszPassLogin[MAX_PATH];
-        TCHAR tszPassLogout[MAX_PATH];
+        XCHAR tszPassRegister[MAX_PATH];
+        XCHAR tszPassUNReg[MAX_PATH];
+        XCHAR tszPassLogin[MAX_PATH];
+        XCHAR tszPassLogout[MAX_PATH];
         int nTimeout;
     }st_XPass;
     struct
@@ -65,7 +65,7 @@ typedef struct tag_XEngine_ServerConfig
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数定义
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD Config_GetLastError(int *pInt_ErrorCode = NULL);
+extern "C" XLONG Config_GetLastError(int *pInt_ErrorCode = NULL);
 /************************************************************************/
 /*                        文件配置读取                                  */
 /************************************************************************/

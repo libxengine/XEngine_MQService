@@ -42,7 +42,7 @@ using namespace std;
 //    History:
 *********************************************************************/
 extern bool DBModule_IsErrorOccur;
-extern DWORD DBModule_dwErrorCode;
+extern XLONG DBModule_dwErrorCode;
 
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")

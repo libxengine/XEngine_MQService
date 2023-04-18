@@ -13,14 +13,14 @@
 //    History:
 *********************************************************************/
 bool DBModule_IsErrorOccur = false;
-DWORD DBModule_dwErrorCode = 0;
+XLONG DBModule_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////////
 CDBModule_MQData m_DBData;
 CDBModule_MQUser m_DBUser;
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD DBModule_GetLastError(int* pInt_SysError)
+extern "C" XLONG DBModule_GetLastError(int* pInt_SysError)
 {
 	if (NULL != pInt_SysError)
 	{
