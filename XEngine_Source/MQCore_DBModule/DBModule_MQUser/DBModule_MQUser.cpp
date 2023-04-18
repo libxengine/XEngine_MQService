@@ -55,14 +55,9 @@ bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return false;
     }
-#ifdef _WINDOWS
-    LPCXSTR lpszStrCharset = _X("gbk");
-#else
-    LPCXSTR lpszStrCharset = _X("utf8");
-#endif
     //连接数据库
     _tcsxcpy(pSt_DBConnector->tszDBName, _X("XEngine_MQUser"));
-    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, true, lpszStrCharset))
+    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector))
     {
         DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
