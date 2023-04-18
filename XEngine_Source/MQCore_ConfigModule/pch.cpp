@@ -11,7 +11,7 @@
 //    Purpose:     导出函数实现
 //    History:
 *********************************************************************/
-BOOL Config_IsErrorOccur = FALSE;
+bool Config_IsErrorOccur = false;
 DWORD Config_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////
 CConfig_Json m_ConfigJson;
@@ -29,7 +29,7 @@ extern "C" DWORD Config_GetLastError(int* pInt_ErrorCode)
 /************************************************************************/
 /*                        配置文件读取                                  */
 /************************************************************************/
-extern "C" BOOL Config_Json_File(LPCTSTR lpszConfigFile, XENGINE_SERVERCONFIG * pSt_ServerConfig)
+extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG * pSt_ServerConfig)
 {
 	return m_ConfigJson.Config_Json_File(lpszConfigFile, pSt_ServerConfig);
 }

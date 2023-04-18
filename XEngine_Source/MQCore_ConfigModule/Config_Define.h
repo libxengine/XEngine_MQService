@@ -17,7 +17,7 @@ typedef struct tag_XEngine_ServerConfig
 {
     TCHAR tszIPAddr[128];
     TCHAR tszTopic[128];
-    BOOL bDeamon;
+    bool bDeamon;
     int nTCPPort;
     int nHttpPort;
     int nWSPort;
@@ -69,4 +69,4 @@ extern "C" DWORD Config_GetLastError(int *pInt_ErrorCode = NULL);
 /************************************************************************/
 /*                        文件配置读取                                  */
 /************************************************************************/
-extern "C" BOOL Config_Json_File(LPCTSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig);
+extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig);

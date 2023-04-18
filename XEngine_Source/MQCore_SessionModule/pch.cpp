@@ -11,7 +11,7 @@
 //    Purpose:     导出实现
 //    History:
 *********************************************************************/
-BOOL Session_IsErrorOccur = FALSE;
+bool Session_IsErrorOccur = false;
 DWORD Session_dwErrorCode = 0;
 //////////////////////////////////////////////////////////////////////////
 CSessionModule_Client m_SessionClient;
@@ -29,35 +29,35 @@ extern "C" DWORD SessionModule_GetLastError(int* pInt_SysError)
 /************************************************************************/
 /*                        客户端会话                                    */
 /************************************************************************/
-extern "C" BOOL SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, LPVOID lParam)
+extern "C" bool SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam)
 {
 	return m_SessionClient.SessionModule_Client_Init(nSessionTime, fpCall_Timeout, lParam);
 }
-extern "C" BOOL SessionModule_Client_Destory()
+extern "C" bool SessionModule_Client_Destory()
 {
 	return m_SessionClient.SessionModule_Client_Destory();
 }
-extern "C" BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType)
+extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType)
 {
 	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, lpszUserName, nNetType);
 }
-extern "C" BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
+extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
-extern "C" BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR * ptszUserName)
+extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR * ptszUserName)
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
 }
-extern "C" BOOL SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR * ptszUserAddr)
+extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR * ptszUserAddr)
 {
 	return m_SessionClient.SessionModule_Client_GetAddr(lpszUserName, ptszUserAddr);
 }
-extern "C" BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType)
+extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType)
 {
 	return m_SessionClient.SessionModule_Client_GetType(lpszSessionStr, pInt_NetType);
 }
-extern "C" BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr)
+extern "C" bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Heart(lpszClientAddr);
 }

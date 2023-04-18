@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 //                       导出的回调
 //////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCTSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, LPVOID lParam);
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCXSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                       导出的数据结构
 //////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ extern "C" DWORD DBModule_GetLastError(int *pInt_SysError = NULL);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
+extern "C" bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
 /********************************************************************
 函数名称：DBModule_MQData_Destory
 函数功能：销毁数据库管理器
@@ -83,7 +83,7 @@ extern "C" BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Destory();
+extern "C" bool DBModule_MQData_Destory();
 /********************************************************************
 函数名称：DBModule_MQData_Insert
 函数功能：插入消息到队列中
@@ -97,7 +97,7 @@ extern "C" BOOL DBModule_MQData_Destory();
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
+extern "C" bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQData_Query
 函数功能：查询数据
@@ -111,7 +111,7 @@ extern "C" BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+extern "C" bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQData_Modify
 函数功能：数据修改
@@ -125,7 +125,7 @@ extern "C" BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+extern "C" bool DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQData_List
 函数功能：枚举指定主题序列号后的数据
@@ -154,7 +154,7 @@ extern "C" BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
+extern "C" bool DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
@@ -183,7 +183,7 @@ extern "C" BOOL DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XE
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
+extern "C" bool DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
 /********************************************************************
 函数名称：DBModule_MQData_CreateTable
 函数功能：创建表
@@ -197,7 +197,7 @@ extern "C" BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCou
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
+extern "C" bool DBModule_MQData_CreateTable(LPCXSTR lpszQueueName);
 /********************************************************************
 函数名称：DBModule_MQData_DeleteTable
 函数功能：删除表
@@ -211,7 +211,7 @@ extern "C" BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
+extern "C" bool DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName);
 /********************************************************************
 函数名称：DBModule_MQData_ModifyTable
 函数功能：修改表名称
@@ -230,7 +230,7 @@ extern "C" BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
+extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
@@ -257,7 +257,7 @@ extern "C" BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDs
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam = NULL);
+extern "C" bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam = NULL);
 /********************************************************************
 函数名称：DBModule_MQUser_Destory
 函数功能：销毁数据库管理器
@@ -266,7 +266,7 @@ extern "C" BOOL DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_Destory();
+extern "C" bool DBModule_MQUser_Destory();
 /********************************************************************
 函数名称：DBModule_MQUser_UserInsert
 函数功能：插入用户
@@ -280,7 +280,7 @@ extern "C" BOOL DBModule_MQUser_Destory();
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+extern "C" bool DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_UserQuery
 函数功能：查询用户
@@ -294,7 +294,7 @@ extern "C" BOOL DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO * pSt_UserI
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+extern "C" bool DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_UserDelete
 函数功能：删除用户
@@ -308,7 +308,7 @@ extern "C" BOOL DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO * pSt_UserIn
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
+extern "C" bool DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_UserUPDate
 函数功能：更新用户
@@ -322,7 +322,7 @@ extern "C" BOOL DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+extern "C" bool DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 /*************************************************************************
 						消息绑定导出函数
 **************************************************************************/
@@ -339,7 +339,7 @@ extern "C" BOOL DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserIn
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
+extern "C" bool DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyQuery
 函数功能：通过用户查询绑定的消息信息
@@ -353,7 +353,7 @@ extern "C" BOOL DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
+extern "C" bool DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyList
 函数功能：枚举用户关联的列表
@@ -382,7 +382,7 @@ extern "C" BOOL DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount);
+extern "C" bool DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKeyName, XENGINE_DBUSERKEY * **pppSt_UserKey, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyDelete
 函数功能：删除绑定的消息队列
@@ -396,7 +396,7 @@ extern "C" BOOL DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, X
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
+extern "C" bool DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyUPDate
 函数功能：更新用户绑定的消息
@@ -410,7 +410,7 @@ extern "C" BOOL DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
+extern "C" bool DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
 /********************************************************************
 函数名称：DBModule_MQUser_KeyTopicUPDate
 函数功能：更新队列信息表
@@ -429,7 +429,7 @@ extern "C" BOOL DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
+extern "C" bool DBModule_MQUser_KeyTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable);
 /*************************************************************************
 						定时发布导出函数
 **************************************************************************/
@@ -446,7 +446,7 @@ extern "C" BOOL DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR 
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo);
+extern "C" bool DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_TimeQuery
 函数功能：定时发布查询
@@ -465,7 +465,7 @@ extern "C" BOOL DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE * pSt_DBInfo);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount);
+extern "C" bool DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo, int* pInt_ListCount);
 /********************************************************************
 函数名称：DBModule_MQUser_TimeDelete
 函数功能：定时发布删除
@@ -479,7 +479,7 @@ extern "C" BOOL DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
+extern "C" bool DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_TimeClaer
 函数功能：清理超时通知
@@ -493,7 +493,7 @@ extern "C" BOOL DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
+extern "C" bool DBModule_MQUser_TimeClaer(time_t nTime = 0);
 /********************************************************************
 函数名称：DBModule_MQUser_TimeTopicUPDate
 函数功能：更新定时发布表
@@ -512,7 +512,7 @@ extern "C" BOOL DBModule_MQUser_TimeClaer(time_t nTime = 0);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
+extern "C" bool DBModule_MQUser_TimeTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable);
 /*************************************************************************
 						主题所有者导出函数
 **************************************************************************/
@@ -529,7 +529,7 @@ extern "C" BOOL DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+extern "C" bool DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerDelete
 函数功能：主题所有者删除
@@ -543,7 +543,7 @@ extern "C" BOOL DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+extern "C" bool DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerQuery
 函数功能：主题所有者查询
@@ -557,7 +557,7 @@ extern "C" BOOL DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
+extern "C" bool DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerTopicUPDate
 函数功能：更新所有者表
@@ -576,4 +576,4 @@ extern "C" BOOL DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable);
+extern "C" bool DBModule_MQUser_OwnerTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable);

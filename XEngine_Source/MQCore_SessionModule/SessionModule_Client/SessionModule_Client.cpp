@@ -13,7 +13,7 @@
 *********************************************************************/
 CSessionModule_Client::CSessionModule_Client()
 {
-	bRun = FALSE;
+	bRun = false;
 	pSTDThread = NULL;
 }
 CSessionModule_Client::~CSessionModule_Client()
@@ -45,15 +45,15 @@ CSessionModule_Client::~CSessionModule_Client()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, LPVOID lParam /* = NULL */)
+bool CSessionModule_Client::SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam /* = NULL */)
 {
-    Session_IsErrorOccur = FALSE;
+    Session_IsErrorOccur = false;
 
-	bRun = TRUE;
+	bRun = true;
 	m_lParam = lParam;
 	lpCall_Timeout = fpCall_Timeout;
 	pSTDThread = make_shared<thread>();
-    return TRUE;
+    return true;
 }
 /************************************************************************
 函数名称：SessionModule_Client_Destory
@@ -63,17 +63,17 @@ BOOL CSessionModule_Client::SessionModule_Client_Init(int nSessionTime, CALLBACK
   意思：是否销毁成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Destory()
+bool CSessionModule_Client::SessionModule_Client_Destory()
 {
-    Session_IsErrorOccur = FALSE;
+    Session_IsErrorOccur = false;
 
-	bRun = FALSE;
+	bRun = false;
 
 	if (pSTDThread->joinable())
 	{
 		pSTDThread->join();
 	}
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：SessionModule_Client_Create
@@ -98,15 +98,15 @@ BOOL CSessionModule_Client::SessionModule_Client_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType)
+bool CSessionModule_Client::SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType)
 {
-    Session_IsErrorOccur = FALSE;
+    Session_IsErrorOccur = false;
 
     if (NULL == lpszClientAddr)
     {
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
+		return false;
     }
 	XENGINE_SESSIONINFO st_SessionInfo;
 	memset(&st_SessionInfo, '\0', sizeof(XENGINE_SESSIONINFO));
@@ -119,7 +119,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, 
     st_Locker.lock();
 	stl_MapSession.insert(make_pair(lpszClientAddr, st_SessionInfo));
     st_Locker.unlock();
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：SessionModule_Client_Delete
@@ -134,9 +134,9 @@ BOOL CSessionModule_Client::SessionModule_Client_Create(LPCTSTR lpszClientAddr, 
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
+bool CSessionModule_Client::SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 {
-	Session_IsErrorOccur = FALSE;
+	Session_IsErrorOccur = false;
 
 	st_Locker.lock();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
@@ -146,7 +146,7 @@ BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
 	}
 	st_Locker.unlock();
 
-	return TRUE;
+	return true;
 }
 /************************************************************************
 函数名称：SessionModule_Client_GetUser
@@ -166,31 +166,31 @@ BOOL CSessionModule_Client::SessionModule_Client_Delete(LPCTSTR lpszClientAddr)
   意思：是否成功
 备注：
 ************************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName /* = NULL */)
+bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptszUserName /* = NULL */)
 {
-	Session_IsErrorOccur = FALSE;
+	Session_IsErrorOccur = false;
 
 	if (NULL == lpszSessionStr)
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	st_Locker.lock_shared();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
 		st_Locker.unlock_shared();
-		return FALSE;
+		return false;
 	}
 	if (NULL != ptszUserName)
 	{
 		_tcscpy(ptszUserName, stl_MapIterator->second.tszUserName);
 	}
 	st_Locker.unlock_shared();
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：SessionModule_Client_GetAddr
@@ -210,23 +210,23 @@ BOOL CSessionModule_Client::SessionModule_Client_GetUser(LPCTSTR lpszSessionStr,
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR* ptszUserAddr)
+bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR* ptszUserAddr)
 {
-	Session_IsErrorOccur = FALSE;
+	Session_IsErrorOccur = false;
 
 	if (NULL == lpszUserName)
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	BOOL bFound = FALSE;
+	bool bFound = false;
 	st_Locker.lock_shared();
 	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
 	{
 		if (0 == _tcsncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcslen(lpszUserName)))
 		{
-			bFound = TRUE;
+			bFound = true;
 			_tcscpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
 			break;
 		}
@@ -235,11 +235,11 @@ BOOL CSessionModule_Client::SessionModule_Client_GetAddr(LPCTSTR lpszUserName, T
 
 	if (!bFound)
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：SessionModule_Client_GetType
@@ -259,28 +259,28 @@ BOOL CSessionModule_Client::SessionModule_Client_GetAddr(LPCTSTR lpszUserName, T
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType)
+bool CSessionModule_Client::SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType)
 {
-	Session_IsErrorOccur = FALSE;
+	Session_IsErrorOccur = false;
 
 	if (NULL == lpszSessionStr)
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	st_Locker.lock_shared();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
 		st_Locker.unlock_shared();
-		return FALSE;
+		return false;
 	}
 	*pInt_NetType = stl_MapIterator->second.nNetType;
 	st_Locker.unlock_shared();
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：SessionModule_Client_Heart
@@ -295,33 +295,33 @@ BOOL CSessionModule_Client::SessionModule_Client_GetType(LPCTSTR lpszSessionStr,
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CSessionModule_Client::SessionModule_Client_Heart(LPCTSTR lpszClientAddr)
+bool CSessionModule_Client::SessionModule_Client_Heart(LPCXSTR lpszClientAddr)
 {
-	Session_IsErrorOccur = FALSE;
+	Session_IsErrorOccur = false;
 
 	if (NULL == lpszClientAddr)
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	st_Locker.lock_shared();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
-		Session_IsErrorOccur = TRUE;
+		Session_IsErrorOccur = true;
 		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
 		st_Locker.unlock_shared();
-		return FALSE;
+		return false;
 	}
 	stl_MapIterator->second.nTimeStart = time(NULL);
 	st_Locker.unlock_shared();
-	return TRUE;
+	return true;
 }
 ///////////////////////////////////////////////////////////////////////////////
 //                      线程函数
 ///////////////////////////////////////////////////////////////////////////////
-XHTHREAD CALLBACK CSessionModule_Client::SessionModule_Client_Thread(LPVOID lParam)
+XHTHREAD CALLBACK CSessionModule_Client::SessionModule_Client_Thread(XPVOID lParam)
 {
 	CSessionModule_Client* pClass_This = (CSessionModule_Client*)lParam;
 

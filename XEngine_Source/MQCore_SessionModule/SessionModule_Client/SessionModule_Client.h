@@ -24,21 +24,21 @@ public:
     CSessionModule_Client();
     ~CSessionModule_Client();
 public:
-    BOOL SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, LPVOID lParam = NULL);
-    BOOL SessionModule_Client_Destory();
-    BOOL SessionModule_Client_Create(LPCTSTR lpszClientAddr, LPCTSTR lpszUserName, int nNetType);
-    BOOL SessionModule_Client_Delete(LPCTSTR lpszClientAddr);
-    BOOL SessionModule_Client_GetUser(LPCTSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
-    BOOL SessionModule_Client_GetAddr(LPCTSTR lpszUserName, TCHAR* ptszUserAddr);
-    BOOL SessionModule_Client_GetType(LPCTSTR lpszSessionStr, int* pInt_NetType);
-    BOOL SessionModule_Client_Heart(LPCTSTR lpszClientAddr);
+    bool SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam = NULL);
+    bool SessionModule_Client_Destory();
+    bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType);
+    bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
+    bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, TCHAR* ptszUserName = NULL);
+    bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, TCHAR* ptszUserAddr);
+    bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
+    bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr);
 protected:
-    static XHTHREAD CALLBACK SessionModule_Client_Thread(LPVOID lParam);
+    static XHTHREAD CALLBACK SessionModule_Client_Thread(XPVOID lParam);
 private:
-    BOOL bRun;
+    bool bRun;
     int nSessionTime;
 private:
-    LPVOID m_lParam;
+    XPVOID m_lParam;
     CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT lpCall_Timeout;
 private:
     shared_mutex st_Locker;

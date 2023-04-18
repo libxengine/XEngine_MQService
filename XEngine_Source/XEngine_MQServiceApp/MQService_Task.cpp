@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-void CALLBACK MessageQueue_CBTask_TimePublish(LPCTSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, LPVOID lParam)
+void CALLBACK MessageQueue_CBTask_TimePublish(LPCXSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, XPVOID lParam)
 {
 	int nMsgLen = 0;
 	TCHAR tszMsgBuffer[4096];
@@ -18,7 +18,7 @@ void CALLBACK MessageQueue_CBTask_TimePublish(LPCTSTR lpszQueueName, __int64x nI
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-	st_ProtocolHdr.byIsReply = FALSE;
+	st_ProtocolHdr.byIsReply = false;
 	st_ProtocolHdr.byVersion = 1;
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;

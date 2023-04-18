@@ -1,13 +1,13 @@
 ﻿#include "MQService_Hdr.h"
 
-BOOL MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_StartlParam)
+bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_StartlParam)
 {
-    LPCTSTR lpszConfigFile = _T("./XEngine_Config/XEngine_Config.json");
+    LPCXSTR lpszConfigFile = _T("./XEngine_Config/XEngine_Config.json");
 
 	if (!Config_Json_File(lpszConfigFile, pSt_StartlParam))
 	{
 		printf("解析配置文件失败,Config_Json_File:%lX\n", Config_GetLastError());
-		return FALSE;
+		return false;
 	}
 
     for (int i = 0;i < argc;i++)
@@ -15,12 +15,12 @@ BOOL MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         if ((0 == _tcscmp("-h",argv[i])) || (0 == _tcscmp("-H",argv[i])))
         {
             MQ_Service_ParamentHelp();
-            return FALSE;
+            return false;
         }
         if ((0 == _tcscmp("-v",argv[i])) || (0 == _tcscmp("-V",argv[i])))
         {
             printf("Version：V1.1.0\n");
-            return FALSE;
+            return false;
         }
         else if (0 == _tcscmp("-TP",argv[i]))
         {
@@ -36,7 +36,7 @@ BOOL MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 void MQ_Service_ParamentHelp()

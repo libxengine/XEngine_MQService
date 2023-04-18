@@ -37,7 +37,7 @@
 //    Purpose:     公用头文件
 //    History:
 *********************************************************************/
-extern BOOL Protocol_IsErrorOccur;
+extern bool Protocol_IsErrorOccur;
 extern DWORD Protocol_dwErrorCode;
 
 

@@ -35,30 +35,30 @@ CDBModule_MQData::~CDBModule_MQData()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
+bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     if (NULL == pSt_DBConnector)
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-        return FALSE;
+        return false;
     }
 #ifdef _WINDOWS
-    LPCTSTR lpszStrCharset = _T("gbk");
+    LPCXSTR lpszStrCharset = _T("gbk");
 #else
-    LPCTSTR lpszStrCharset = _T("utf8");
+    LPCXSTR lpszStrCharset = _T("utf8");
 #endif
     //连接数据库
     _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQData"));
-    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
+    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, true, lpszStrCharset))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Destory
@@ -68,12 +68,12 @@ BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Destory()
+bool CDBModule_MQData::DBModule_MQData_Destory()
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
     
 	DataBase_MySQL_Close(xhDBSQL);
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Insert
@@ -88,15 +88,15 @@ BOOL CDBModule_MQData::DBModule_MQData_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     if (NULL == pSt_DBInfo)
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-        return FALSE;
+        return false;
     }
     TCHAR tszSQLStatement[10240];
     memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
@@ -104,11 +104,11 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Query
@@ -123,15 +123,15 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
@@ -144,15 +144,15 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
 	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 
@@ -197,7 +197,7 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[10]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Modify
@@ -212,15 +212,15 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	TCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
@@ -230,17 +230,17 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	__int64u nRows = 0;
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRows))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nRows <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_List
@@ -270,15 +270,15 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
+bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == lpszQueueName)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
@@ -291,15 +291,15 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
 	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial > %lld"), lpszQueueName, nSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBMessage, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
@@ -349,7 +349,7 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_GetSerial
@@ -379,15 +379,15 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd)
+bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == lpszName)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
@@ -403,15 +403,15 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID ASC LIMIT 1"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 
@@ -466,15 +466,15 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID DESC LIMIT 1"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		
@@ -529,15 +529,15 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		_stprintf(tszSQLStatement, _T("SELECT COUNT(*) FROM `%s`"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		if (NULL != pptszResult[0])
@@ -547,7 +547,7 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
 	
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_CreateTable
@@ -562,9 +562,9 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
+bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     TCHAR tszSQLQuery[2048];
     memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
@@ -587,11 +587,11 @@ BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
 
     if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_DeleteTable
@@ -606,9 +606,9 @@ BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
+bool CDBModule_MQData::DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
@@ -617,11 +617,11 @@ BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_ModifyTable
@@ -641,9 +641,9 @@ BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable)
+bool CDBModule_MQData::DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	TCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
@@ -651,9 +651,9 @@ BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR
 	_stprintf(tszSQLQuery, _T("UPDATE `%s` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSrcTable, lpszDstTable, lpszSrcTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
@@ -661,10 +661,10 @@ BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	return true;
 }

@@ -41,7 +41,7 @@ using namespace std;
 //    Purpose:     通用公共头文件
 //    History:
 *********************************************************************/
-extern BOOL DBModule_IsErrorOccur;
+extern bool DBModule_IsErrorOccur;
 extern DWORD DBModule_dwErrorCode;
 
 #ifdef _MSC_BUILD
