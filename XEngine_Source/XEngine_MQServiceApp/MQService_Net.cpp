@@ -145,18 +145,18 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
-        int nPKTLen = 8196;
-        XCHAR tszPKTBuffer[8196];
-        RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
+		int nPKTLen = 8196;
+		XCHAR tszPKTBuffer[8196];
+		RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
 
-        memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
-        memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+		memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+		memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-        st_HTTPHdr.nHttpCode = 200;
-        st_HTTPHdr.bIsClose = true;
-        _tcsxcpy(st_HTTPHdr.tszMimeType, _X("json"));
+		st_HTTPHdr.nHttpCode = 200;
+		st_HTTPHdr.bIsClose = true;
+		_tcsxcpy(st_HTTPHdr.tszMimeType, _X("json"));
 
-        HttpProtocol_Server_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
+		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
 		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, tszPKTBuffer, nPKTLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());

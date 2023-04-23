@@ -40,8 +40,9 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 }
 bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR** pptszListHdr, int nHdrCount)
 {
-	LPCXSTR lpszMethod = _X("POST");
-	if (0 == _tcsxnicmp(lpszMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszMethod)))
+	LPCXSTR lpszPostMethod = _X("POST");
+	LPCXSTR lpszGetMethod = _X("GET");
+	if (0 == _tcsxnicmp(lpszPostMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszPostMethod)))
 	{
 		int nPLen = 0;
 		XCHAR tszMsgBuffer[4096];
@@ -52,6 +53,51 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 
 		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
 		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_HTTP);
+	}
+	else if (0 == _tcsxnicmp(lpszGetMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszGetMethod)))
+	{
+		//http://127.0.0.1:5201/api?function=get&token=112&key=xengine&serial=1
+		HttpProtocol_ServerHelp_GetParament(pSt_HTTPParam->tszHttpUri, &pptszListHdr, &nHdrCount);
+		if (4 != nHdrCount)
+		{
+			int nPKTLen = 8196;
+			XCHAR tszPKTBuffer[8196];
+			RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
+
+			memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+			memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+
+			st_HTTPHdr.nHttpCode = 400;
+			st_HTTPHdr.bIsClose = true;
+
+			HttpProtocol_Server_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr);
+			NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, tszPKTBuffer, nPKTLen);
+			return false;
+		}
+		XCHAR tszKey[128];
+		XCHAR tszValue[128];
+		XENGINE_PROTOCOLHDR st_ProtocolHdr;
+		XENGINE_PROTOCOL_XMQ st_MQProtocol;
+
+		memset(tszKey, '\0', sizeof(tszKey));
+		memset(tszValue, '\0', sizeof(tszValue));
+		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+		BaseLib_OperatorString_GetKeyValue(pptszListHdr[1], "=", tszKey, tszValue);
+
+		st_ProtocolHdr.xhToken = _ttxoll(tszValue);
+		st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+		st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
+		st_ProtocolHdr.xhToken = sizeof(XENGINE_PROTOCOL_XMQ);
+		st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+		BaseLib_OperatorString_GetKeyValue(pptszListHdr[2], "=", tszKey, st_MQProtocol.tszMQKey);
+		BaseLib_OperatorString_GetKeyValue(pptszListHdr[3], "=", tszKey, tszValue);
+		st_MQProtocol.nSerial = _ttxoll(tszValue);
+
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else
 	{
