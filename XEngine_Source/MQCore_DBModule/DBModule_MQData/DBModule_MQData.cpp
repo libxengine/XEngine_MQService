@@ -561,26 +561,35 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 {
     DBModule_IsErrorOccur = false;
 
+	int nUTFLen = 0;
     XCHAR tszSQLQuery[2048];
+	XCHAR tszUTFQuery[2048];
+
     memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+	memset(tszUTFQuery, '\0', sizeof(tszUTFQuery));
 
     _xstprintf(tszSQLQuery, _X("CREATE TABLE IF NOT EXISTS `%s` ("
         "`ID` int NOT NULL AUTO_INCREMENT,"
-		"`tszUserName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '谁发布的消息',"
-        "`tszQueueName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所属队列',"
+		"`tszUserName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '谁发布的消息',"
+        "`tszQueueName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '所属队列',"
         "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
         "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
-        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '过期时间',"
-        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
-        "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
+        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',"
+        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '发布时间',"
+        "`tszQueueData` varchar(8192) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '保存数据',"
 		"`nDataLen` int NOT NULL COMMENT '数据大小',"
 		"`nDataType` tinyint NOT NULL COMMENT '数据类型',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
         "PRIMARY KEY (`ID`) USING BTREE"
-        ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
+        ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;"
     ), lpszQueueName);
 
-    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+#ifdef _MSC_BUILD
+	BaseLib_OperatorCharset_AnsiToUTF(tszSQLQuery, tszUTFQuery, &nUTFLen);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszUTFQuery))
+#else
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+#endif
     {
         DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
