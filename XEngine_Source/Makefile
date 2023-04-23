@@ -1,7 +1,7 @@
 RELEASE = 0
 UNICODE = 0
-
-FLAGS = RELEASE=$(RELEASE)
+PLATFORM=linux
+FLAGS= 
 
 BASE_THIRDPART_JSONCPP = ./XEngine_ThirdPart/jsoncpp
 
@@ -12,12 +12,12 @@ BASE_SESSION_PATH = ./MQCore_SessionModule
 
 APP_SERVICE_PATH = ./XEngine_MQServiceApp
 
-NETENGINE_LIB = libjsoncpp.so               \
+XENGINE_MODULES = libjsoncpp.so               \
                 libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_DBModule.so     \
 		        XEngine_MQServiceApp.exe 
 
 .PHONY:MakeAll 
-MakeAll:$(NETENGINE_LIB)
+MakeAll:$(XENGINE_MODULES)
 
 libjsoncpp.so:
 	make -C $(BASE_THIRDPART_JSONCPP) $(FLAGS)
@@ -33,15 +33,6 @@ libMQCore_DBModule.so:
 
 XEngine_MQServiceApp.exe:
 	make -C $(APP_SERVICE_PATH) $(FLAGS)
-
-
-SetFlags_Install:
-	export FLAGS=InstallAll
-InstallAll:SetFlags_Install $(NETENGINE_LIB) 
- 
-SetFlags_Clean:
-	export FLAGS=CleanAll
-CleanAll:SetFlags_Clean $(NETENGINE_LIB) 
 	
 	
 	
