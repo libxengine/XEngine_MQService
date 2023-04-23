@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
@@ -520,11 +520,11 @@ void MQ_DeleteTopic()
 
 int main(int argc, char** argv)
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	LPCTSTR lpszServiceAddr = _T("192.168.1.8");
+	LPCTSTR lpszServiceAddr = _T("127.0.0.1");
 	LPCTSTR lpszMsgBuffer = _T("123456789aaa");
 	if (!XClient_TCPSelect_Create(&m_Socket, lpszServiceAddr, 5200))
 	{
@@ -550,7 +550,7 @@ int main(int argc, char** argv)
 	MQ_DeleteUser();
 
 	XClient_TCPSelect_Close(m_Socket);
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;
