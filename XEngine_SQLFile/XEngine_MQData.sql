@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32-0ubuntu0.22.04.2)
  File Encoding         : 65001
 
- Date: 24/04/2023 14:58:11
+ Date: 24/04/2023 15:15:54
 */
 
 SET NAMES utf8mb4;
@@ -30,8 +30,7 @@ CREATE TABLE `XEngine_CommKey`  (
   `tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',
   `tszQueuePublishTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '发布时间',
   `tszQueueData` longblob NOT NULL COMMENT '保存数据',
-  `nDataLen` int NOT NULL COMMENT '数据大小',
-  `nDataType` tinyint NULL DEFAULT NULL COMMENT '数据类型',
+  `nDataType` tinyint NOT NULL COMMENT '数据类型',
   `tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',
   PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
