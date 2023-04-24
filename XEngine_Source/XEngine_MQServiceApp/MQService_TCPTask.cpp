@@ -373,6 +373,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 				st_DBTime.nIDMsg = st_DBQueue.nQueueSerial;
 				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
+				st_DBTime.bBreak = pSt_ProtocolHdr->wReserve;
 				_tcsxcpy(st_DBTime.tszQueueName, st_DBQueue.tszQueueName);
 
 				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);

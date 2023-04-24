@@ -11,10 +11,6 @@
 //    History:
 *********************************************************************/
 //////////////////////////////////////////////////////////////////////////
-//                       导出的回调
-//////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(LPCXSTR lpszQueueName, __int64x nIDMsg, __int64x nIDTime, XPVOID lParam);
-//////////////////////////////////////////////////////////////////////////
 //                       导出的数据结构
 //////////////////////////////////////////////////////////////////////////
 //消息队列
@@ -38,6 +34,7 @@ typedef struct
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
 	bool bActive;                                                         //是否激活过
+	bool bBreak;                                                          //跳过自身
 }XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct
@@ -55,6 +52,10 @@ typedef struct
 	XCHAR tszUserName[256];                                               //主题所有者
 	XCHAR tszCreateTime[64];                                              //创建时间
 }XENGINE_DBTOPICOWNER;
+//////////////////////////////////////////////////////////////////////////
+//                       导出的回调
+//////////////////////////////////////////////////////////////////////////
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(XENGINE_DBTIMERELEASE* pSt_DBInfo, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
