@@ -588,6 +588,7 @@ int main(int argc, char** argv)
 	MQ_DeleteTopic();
 	MQ_DeleteUser();
 
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	XClient_TCPSelect_Close(m_Socket);
 #ifdef _MSC_BUILD
 	WSACleanup();
