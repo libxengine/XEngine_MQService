@@ -33,3 +33,7 @@ extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG * 
 {
 	return m_ConfigJson.Config_Json_File(lpszConfigFile, pSt_ServerConfig);
 }
+extern "C" bool Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG * pSt_DBConfig)
+{
+	return m_ConfigJson.Config_Json_DBFile(lpszConfigFile, pSt_DBConfig);
+}

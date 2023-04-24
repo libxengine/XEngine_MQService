@@ -23,10 +23,10 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLAddr":"192.168.1.10",
+        "SQLAddr":"42.194.178.57",
         "SQLPort":3306,
         "SQLUser":"root",
-        "SQLPass":"123123aa"
+        "SQLPass":"123123Qyt"
     },
     "XPass":{
         "nTimeout":2,
@@ -36,6 +36,7 @@
         "tszPassLogout":""
     },
     "XVer":[
+        "3.7.0.1001 Build20230423",
         "3.6.0.1001 Build20230222",
         "3.5.0.1001 Build20230106",
         "3.4.0.1001 Build20221110",

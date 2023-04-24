@@ -145,3 +145,65 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     }
     return true;
 }
+bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig)
+{
+	Config_IsErrorOccur = false;
+
+	if ((NULL == lpszConfigFile) || (NULL == pSt_DBConfig))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	JSONCPP_STRING st_JsonError;
+	Json::Value st_JsonRoot;
+	Json::CharReaderBuilder st_JsonBuilder;
+
+	FILE* pSt_File = _xtfopen(lpszConfigFile, _X("rb"));
+	if (NULL == pSt_File)
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	int nCount = 0;
+	XCHAR tszMsgBuffer[4096];
+	while (1)
+	{
+		int nRet = fread(tszMsgBuffer + nCount, 1, 2048, pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		nCount += nRet;
+	}
+	fclose(pSt_File);
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_JsonBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nCount, &st_JsonRoot, &st_JsonError))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
+		return false;
+	}
+
+	if (st_JsonRoot["MQUser"].empty())
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMAX;
+		return false;
+	}
+	Json::Value st_JsonUser = st_JsonRoot["MQUser"];
+
+	if (st_JsonUser["UserTime"].empty())
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMAX;
+		return false;
+	}
+	Json::Value st_JsonUserTime = st_JsonUser["UserTime"];
+	
+	pSt_DBConfig->st_MQUser.st_UserTime.bPubClear = st_JsonUserTime["bPubClear"].asBool();
+
+	return true;
+}

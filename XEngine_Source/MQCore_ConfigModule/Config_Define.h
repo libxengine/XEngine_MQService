@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 //                        导出的数据结构
 //////////////////////////////////////////////////////////////////////////
-typedef struct tag_XEngine_ServerConfig
+typedef struct 
 {
     XCHAR tszIPAddr[128];
     XCHAR tszTopic[128];
@@ -62,6 +62,16 @@ typedef struct tag_XEngine_ServerConfig
         list<tstring> *pStl_ListStorage;
     }st_XVer;
 }XENGINE_SERVERCONFIG;
+typedef struct
+{
+    struct  
+    {
+        struct  
+        {
+            bool bPubClear;
+        }st_UserTime;
+    }st_MQUser;
+}MESSAGEQUEUE_DBCONFIG;
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数定义
 //////////////////////////////////////////////////////////////////////////
@@ -70,3 +80,4 @@ extern "C" XLONG Config_GetLastError(int *pInt_ErrorCode = NULL);
 /*                        文件配置读取                                  */
 /************************************************************************/
 extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig);
+extern "C" bool Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig);
