@@ -37,6 +37,7 @@ typedef struct
 	XCHAR tszCreateTime[64];                                              //创建时间
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
+	bool bActive;                                                         //是否激活过
 }XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct
@@ -480,6 +481,20 @@ extern "C" bool DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE * **pppSt_DBInfo
 备注：
 *********************************************************************/
 extern "C" bool DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_TimeUPDate
+函数功能：更新定时发布表
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool DBModule_MQUser_TimeUPDate(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 /********************************************************************
 函数名称：DBModule_MQUser_TimeClaer
 函数功能：清理超时通知

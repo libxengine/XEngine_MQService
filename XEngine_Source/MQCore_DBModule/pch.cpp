@@ -140,6 +140,10 @@ extern "C" bool DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE * pSt_DBInfo)
 {
 	return m_DBUser.DBModule_MQUser_TimeDelete(pSt_DBInfo);
 }
+extern "C" bool DBModule_MQUser_TimeUPDate(XENGINE_DBTIMERELEASE * pSt_DBInfo)
+{
+	return m_DBUser.DBModule_MQUser_TimeUPDate(pSt_DBInfo);
+}
 extern "C" bool DBModule_MQUser_TimeClaer(time_t nTime)
 {
 	return m_DBUser.DBModule_MQUser_TimeClaer(nTime);

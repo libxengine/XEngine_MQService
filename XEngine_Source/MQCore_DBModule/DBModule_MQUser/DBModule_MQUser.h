@@ -34,6 +34,7 @@ public:
 	bool DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	bool DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount);
 	bool DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo);
+	bool DBModule_MQUser_TimeUPDate(XENGINE_DBTIMERELEASE* pSt_DBInfo);
 	bool DBModule_MQUser_TimeClaer(time_t nTime = 0);
 	bool DBModule_MQUser_TimeTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable);
 public:

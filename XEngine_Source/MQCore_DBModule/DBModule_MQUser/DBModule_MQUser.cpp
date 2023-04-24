@@ -63,7 +63,6 @@ bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = DataBase_GetLastError();
         return false;
     }
-	DBModule_MQUser_TimeClaer();
 
 	bIsRun = true;
 	m_lParam = lParam;
@@ -643,7 +642,7 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBI
 	XCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,tszCreateTime) VALUES('%s',%lld,%lld,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
+	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,bActive,tszCreateTime) VALUES('%s',%lld,%lld,0,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = true;
@@ -682,9 +681,9 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 #ifdef _MSC_BUILD
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %lld"), time(NULL));
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %lld AND bActive = 0"), time(NULL));
 #else
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %ld"), time(NULL));
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %ld AND bActive = 0"), time(NULL));
 #endif
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
@@ -712,7 +711,11 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 		}
 		if (NULL != pptszResult[3])
 		{
-			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[3]);
+			(*pppSt_DBInfo)[i]->bActive = _ttoi(pptszResult[3]);
+		}
+		if (NULL != pptszResult[4])
+		{
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[4]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
@@ -753,6 +756,36 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
 		return false;
 	}
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	return true;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_TimeUPDate
+函数功能：更新定时发布表
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQUser::DBModule_MQUser_TimeUPDate(XENGINE_DBTIMERELEASE* pSt_DBInfo)
+{
+	DBModule_IsErrorOccur = false;
+
+	XCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_xstprintf(tszSQLQuery, _X("UPDATE `UserTime` SET bActive = 1 WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{

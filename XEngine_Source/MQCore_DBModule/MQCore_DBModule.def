@@ -31,6 +31,7 @@ EXPORTS
 	DBModule_MQUser_TimeInsert
 	DBModule_MQUser_TimeQuery
 	DBModule_MQUser_TimeDelete
+	DBModule_MQUser_TimeUPDate
 	DBModule_MQUser_TimeClaer
 	DBModule_MQUser_TimeTopicUPDate
 
