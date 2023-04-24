@@ -70,6 +70,7 @@ extern XHANDLE xhHttpPool;
 extern XHANDLE xhWSPool;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
+extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 
 #include "MQService_Config.h"
 #include "MQService_Net.h"

@@ -51,7 +51,16 @@ void CALLBACK MessageQueue_CBTask_TimePublish(LPCXSTR lpszQueueName, __int64x nI
 		XEngine_MQXService_Send(tszUserAddr, tszMsgBuffer, nMsgLen, nNetType);
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
-	//移除这条消息
-	DBModule_MQUser_TimeDelete(&st_DBTime);
+	
+	if (st_DBConfig.st_MQUser.st_UserTime.bPubClear)
+	{
+		//移除这条消息
+		DBModule_MQUser_TimeDelete(&st_DBTime);
+	}
+	else
+	{
+		//更新
+		DBModule_MQUser_TimeUPDate(&st_DBTime);
+	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("定时任务,消息主题:%s,序列:%lld,定时任务分发成功,客户端个数:%d"), lpszQueueName, nIDMsg, nListCount);
 }

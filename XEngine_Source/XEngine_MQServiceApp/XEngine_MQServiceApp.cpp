@@ -15,6 +15,7 @@ XHANDLE xhHttpPool = NULL;
 XHANDLE xhWSPool = NULL;
 
 XENGINE_SERVERCONFIG st_ServiceCfg;
+MESSAGEQUEUE_DBCONFIG st_DBConfig;
 
 void ServiceApp_Stop(int signo)
 {
@@ -88,6 +89,8 @@ int main(int argc, char** argv)
 	LPCXSTR lpszHTTPMime = _X("./XEngine_Config/HttpMime.types");
 	LPCXSTR lpszHTTPCode = _X("./XEngine_Config/HttpCode.types");
 	LPCXSTR lpszLogFile = _X("./XEngine_Log/XEngine_MQServiceApp.Log");
+	LPCXSTR lpszDBConfig = _X("./XEngine_Config/XEngine_DBConfig.json");
+
 	XCHAR tszStringMsg[2048];
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
@@ -117,8 +120,14 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	HelpComponents_XLog_SetLogPriority(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
-
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化日志系统成功"));
+
+	if (!Config_Json_DBFile(lpszDBConfig, &st_DBConfig))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化数据库配置失败，错误：%lX"), Config_GetLastError());
+		goto NETSERVICEEXIT;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库配置成功"));
 
 	if (st_ServiceCfg.bDeamon)
 	{
