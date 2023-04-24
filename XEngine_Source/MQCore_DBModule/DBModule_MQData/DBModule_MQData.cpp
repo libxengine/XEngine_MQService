@@ -92,12 +92,24 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
         DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return false;
-    }
-    XCHAR tszSQLStatement[10240];
-    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	}
+	XCHAR tszSQLStatement[10240];
+	XCHAR tszSQLCoder[8192];
 
-	_xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
-    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+
+	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
+	nRet += pSt_DBInfo->nMsgLen;
+
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+	int nLen = _xstprintf(tszSQLCoder, _X("',%d,%d,now())"), pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
+	nRet += nLen;
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRet))
     {
         DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
@@ -150,6 +162,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		return false;
 	}
 	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
 	if (NULL != pptszResult[1])
 	{
@@ -177,11 +190,12 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	}
 	if (NULL != pptszResult[7])
 	{
-		_tcsxcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[7]);
+		pSt_DBInfo->nMsgLen = pInt_Length[7];
+		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[7], pSt_DBInfo->nMsgLen);
 	}
 	if (NULL != pptszResult[8])
 	{
-		pSt_DBInfo->nMsgLen = _ttxoi(pptszResult[8]);
+		//pSt_DBInfo->nMsgLen = _ttxoi(pptszResult[8]);
 	}
 	if (NULL != pptszResult[9])
 	{
@@ -576,7 +590,7 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
         "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
         "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',"
         "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '发布时间',"
-        "`tszQueueData` varchar(8192) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '保存数据',"
+        "`tszQueueData` longblob NOT NULL COMMENT '保存数据',"
 		"`nDataLen` int NOT NULL COMMENT '数据大小',"
 		"`nDataType` tinyint NOT NULL COMMENT '数据类型',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"

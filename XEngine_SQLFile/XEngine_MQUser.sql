@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32-0ubuntu0.22.04.2)
  File Encoding         : 65001
 
- Date: 23/04/2023 09:23:49
+ Date: 24/04/2023 15:00:41
 */
 
 SET NAMES utf8mb4;
@@ -44,7 +44,7 @@ CREATE TABLE `UserInfo`  (
   `tszLoginTime` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '登录时间',
   `tszCreateTime` datetime NOT NULL COMMENT '注册时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 0 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for UserKey
@@ -58,7 +58,7 @@ CREATE TABLE `UserKey`  (
   `tszUPTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
   `tszCreateTime` datetime NOT NULL COMMENT '创建的时间',
   PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 0 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for UserTime
@@ -68,6 +68,8 @@ CREATE TABLE `UserTime`  (
   `tszQueueName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '队列名称',
   `nIDMsg` bigint NOT NULL COMMENT '队列唯一ID',
   `nIDTime` bigint NOT NULL COMMENT '发布时间',
+  `bActive` tinyint NULL DEFAULT NULL COMMENT '是否激活过',
+  `bBreak` tinyint NULL DEFAULT NULL COMMENT '是否跳过自身',
   `tszCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间'
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
