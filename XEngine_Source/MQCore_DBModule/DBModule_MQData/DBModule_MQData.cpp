@@ -576,7 +576,6 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 {
     DBModule_IsErrorOccur = false;
 
-	int nUTFLen = 0;
     XCHAR tszSQLQuery[2048];
 	XCHAR tszUTFQuery[2048];
 
@@ -599,6 +598,7 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
     ), lpszQueueName);
 
 #ifdef _MSC_BUILD
+	int nUTFLen = 0;
 	BaseLib_OperatorCharset_AnsiToUTF(tszSQLQuery, tszUTFQuery, &nUTFLen);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszUTFQuery))
 #else

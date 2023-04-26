@@ -711,11 +711,11 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 		}
 		if (NULL != pptszResult[3])
 		{
-			(*pppSt_DBInfo)[i]->bActive = _ttoi(pptszResult[3]);
+			(*pppSt_DBInfo)[i]->bActive = _ttxoi(pptszResult[3]);
 		}
 		if (NULL != pptszResult[4])
 		{
-			(*pppSt_DBInfo)[i]->bBreak = _ttoi(pptszResult[4]);
+			(*pppSt_DBInfo)[i]->bBreak = _ttxoi(pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
