@@ -43,5 +43,5 @@ typedef std::string tstring;
 //    Purpose:     会话管理器
 //    History:
 *********************************************************************/
-extern BOOL Session_IsErrorOccur;
-extern DWORD Session_dwErrorCode;
+extern bool Session_IsErrorOccur;
+extern XLONG Session_dwErrorCode;

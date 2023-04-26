@@ -17,16 +17,16 @@ public:
 	CDBModule_MQData();
 	~CDBModule_MQData();
 public:
-	BOOL DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
-	BOOL DBModule_MQData_Destory();
-	BOOL DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
-	BOOL DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
-	BOOL DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
-	BOOL DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
-	BOOL DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
-	BOOL DBModule_MQData_CreateTable(LPCTSTR lpszQueueName);
-	BOOL DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName);
-	BOOL DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable);
+	bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector);
+	bool DBModule_MQData_Destory();
+	bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+	bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+	bool DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+	bool DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
+	bool DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);
+	bool DBModule_MQData_CreateTable(LPCXSTR lpszQueueName);
+	bool DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName);
+	bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable);
 private:
 	XNETHANDLE xhDBSQL;
 };

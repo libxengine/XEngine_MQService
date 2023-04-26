@@ -1,17 +1,18 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <json/json.h>
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"x86/XEngine_Client/XClient_Socket")
 #pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_WSProtocol")
-#else
+#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include <json/json.h>
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
@@ -19,52 +20,51 @@
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-#pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
-//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp -Wl,-rpath=../../XEngine_Source/XEngine_ThirdPart/jsoncpp,--disable-new-dtags
 
-SOCKET m_Socket;
-LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
+XSOCKET m_Socket;
+LPCXSTR lpszKey = _X("XEngine_Notify");  //主题
 
-BOOL MQ_SendPacket(LPCTSTR lpszMsgBuffer, int nMsgLen)
+bool MQ_SendPacket(LPCXSTR lpszMsgBuffer, int nMsgLen)
 {
 	int nSDLen = nMsgLen;
-	TCHAR tszSDBuffer[2048];
+	XCHAR tszSDBuffer[2048];
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 	//connect is ok.
-	if (!RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, tszSDBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, TRUE))
+	if (!RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, tszSDBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, true))
 	{
-		return FALSE;
+		return false;
 	}
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszSDBuffer, nSDLen))
 	{
-		return FALSE;
+		return false;
 	}
-	printf("MQ_SendPacket:%d\n", nSDLen);
-	return TRUE;
+	_xtprintf("MQ_SendPacket:%d\n", nSDLen);
+	return true;
 }
-BOOL MQ_RecvPacket(TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+bool MQ_RecvPacket(XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
 	int nRVLen = 2048;
-	TCHAR tszRVBuffer[2048];
+	XCHAR tszRVBuffer[2048];
 	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
 	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszRVBuffer, &nRVLen))
 	{
-		return FALSE;
+		return false;
 	}
 	//你可以直接解码数据,也可以使用wspacket包管理器来获得高性能和自动包管理
 	if (!RfcComponents_WSCodec_DecodeMsg(tszRVBuffer, &nRVLen, ptszMsgBuffer))
 	{
-		return FALSE;
+		return false;
 	}
 	*pInt_MsgLen = nRVLen;
-	return TRUE;
+	return true;
 }
 
 void MQ_Authorize()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -83,23 +83,23 @@ void MQ_Authorize()
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_Authorize:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_Authorize:%s\n", tszMsgBuffer);
 }
 
 void MQ_Create()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -120,23 +120,23 @@ void MQ_Create()
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_Create:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_Create:%s\n", tszMsgBuffer);
 }
 
-void MQ_Post(LPCTSTR lpszMsgBuffer)
+void MQ_Post(LPCXSTR lpszMsgBuffer)
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -163,24 +163,24 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_Post:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_Post:%s\n", tszMsgBuffer);
 }
 
 
 void MQ_BindTopic()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -200,23 +200,23 @@ void MQ_BindTopic()
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_GetOrder:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_GetOrder:%s\n", tszMsgBuffer);
 }
 
 void MQ_GetNumber()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -235,22 +235,22 @@ void MQ_GetNumber()
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_GetSerial:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_GetSerial:%s\n", tszMsgBuffer);
 }
 void MQ_Get()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -270,46 +270,46 @@ void MQ_Get()
 
 	if (!MQ_SendPacket(tszMsgBuffer, nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
 	{
-		printf("接受数据失败！\n");
+		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	printf("MQ_Get:%s\n", tszMsgBuffer);
+	_xtprintf("MQ_Get:%s\n", tszMsgBuffer);
 }
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
 	int nLen = 0;
-	TCHAR tszKeyBuffer[1024];
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszKeyBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 
 	memset(tszKeyBuffer, '\0', sizeof(tszKeyBuffer));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	if (!RfcComponents_WSConnector_Connect(tszKeyBuffer, tszMsgBuffer, &nLen, "127.0.0.1:5202"))
 	{
-		printf("RfcComponents_WSConnector_Connect:%lX", WSFrame_GetLastError());
+		_xtprintf("RfcComponents_WSConnector_Connect:%lX", WSFrame_GetLastError());
 		return -1;
 	}
-	if (!XClient_TCPSelect_Create(&m_Socket, _T("127.0.0.1"), 5202))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5202))
 	{
-		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
+		_xtprintf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
 	}
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
-		printf("NetClient_TCPSelect_SendMsg:%lX", XClient_GetLastError());
+		_xtprintf("NetClient_TCPSelect_SendMsg:%lX", XClient_GetLastError());
 		return -1;
 	}
 
@@ -318,18 +318,18 @@ int main()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
 	{
-		printf("NetClient_TCPSelect_RecvMsg:%lX", XClient_GetLastError());
+		_xtprintf("NetClient_TCPSelect_RecvMsg:%lX", XClient_GetLastError());
 		return -1;
 	}
 	if (!RfcComponents_WSConnector_VerConnect(tszKeyBuffer, tszMsgBuffer, &nPos))
 	{
-		printf("RfcComponents_WSConnector_VerConnect:%lX", WSFrame_GetLastError());
+		_xtprintf("RfcComponents_WSConnector_VerConnect:%lX", WSFrame_GetLastError());
 		return -1;
 	}
 
 	if (nPos > 0)
 	{
-		printf("%s\n", tszMsgBuffer + nPos);
+		_xtprintf("%s\n", tszMsgBuffer + nPos);
 	}
 	MQ_Authorize();
 	MQ_Create();
@@ -338,7 +338,7 @@ int main()
 	MQ_BindTopic();
 	MQ_Get();
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

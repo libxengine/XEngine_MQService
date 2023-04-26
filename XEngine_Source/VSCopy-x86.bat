@@ -11,7 +11,7 @@ copy /y "%XEngine_Lib32%\XEngine_HelpComponents\HelpComponents_Packets.dll" "./"
 copy /y "%XEngine_Lib32%\XEngine_HelpComponents\HelpComponents_XLog.dll" "./"
 copy /y "%XEngine_Lib32%\XEngine_HelpComponents\HelpComponents_DataBase.dll" "./"
 
-copy /y "%XEngine_Lib32%\XEngine_RfcComponents\RfcComponents_HttpServer.dll" "./"
+copy /y "%XEngine_Lib32%\XEngine_RfcComponents\RfcComponents_HttpProtocol.dll" "./"
 copy /y "%XEngine_Lib32%\XEngine_RfcComponents\RfcComponents_WSProtocol.dll" "./"
 
 copy /y "%XEngine_Lib32%\XEngine_LibEx\libcrypto-3.dll" "./"

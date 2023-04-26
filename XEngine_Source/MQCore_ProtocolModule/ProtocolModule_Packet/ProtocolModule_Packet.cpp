@@ -63,9 +63,9 @@ CProtocolModule_Packet::~CProtocolModule_Packet()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+bool CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	if (XENGINE_MQAPP_NETTYPE_TCP == nNetType)
 	{
@@ -75,7 +75,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
 	{
 		ProtocolModule_Packet_HttpCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_TCPCommon
@@ -115,15 +115,15 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+bool CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
 {
-    Protocol_IsErrorOccur = FALSE;
+    Protocol_IsErrorOccur = false;
 
     if ((NULL == pSt_ProtocolHdr) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
     {
-        Protocol_IsErrorOccur = TRUE;
+        Protocol_IsErrorOccur = true;
         Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-        return FALSE;
+        return false;
     }
 	
 	if (NULL == pSt_MQProtocol)
@@ -146,7 +146,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR
 		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
 	}
    
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_HttpCommon
@@ -186,7 +186,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+bool CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
 {
     Json::Value st_JsonRoot;
     Json::Value st_JsonMQProtocol;
@@ -222,7 +222,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
     *pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
     memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
@@ -257,15 +257,15 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHD
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
+bool CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	if ((NULL == pSt_ProtocolHdr) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-		return FALSE;
+		return false;
 	}
 
 	if (XENGINE_MQAPP_NETTYPE_TCP == nNetType)
@@ -297,7 +297,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR*
 		*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
 		memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_PassAuth
@@ -327,15 +327,15 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR*
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
+bool CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	if ((NULL == pSt_ProtocolAuth) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonAuth;
@@ -356,7 +356,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USE
 
 	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
 	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_PassUser
@@ -386,15 +386,15 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USE
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
+bool CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	if ((NULL == pSt_ProtocolUser) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	Json::Value st_JsonRoot;
 	Json::Value st_JsonUser;
@@ -420,7 +420,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 
 	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
 	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
@@ -442,21 +442,21 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 *********************************************************************/
 XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	if (NULL == pSt_ProtocolHdr)
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-		return FALSE;
+		return NULL;
 	}
 	//申请内存
 	PROTOCOL_PACKETUNREAD* pSt_UNRead = new PROTOCOL_PACKETUNREAD;
 	if (NULL == pSt_UNRead)
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
-		return FALSE;
+		return NULL;
 	}
 	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
@@ -496,16 +496,16 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
 	if (NULL == pSt_UNRead)
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
-		return FALSE;
+		return false;
 	}
 	Json::Value st_JsonSub;
 	Json::Value st_JsonSubArray;
@@ -528,7 +528,7 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 	st_JsonSubArray["Name"] = (*pppSt_DBMessage)[0]->tszQueueName;
 	st_JsonSubArray["Count"] = st_JsonSub.size();
 	pSt_UNRead->st_JsonArray.append(st_JsonSubArray);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadDelete
@@ -553,16 +553,16 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
-	Protocol_IsErrorOccur = FALSE;
+	Protocol_IsErrorOccur = false;
 
 	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
 	if (NULL == pSt_UNRead)
 	{
-		Protocol_IsErrorOccur = TRUE;
+		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
-		return FALSE;
+		return false;
 	}
 	Json::StreamWriterBuilder st_JsonBuilder;
 	st_JsonBuilder["emitUTF8"] = true;
@@ -585,5 +585,5 @@ BOOL CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken,
 
 	delete pSt_UNRead;
 	pSt_UNRead = NULL;
-	return TRUE;
+	return true;
 }

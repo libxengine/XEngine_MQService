@@ -35,30 +35,25 @@ CDBModule_MQData::~CDBModule_MQData()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
+bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     if (NULL == pSt_DBConnector)
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-        return FALSE;
+        return false;
     }
-#ifdef _WINDOWS
-    LPCTSTR lpszStrCharset = _T("gbk");
-#else
-    LPCTSTR lpszStrCharset = _T("utf8");
-#endif
     //连接数据库
-    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQData"));
-    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
+    _tcsxcpy(pSt_DBConnector->tszDBName, _X("XEngine_MQData"));
+    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Destory
@@ -68,12 +63,12 @@ BOOL CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Destory()
+bool CDBModule_MQData::DBModule_MQData_Destory()
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
     
 	DataBase_MySQL_Close(xhDBSQL);
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Insert
@@ -88,27 +83,39 @@ BOOL CDBModule_MQData::DBModule_MQData_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     if (NULL == pSt_DBInfo)
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-        return FALSE;
-    }
-    TCHAR tszSQLStatement[10240];
-    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+        return false;
+	}
+	XCHAR tszSQLStatement[10240];
+	XCHAR tszSQLCoder[8192];
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataLen,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','%s',%d,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType);
-    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+
+	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
+	nRet += pSt_DBInfo->nMsgLen;
+
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+	int nLen = _xstprintf(tszSQLCoder, _X("',%d,now())"), pSt_DBInfo->byMsgType);
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
+	nRet += nLen;
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRet))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Query
@@ -123,81 +130,79 @@ BOOL CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` WHERE nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
-	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
 	if (NULL != pptszResult[1])
 	{
-		_tcscpy(pSt_DBInfo->tszUserName, pptszResult[1]);
+		_tcsxcpy(pSt_DBInfo->tszUserName, pptszResult[1]);
 	}
 	if (NULL != pptszResult[2])
 	{
-		_tcscpy(pSt_DBInfo->tszQueueName, pptszResult[2]);
+		_tcsxcpy(pSt_DBInfo->tszQueueName, pptszResult[2]);
 	}
 	if (NULL != pptszResult[3])
 	{
-		pSt_DBInfo->nQueueSerial = _ttoi64(pptszResult[3]);
+		pSt_DBInfo->nQueueSerial = _ttxoll(pptszResult[3]);
 	}
 	if (NULL != pptszResult[4])
 	{
-		pSt_DBInfo->nQueueGetTime = _ttoi64(pptszResult[4]);
+		pSt_DBInfo->nQueueGetTime = _ttxoll(pptszResult[4]);
 	}
 	if (NULL != pptszResult[5])
 	{
-		_tcscpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[5]);
+		_tcsxcpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[5]);
 	}
 	if (NULL != pptszResult[6])
 	{
-		_tcscpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[6]);
+		_tcsxcpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[6]);
 	}
 	if (NULL != pptszResult[7])
 	{
-		_tcscpy(pSt_DBInfo->tszMsgBuffer, pptszResult[7]);
+		pSt_DBInfo->nMsgLen = pInt_Length[7];
+		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[7], pSt_DBInfo->nMsgLen);
 	}
 	if (NULL != pptszResult[8])
 	{
-		pSt_DBInfo->nMsgLen = _ttoi(pptszResult[8]);
+		pSt_DBInfo->byMsgType = _ttxoi(pptszResult[8]);
 	}
 	if (NULL != pptszResult[9])
 	{
-		pSt_DBInfo->byMsgType = _ttoi(pptszResult[9]);
-	}
-	if (NULL != pptszResult[10])
-	{
-		_tcscpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[10]);
+		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_Modify
@@ -212,35 +217,46 @@ BOOL CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[10240];
+	XCHAR tszSQLStatement[10240];
+	XCHAR tszSQLCoder[8192];
+
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
-	_stprintf(tszSQLStatement, _T("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '%s',nDataLen = %d,nDataType = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime, pSt_DBInfo->tszMsgBuffer, pSt_DBInfo->nMsgLen, pSt_DBInfo->byMsgType, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 
-	__int64u nRows = 0;
-	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRows))
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
+	nRet += pSt_DBInfo->nMsgLen;
+
+	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+	int nLen = _xstprintf(tszSQLCoder, _X("',nDataType = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->byMsgType, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
+	nRet += nLen;
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRet))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	if (nRows <= 0)
+	if (nRet <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_List
@@ -270,86 +286,84 @@ BOOL CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
+bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == lpszQueueName)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `%s` WHERE nQueueSerial > %lld"), lpszQueueName, nSerial);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` WHERE nQueueSerial > %lld"), lpszQueueName, nSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBMessage, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
-		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
 		if (NULL != pptszResult[1])
 		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszUserName, pptszResult[1]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszUserName, pptszResult[1]);
 		}
 		if (NULL != pptszResult[2])
 		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[2]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[2]);
 		}
 		if (NULL != pptszResult[3])
 		{
-			(*pppSt_DBMessage)[i]->nQueueSerial = _ttoi64(pptszResult[3]);
+			(*pppSt_DBMessage)[i]->nQueueSerial = _ttxoll(pptszResult[3]);
 		}
 		if (NULL != pptszResult[4])
 		{
-			(*pppSt_DBMessage)[i]->nQueueGetTime = _ttoi64(pptszResult[4]);
+			(*pppSt_DBMessage)[i]->nQueueGetTime = _ttxoll(pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[6]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[6]);
 		}
 		if (NULL != pptszResult[7])
 		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[7]);
+			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[7];
+			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[7], (*pppSt_DBMessage)[i]->nMsgLen);
 		}
 		if (NULL != pptszResult[8])
 		{
-			(*pppSt_DBMessage)[i]->nMsgLen = _ttoi(pptszResult[8]);
+			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			(*pppSt_DBMessage)[i]->byMsgType = _ttoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcscpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[9]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_GetSerial
@@ -379,81 +393,79 @@ BOOL CDBModule_MQData::DBModule_MQData_List(LPCTSTR lpszQueueName, __int64x nSer
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd)
+bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == lpszName)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
-	TCHAR** pptszResult;
+	XCHAR** pptszResult;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//////////////////////////////////////////////////////////////////////////第一条
 	if (NULL != pSt_DBStart)
 	{
-		_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID ASC LIMIT 1"), lpszName);
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` ORDER BY ID ASC LIMIT 1"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
 		if (NULL != pptszResult[1])
 		{
-			_tcscpy(pSt_DBStart->tszUserName, pptszResult[1]);
+			_tcsxcpy(pSt_DBStart->tszUserName, pptszResult[1]);
 		}
 		if (NULL != pptszResult[2])
 		{
-			_tcscpy(pSt_DBStart->tszQueueName, pptszResult[2]);
+			_tcsxcpy(pSt_DBStart->tszQueueName, pptszResult[2]);
 		}
 		if (NULL != pptszResult[3])
 		{
-			pSt_DBStart->nQueueSerial = _ttoi64(pptszResult[3]);
+			pSt_DBStart->nQueueSerial = _ttxoll(pptszResult[3]);
 		}
 		if (NULL != pptszResult[4])
 		{
-			pSt_DBStart->nQueueGetTime = _ttoi64(pptszResult[4]);
+			pSt_DBStart->nQueueGetTime = _ttxoll(pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcscpy(pSt_DBStart->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBStart->tszQueueLeftTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcscpy(pSt_DBStart->tszQueuePublishTime, pptszResult[6]);
+			_tcsxcpy(pSt_DBStart->tszQueuePublishTime, pptszResult[6]);
 		}
 		if (NULL != pptszResult[7])
 		{
-			_tcscpy(pSt_DBStart->tszMsgBuffer, pptszResult[7]);
+			pSt_DBStart->nMsgLen = pInt_Length[7];
+			memcpy(pSt_DBStart->tszMsgBuffer, pptszResult[7], pSt_DBStart->nMsgLen);
 		}
 		if (NULL != pptszResult[8])
 		{
-			pSt_DBStart->nMsgLen = _ttoi(pptszResult[8]);
+			pSt_DBStart->byMsgType = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			pSt_DBStart->byMsgType = _ttoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcscpy(pSt_DBStart->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy(pSt_DBStart->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -463,60 +475,58 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		nllLine = 0;
 		nllRow = 0;
 		memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
-		_stprintf(tszSQLStatement, _T("SELECT * FROM `%s` ORDER BY ID DESC LIMIT 1"), lpszName);
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` ORDER BY ID DESC LIMIT 1"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 		
 		if (NULL != pptszResult[1])
 		{
-			_tcscpy(pSt_DBEnd->tszUserName, pptszResult[1]);
+			_tcsxcpy(pSt_DBEnd->tszUserName, pptszResult[1]);
 		}
 		if (NULL != pptszResult[2])
 		{
-			_tcscpy(pSt_DBEnd->tszQueueName, pptszResult[2]);
+			_tcsxcpy(pSt_DBEnd->tszQueueName, pptszResult[2]);
 		}
 		if (NULL != pptszResult[3])
 		{
-			pSt_DBEnd->nQueueSerial = _ttoi64(pptszResult[3]);
+			pSt_DBEnd->nQueueSerial = _ttxoll(pptszResult[3]);
 		}
 		if (NULL != pptszResult[4])
 		{
-			pSt_DBEnd->nQueueGetTime = _ttoi64(pptszResult[4]);
+			pSt_DBEnd->nQueueGetTime = _ttxoll(pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcscpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcscpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[6]);
+			_tcsxcpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[6]);
 		}
 		if (NULL != pptszResult[7])
 		{
-			_tcscpy(pSt_DBEnd->tszMsgBuffer, pptszResult[7]);
+			pSt_DBEnd->nMsgLen = pInt_Length[7];
+			memcpy(pSt_DBEnd->tszMsgBuffer, pptszResult[7], pSt_DBEnd->nMsgLen);
 		}
 		if (NULL != pptszResult[8])
 		{
-			pSt_DBEnd->nMsgLen = _ttoi(pptszResult[8]);
+			pSt_DBEnd->byMsgType = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			pSt_DBEnd->byMsgType = _ttoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcscpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -526,28 +536,28 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
 		nllLine = 0;
 		nllRow = 0;
 		memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
-		_stprintf(tszSQLStatement, _T("SELECT COUNT(*) FROM `%s`"), lpszName);
+		_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM `%s`"), lpszName);
 		if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nllLine <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-			return FALSE;
+			return false;
 		}
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		if (NULL != pptszResult[0])
 		{
-			*pInt_DBCount = _ttoi64(pptszResult[0]);
+			*pInt_DBCount = _ttxoll(pptszResult[0]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
 	
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_CreateTable
@@ -562,36 +572,44 @@ BOOL CDBModule_MQData::DBModule_MQData_GetSerial(LPCTSTR lpszName, __int64x* pIn
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
+bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
-    TCHAR tszSQLQuery[2048];
+    XCHAR tszSQLQuery[2048];
+	XCHAR tszUTFQuery[2048];
+
     memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+	memset(tszUTFQuery, '\0', sizeof(tszUTFQuery));
 
-    _stprintf_s(tszSQLQuery, _T("CREATE TABLE IF NOT EXISTS `%s` ("
+    _xstprintf(tszSQLQuery, _X("CREATE TABLE IF NOT EXISTS `%s` ("
         "`ID` int NOT NULL AUTO_INCREMENT,"
-		"`tszUserName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '谁发布的消息',"
-        "`tszQueueName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所属队列',"
+		"`tszUserName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '谁发布的消息',"
+        "`tszQueueName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '所属队列',"
         "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
         "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
-        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '过期时间',"
-        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发布时间',"
-        "`tszQueueData` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '保存数据',"
-		"`nDataLen` int NOT NULL COMMENT '数据大小',"
+        "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',"
+        "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '发布时间',"
+        "`tszQueueData` longblob NOT NULL COMMENT '保存数据',"
 		"`nDataType` tinyint NOT NULL COMMENT '数据类型',"
         "`tszQueueCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',"
         "PRIMARY KEY (`ID`) USING BTREE"
-        ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
+        ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;"
     ), lpszQueueName);
 
-    if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+#ifdef _MSC_BUILD
+	int nUTFLen = 0;
+	BaseLib_OperatorCharset_AnsiToUTF(tszSQLQuery, tszUTFQuery, &nUTFLen);
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszUTFQuery))
+#else
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+#endif
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_DeleteTable
@@ -606,22 +624,22 @@ BOOL CDBModule_MQData::DBModule_MQData_CreateTable(LPCTSTR lpszQueueName)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
+bool CDBModule_MQData::DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-    _stprintf_s(tszSQLQuery, _T("DROP TABLE IF EXISTS `%s`"), lpszQueueName);
+    _xstprintf(tszSQLQuery, _X("DROP TABLE IF EXISTS `%s`"), lpszQueueName);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQData_ModifyTable
@@ -641,30 +659,30 @@ BOOL CDBModule_MQData::DBModule_MQData_DeleteTable(LPCTSTR lpszQueueName)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQData::DBModule_MQData_ModifyTable(LPCTSTR lpszSrcTable, LPCTSTR lpszDstTable)
+bool CDBModule_MQData::DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `%s` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSrcTable, lpszDstTable, lpszSrcTable);
+	_xstprintf(tszSQLQuery, _X("UPDATE `%s` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszSrcTable, lpszDstTable, lpszSrcTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
-	_stprintf_s(tszSQLQuery, _T("RENAME TABLE `%s` TO `%s`"), lpszSrcTable, lpszDstTable);
+	_xstprintf(tszSQLQuery, _X("RENAME TABLE `%s` TO `%s`"), lpszSrcTable, lpszDstTable);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	return true;
 }

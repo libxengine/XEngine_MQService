@@ -41,8 +41,8 @@ using namespace std;
 //    Purpose:     通用公共头文件
 //    History:
 *********************************************************************/
-extern BOOL DBModule_IsErrorOccur;
-extern DWORD DBModule_dwErrorCode;
+extern bool DBModule_IsErrorOccur;
+extern XLONG DBModule_dwErrorCode;
 
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")

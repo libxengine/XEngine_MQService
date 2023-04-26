@@ -1,26 +1,19 @@
 CC = g++ -Wall -std=c++17 -fPIC
-SHAREFLAG = -shared
-SHAREDLL = so
+PLATFORM = linux
+PLATVER = 
+PLATDIR = 
+FILEEXT = 
+LIBFLAG = 
 RELEASE = 0
 UNICODE = 0
-INCLUDE = -I ./
-LOADBIN = 
+LOADHDR = -I ./ 
+LOADSO = 
 LIB = 
-LIBEX = -ldl -lpthread
-LOADSO = -Wl,-rpath=
-LIBINCLUDE = SessionModule_Client.o pch.o
-
-ifeq ($(shell uname),Darwin)
-	SHAREDLL = dylib
-	SHAREFLAG = -dynamiclib
-	LOADSO = 
-else
-	SHAREDLL = so
-	SHAREFLAG = -shared
-endif
+LIBEX = 
+OBJECTS = SessionModule_Client.o pch.o
 
 ifeq ($(RELEASE),1)
-FLAGS = -c -O2 
+FLAGS = -c 
 DEBUG = 
 else
 FLAGS = -c -lc_p
@@ -33,24 +26,46 @@ else
 UNICODE = 
 endif
 
+ifeq ($(PLATFORM),linux)
+	ifeq (/etc/redhat-release,$(wildcard /etc/redhat-release))
+		PLATVER = -D __CENTOS__
+		PLATDIR = XEngine_Linux/Centos
+	else
+		PLATVER = -D __UBUNTU__
+		PLATDIR = XEngine_Linux/Ubuntu
+	endif
+	FILEEXT = so
+	LIBFLAG = -shared
+	LIBEX = -lpthread -lrt -ldl
+	LOADBIN = -Wl,-rpath=./,--disable-new-dtags
+else ifeq ($(PLATFORM),mac)
+	CC += -Wno-deprecated-declarations
+	PLATVER = -D __MACOS__
+	PLATDIR = XEngine_Mac
+	FILEEXT = dylib
+	LIBFLAG = -dynamiclib
+	LIBEX = -lpthread -ldl
+	LOADBIN = -Wl,-rpath,@loader_path/./
+endif
 
-all:$(LIBINCLUDE)
-	$(CC) $(DEBUG) $(LIBINCLUDE) -o libMQCore_SessionModule.$(SHAREDLL) $(SHAREFLAG) -fPIC $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
+
+all:$(OBJECTS)
+	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_SessionModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 SessionModule_Client.o:./SessionModule_Client/SessionModule_Client.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./SessionModule_Client/SessionModule_Client.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./SessionModule_Client/SessionModule_Client.cpp 
 
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(INCLUDE) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
-InstallSo:./libMQCore_SessionModule.$(SHAREDLL)
-	cp ./libMQCore_SessionModule.$(SHAREDLL) ../../XEngine_Release/libMQCore_SessionModule.$(SHAREDLL)
+InstallSo:./libMQCore_SessionModule.$(FILEEXT)
+	cp ./libMQCore_SessionModule.$(FILEEXT) ../../XEngine_Release/libMQCore_SessionModule.$(FILEEXT)
 
 
 CleanAll:CleanObj CleanMk
 CleanObj:                                               
 	rm *.o
 CleanMk:                             
-	rm *.$(SHAREDLL)                        
+	rm *.$(FILEEXT)                        

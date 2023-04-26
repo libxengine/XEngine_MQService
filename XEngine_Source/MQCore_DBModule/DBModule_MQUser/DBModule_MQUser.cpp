@@ -45,42 +45,36 @@ CDBModule_MQUser::~CDBModule_MQUser()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, LPVOID lParam /* = NULL */)
+bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam /* = NULL */)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
     if (NULL == pSt_DBConnector)
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-        return FALSE;
+        return false;
     }
-#ifdef _WINDOWS
-    LPCTSTR lpszStrCharset = _T("gbk");
-#else
-    LPCTSTR lpszStrCharset = _T("utf8");
-#endif
     //连接数据库
-    _tcscpy(pSt_DBConnector->tszDBName, _T("XEngine_MQUser"));
-    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector, 5, TRUE, lpszStrCharset))
+    _tcsxcpy(pSt_DBConnector->tszDBName, _X("XEngine_MQUser"));
+    if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector))
     {
-        DBModule_IsErrorOccur = TRUE;
+        DBModule_IsErrorOccur = true;
         DBModule_dwErrorCode = DataBase_GetLastError();
-        return FALSE;
+        return false;
     }
-	DBModule_MQUser_TimeClaer();
 
-	bIsRun = TRUE;
+	bIsRun = true;
 	m_lParam = lParam;
 	lpCall_TimePublish = fpCall_TimePublish;
 	pSTDThread = make_shared<std::thread>(DBModule_MQUser_TimeThread, this);
 	if (NULL == pSTDThread)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_CREATETHREAD;
-		return FALSE;
+		return false;
 	}
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_Destory
@@ -90,17 +84,17 @@ BOOL CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_Destory()
+bool CDBModule_MQUser::DBModule_MQUser_Destory()
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
-	bIsRun = FALSE;
+	bIsRun = false;
 	if (NULL != pSTDThread)
 	{
 		pSTDThread->join();
 	}
     DataBase_MySQL_Close(xhDBSQL);
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_UserInsert
@@ -115,28 +109,28 @@ BOOL CDBModule_MQUser::DBModule_MQUser_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+bool CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
 {
-    DBModule_IsErrorOccur = FALSE;
+    DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[2048];
+	XCHAR tszSQLStatement[2048];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-    _stprintf(tszSQLStatement, _T("INSERT INTO `UserInfo` (tszUserName,tszUserPass,tszEMailAddr,nPhoneNumber,nIDNumber,nUserState,nUserLevel,tszCreateTime) VALUES('%s','%s','%s',%lld,%lld,%d,%d,now())"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass, pSt_UserInfo->tszEMailAddr, pSt_UserInfo->nPhoneNumber, pSt_UserInfo->nIDNumber, pSt_UserInfo->nUserState, pSt_UserInfo->nUserLevel);
+    _xstprintf(tszSQLStatement, _X("INSERT INTO `UserInfo` (tszUserName,tszUserPass,tszEMailAddr,nPhoneNumber,nIDNumber,nUserState,nUserLevel,tszCreateTime) VALUES('%s','%s','%s',%lld,%lld,%d,%d,now())"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass, pSt_UserInfo->tszEMailAddr, pSt_UserInfo->nPhoneNumber, pSt_UserInfo->nIDNumber, pSt_UserInfo->nUserState, pSt_UserInfo->nUserLevel);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-    return TRUE;
+    return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_UserQuery
@@ -151,68 +145,68 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
-	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 	if (NULL != pptszResult[3])
 	{
-		_tcscpy(pSt_UserInfo->tszEMailAddr, pptszResult[3]);
+		_tcsxcpy(pSt_UserInfo->tszEMailAddr, pptszResult[3]);
 	}
 	if (NULL != pptszResult[4])
 	{
-		pSt_UserInfo->nPhoneNumber = _ttoi64(pptszResult[4]);
+		pSt_UserInfo->nPhoneNumber = _ttxoll(pptszResult[4]);
 	}
 	if (NULL != pptszResult[5])
 	{
-		pSt_UserInfo->nIDNumber = _ttoi64(pptszResult[5]);
+		pSt_UserInfo->nIDNumber = _ttxoll(pptszResult[5]);
 	}
 	if (NULL != pptszResult[6])
 	{
-		pSt_UserInfo->nUserState = _ttoi(pptszResult[6]);
+		pSt_UserInfo->nUserState = _ttxoi(pptszResult[6]);
 	}
 	if (NULL != pptszResult[7])
 	{
-		pSt_UserInfo->nUserLevel = _ttoi(pptszResult[7]);
+		pSt_UserInfo->nUserLevel = _ttxoi(pptszResult[7]);
 	}
 	if (NULL != pptszResult[8])
 	{
-		_tcscpy(pSt_UserInfo->tszLoginTime, pptszResult[8]);
+		_tcsxcpy(pSt_UserInfo->tszLoginTime, pptszResult[8]);
 	}
 	if (NULL != pptszResult[9])
 	{
-		_tcscpy(pSt_UserInfo->tszCreateTime, pptszResult[9]);
+		_tcsxcpy(pSt_UserInfo->tszCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_UserDelete
@@ -227,27 +221,27 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+bool CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	_xstprintf(tszSQLStatement, _X("DELETE FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_UserUPDate
@@ -262,35 +256,35 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+bool CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
 	if (1 == pSt_UserInfo->nUserState)
 	{
-		_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d,tszLoginTime = now() WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+		_xstprintf(tszSQLStatement, _X("UPDATE `UserInfo` SET nUserState = %d,tszLoginTime = now() WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
 	}
 	else
 	{
-		_stprintf_s(tszSQLStatement, _T("UPDATE `UserInfo` SET nUserState = %d WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
+		_xstprintf(tszSQLStatement, _X("UPDATE `UserInfo` SET nUserState = %d WHERE tszUserName = '%s'"), pSt_UserInfo->nUserState, pSt_UserInfo->tszUserName);
 	}
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 //////////////////////////////////////////////////////////////////////////
 /********************************************************************
@@ -306,35 +300,35 @@ BOOL CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey)
+bool CDBModule_MQUser::DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserKey)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	if (DBModule_MQUser_KeyQuery(pSt_UserKey))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EXIST;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[2048];
+	XCHAR tszSQLStatement[2048];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `UserKey` (tszKeyUser,tszKeyName,nKeySerial,tszUPTime,tszCreateTime) VALUES('%s','%s',%lld,now(),now())"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName, pSt_UserKey->nKeySerial);
+	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserKey` (tszKeyUser,tszKeyName,nKeySerial,tszUPTime,tszCreateTime) VALUES('%s','%s',%lld,now(),now())"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName, pSt_UserKey->nKeySerial);
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_KeyQuery
@@ -349,52 +343,52 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
+bool CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserKey)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
-	TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 	if (NULL != pptszResult[3])
 	{
-		pSt_UserKey->nKeySerial = _ttoi64(pptszResult[3]);
+		pSt_UserKey->nKeySerial = _ttxoll(pptszResult[3]);
 	}
 	if (NULL != pptszResult[4])
 	{
-		_tcscpy(pSt_UserKey->tszUPTime, pptszResult[4]);
+		_tcsxcpy(pSt_UserKey->tszUPTime, pptszResult[4]);
 	}
 	if (NULL != pptszResult[5])
 	{
-		_tcscpy(pSt_UserKey->tszCreateTime, pptszResult[5]);
+		_tcsxcpy(pSt_UserKey->tszCreateTime, pptszResult[5]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_KeyList
@@ -424,78 +418,78 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount)
+bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKeyName, XENGINE_DBUSERKEY*** pppSt_UserKey, int* pInt_ListCount)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if ((NULL == lpszUser) && (NULL == lpszKeyName))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
 
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
 	if ((NULL != lpszUser) && (NULL != lpszKeyName))
 	{
-		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
 	}
 	else if ((NULL != lpszUser) && (NULL == lpszKeyName))
 	{
-		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
 	}
 	else if ((NULL == lpszUser) && (NULL != lpszKeyName))
 	{
-		_stprintf_s(tszSQLStatement, _T("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
 	}
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
-		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 
 		if (NULL != pptszResult[1])
 		{
-			_tcscpy((*pppSt_UserKey)[i]->tszUserName, pptszResult[1]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszUserName, pptszResult[1]);
 		}
 		if (NULL != pptszResult[2])
 		{
-			_tcscpy((*pppSt_UserKey)[i]->tszKeyName, pptszResult[2]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszKeyName, pptszResult[2]);
 		}
 		if (NULL != pptszResult[3])
 		{
-			(*pppSt_UserKey)[i]->nKeySerial = _ttoi64(pptszResult[3]);
+			(*pppSt_UserKey)[i]->nKeySerial = _ttxoll(pptszResult[3]);
 		}
 		if (NULL != pptszResult[4])
 		{
-			_tcscpy((*pppSt_UserKey)[i]->tszUPTime, pptszResult[4]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszUPTime, pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcscpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[5]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_KeyDelete
@@ -510,45 +504,45 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyList(LPCTSTR lpszUser, LPCTSTR lpszKey
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
+bool CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserKey)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	if ((_tcslen(pSt_UserKey->tszKeyName) > 0) && (_tcslen(pSt_UserKey->tszUserName) > 0))
+	if ((_tcsxlen(pSt_UserKey->tszKeyName) > 0) && (_tcsxlen(pSt_UserKey->tszUserName) > 0))
 	{
-		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
 	}
-	else if ((_tcslen(pSt_UserKey->tszKeyName) > 0) && (_tcslen(pSt_UserKey->tszUserName) <= 0))
+	else if ((_tcsxlen(pSt_UserKey->tszKeyName) > 0) && (_tcsxlen(pSt_UserKey->tszUserName) <= 0))
 	{
-		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyName = '%s'"), pSt_UserKey->tszKeyName);
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `UserKey` WHERE tszKeyName = '%s'"), pSt_UserKey->tszKeyName);
 	}
-	else if ((_tcslen(pSt_UserKey->tszKeyName) <= 0) && (_tcslen(pSt_UserKey->tszUserName) > 0))
+	else if ((_tcsxlen(pSt_UserKey->tszKeyName) <= 0) && (_tcsxlen(pSt_UserKey->tszUserName) > 0))
 	{
-		_stprintf_s(tszSQLStatement, _T("DELETE FROM `UserKey` WHERE tszKeyUser = '%s'"), pSt_UserKey->tszUserName);
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `UserKey` WHERE tszKeyUser = '%s'"), pSt_UserKey->tszUserName);
 	}
 	else
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_KeyUPDate
@@ -563,28 +557,28 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyDelete(XENGINE_DBUSERKEY* pSt_UserKey)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey)
+bool CDBModule_MQUser::DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_UserKey)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf_s(tszSQLStatement, _T("UPDATE `UserKey` SET nKeySerial = %lld WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->nKeySerial, pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
+	_xstprintf(tszSQLStatement, _X("UPDATE `UserKey` SET nKeySerial = %lld WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->nKeySerial, pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_KeyTopicUPDate
@@ -604,22 +598,22 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyUPDate(XENGINE_DBUSERKEY* pSt_UserKey)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+bool CDBModule_MQUser::DBModule_MQUser_KeyTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `UserKey` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
+	_xstprintf(tszSQLQuery, _X("UPDATE `UserKey` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 //////////////////////////////////////////////////////////////////////////
 /********************************************************************
@@ -635,27 +629,27 @@ BOOL CDBModule_MQUser::DBModule_MQUser_KeyTopicUPDate(LPCTSTR lpszSourceTable, L
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo)
+bool CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBInfo)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[10240];
+	XCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,tszCreateTime) VALUES('%s',%lld,%lld,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
+	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,bActive,bBreak,tszCreateTime) VALUES('%s',%lld,%lld,0,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime, pSt_DBInfo->bBreak);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_TimeQuery
@@ -675,54 +669,62 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBI
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount)
+bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_DBInfo, int* pInt_ListCount)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 #ifdef _MSC_BUILD
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `UserTime` WHERE nIDTime <= %lld"), time(NULL));
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %lld AND bActive = 0"), time(NULL));
 #else
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `UserTime` WHERE nIDTime <= %ld"), time(NULL));
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %ld AND bActive = 0"), time(NULL));
 #endif
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBInfo, *pInt_ListCount, sizeof(XENGINE_DBTIMERELEASE));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
-		TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		if (NULL != pptszResult[0])
 		{
-			_tcscpy((*pppSt_DBInfo)[i]->tszQueueName, pptszResult[0]);
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszQueueName, pptszResult[0]);
 		}
 		if (NULL != pptszResult[1])
 		{
-			(*pppSt_DBInfo)[i]->nIDMsg = _ttoi64(pptszResult[1]);
+			(*pppSt_DBInfo)[i]->nIDMsg = _ttxoll(pptszResult[1]);
 		}
 		if (NULL != pptszResult[2])
 		{
-			(*pppSt_DBInfo)[i]->nIDTime = _ttoi64(pptszResult[2]);
+			(*pppSt_DBInfo)[i]->nIDTime = _ttxoll(pptszResult[2]);
 		}
 		if (NULL != pptszResult[3])
 		{
-			_tcscpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[3]);
+			(*pppSt_DBInfo)[i]->bActive = _ttxoi(pptszResult[3]);
+		}
+		if (NULL != pptszResult[4])
+		{
+			(*pppSt_DBInfo)[i]->bBreak = _ttxoi(pptszResult[4]);
+		}
+		if (NULL != pptszResult[5])
+		{
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[5]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_TimeDelete
@@ -737,35 +739,65 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo)
+bool CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBInfo)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
 	if (pSt_DBInfo->nIDMsg > 0)
 	{
-		_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+		_xstprintf(tszSQLQuery, _X("DELETE FROM `UserTime` WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
 	}
-	else if (_tcslen(pSt_DBInfo->tszQueueName) > 0)
+	else if (_tcsxlen(pSt_DBInfo->tszQueueName) > 0)
 	{
-		_stprintf_s(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE tszQueueName = '%s'"), pSt_DBInfo->tszQueueName);
+		_xstprintf(tszSQLQuery, _X("DELETE FROM `UserTime` WHERE tszQueueName = '%s'"), pSt_DBInfo->tszQueueName);
 	}
 	else
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
+}
+/********************************************************************
+函数名称：DBModule_MQUser_TimeUPDate
+函数功能：更新定时发布表
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要更新的信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQUser::DBModule_MQUser_TimeUPDate(XENGINE_DBTIMERELEASE* pSt_DBInfo)
+{
+	DBModule_IsErrorOccur = false;
+
+	XCHAR tszSQLQuery[2048];
+	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+
+	_xstprintf(tszSQLQuery, _X("UPDATE `UserTime` SET bActive = 1 WHERE nIDMsg = %lld"), pSt_DBInfo->nIDMsg);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_TimeClaer
@@ -780,11 +812,11 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeDelete(XENGINE_DBTIMERELEASE* pSt_DBI
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
+bool CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
 	if (0 == nTime)
@@ -792,18 +824,18 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
 		nTime = time(NULL);
 	}
 #ifdef _MSC_BUILD
-	_stprintf(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDTime <= %lld"), nTime);
+	_xstprintf(tszSQLQuery, _X("DELETE FROM `UserTime` WHERE nIDTime <= %lld"), nTime);
 #else
-	_stprintf(tszSQLQuery, _T("DELETE FROM `UserTime` WHERE nIDTime <= %ld"), nTime);
+	_xstprintf(tszSQLQuery, _X("DELETE FROM `UserTime` WHERE nIDTime <= %ld"), nTime);
 #endif
 
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_TimeTopicUPDate
@@ -823,22 +855,22 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeClaer(time_t nTime /* = 0 */)
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+bool CDBModule_MQUser::DBModule_MQUser_TimeTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `UserTime` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszDestTable, lpszSourceTable);
+	_xstprintf(tszSQLQuery, _X("UPDATE `UserTime` SET tszQueueName = '%s' WHERE tszQueueName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerInsert
@@ -853,27 +885,27 @@ BOOL CDBModule_MQUser::DBModule_MQUser_TimeTopicUPDate(LPCTSTR lpszSourceTable, 
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+bool CDBModule_MQUser::DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBOwner)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBOwner)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
-	TCHAR tszSQLStatement[10240];
+	XCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("INSERT IGNORE INTO `KeyOwner` (tszUserName,tszKeyName,tszCreateTime) VALUES('%s','%s',now())"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+	_xstprintf(tszSQLStatement, _X("INSERT IGNORE INTO `KeyOwner` (tszUserName,tszKeyName,tszCreateTime) VALUES('%s','%s',now())"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerDelete
@@ -888,48 +920,48 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerInsert(XENGINE_DBTOPICOWNER* pSt_DBO
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+bool CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBOwner)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	if (NULL == pSt_DBOwner)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return FALSE;
+		return false;
 	}
 	__int64u nAffectRow = 0;
-	TCHAR tszSQLStatement[10240];
+	XCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	if ((_tcslen(pSt_DBOwner->tszUserName) > 0) && (_tcslen(pSt_DBOwner->tszQueueName) > 0))
+	if ((_tcsxlen(pSt_DBOwner->tszUserName) > 0) && (_tcsxlen(pSt_DBOwner->tszQueueName) > 0))
 	{
-		_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
 		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nAffectRow))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 		if (nAffectRow <= 0)
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
-			return FALSE;
+			return false;
 		}
 	}
 	else
 	{
-		_stprintf(tszSQLStatement, _T("DELETE FROM `KeyOwner` WHERE tszUserName = '%s'"), pSt_DBOwner->tszUserName);
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszUserName = '%s'"), pSt_DBOwner->tszUserName);
 		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 		{
-			DBModule_IsErrorOccur = TRUE;
+			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return FALSE;
+			return false;
 		}
 	}
 	
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerQuery
@@ -944,34 +976,34 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBO
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner)
+bool CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
 	__int64u nllRow = 0;
-	TCHAR tszSQLStatement[1024];
+	XCHAR tszSQLStatement[1024];
 
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_stprintf(tszSQLStatement, _T("SELECT * FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
 
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	if (nllLine <= 0)
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 }
 /********************************************************************
 函数名称：DBModule_MQUser_OwnerTopicUPDate
@@ -991,27 +1023,27 @@ BOOL CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOw
   意思：是否成功
 备注：
 *********************************************************************/
-BOOL CDBModule_MQUser::DBModule_MQUser_OwnerTopicUPDate(LPCTSTR lpszSourceTable, LPCTSTR lpszDestTable)
+bool CDBModule_MQUser::DBModule_MQUser_OwnerTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable)
 {
-	DBModule_IsErrorOccur = FALSE;
+	DBModule_IsErrorOccur = false;
 
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 
-	_stprintf(tszSQLQuery, _T("UPDATE `KeyOwner` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
+	_xstprintf(tszSQLQuery, _X("UPDATE `KeyOwner` SET tszKeyName = '%s' WHERE tszKeyName = '%s'"), lpszDestTable, lpszSourceTable);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
 	{
-		DBModule_IsErrorOccur = TRUE;
+		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
-XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(LPVOID lParam)
+XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 {
 	CDBModule_MQUser* pClass_This = (CDBModule_MQUser*)lParam;
 
@@ -1022,7 +1054,7 @@ XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(LPVOID lParam)
 		pClass_This->DBModule_MQUser_TimeQuery(&ppSt_DBInfo, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			pClass_This->lpCall_TimePublish(ppSt_DBInfo[i]->tszQueueName, ppSt_DBInfo[i]->nIDMsg, ppSt_DBInfo[i]->nIDTime, pClass_This->m_lParam);
+			pClass_This->lpCall_TimePublish(ppSt_DBInfo[i], pClass_This->m_lParam);
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBInfo, nListCount);
 		std::this_thread::sleep_for(std::chrono::seconds(1));

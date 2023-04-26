@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_WebsocketThread(LPVOID lParam)
+XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -19,7 +19,7 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(LPVOID lParam)
 			for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
 			{
 				int nMsgLen = 0;
-				TCHAR* ptszMsgBuffer = NULL;
+				XCHAR* ptszMsgBuffer = NULL;
 				ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
 				if (RfcComponents_WSPacket_GetMemoryEx(xhWSPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &enOPCode))
 				{
@@ -32,12 +32,12 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(LPVOID lParam)
 	}
 	return 0;
 }
-BOOL MessageQueue_Websocket_Handle(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode)
+bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode)
 {
 	if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT == enOPCode)
 	{
 		int nPLen = 0;
-		TCHAR tszMsgBuffer[4096];
+		XCHAR tszMsgBuffer[4096];
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;
 
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -48,7 +48,7 @@ BOOL MessageQueue_Websocket_Handle(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _T("Websocket客户端:%s,协议错误"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("Websocket客户端:%s,协议错误"), lpszClientAddr);
 	}
-	return TRUE;
+	return true;
 }
