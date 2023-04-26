@@ -4,3 +4,4 @@ EXPORTS
 	Config_GetLastError
 
 	Config_Json_File
+	Config_Json_DBFile

@@ -54,7 +54,7 @@
 //消息队列服务协议
 typedef struct 
 {
-	CHAR tszMQKey[256];                                                   //此消息的KEY，不能为空
+	XCHAR tszMQKey[256];                                                   //此消息的KEY，不能为空
 	__int64x nSerial;                                                     //包序列号
 	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区
 	int nKeepTime;                                                        //保持时间,单位秒,-1 永久存在 0 一次就结束,>0 保存秒数
@@ -62,13 +62,13 @@ typedef struct
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;
 typedef struct 
 {
-	TCHAR tszMQKey[256];                                                  //主题名		  
+	XCHAR tszMQKey[256];                                                  //主题名		  
 	__int64x nCount;                                                      //总个数
 	__int64x nFirstNumber;                                                //起始编码
 	__int64x nLastNumber;                                                 //末尾编号
 }XENGINE_MQNUMBER, * LPXENGINE_MQNUMBER;
 typedef struct 
 {
-	TCHAR tszMQKey[256];                                               //原始主题名		
+	XCHAR tszMQKey[256];                                               //原始主题名		
 }XENGINE_MQTOPIC, * LPXENGINE_MQTOPIC;
 #pragma pack(pop)

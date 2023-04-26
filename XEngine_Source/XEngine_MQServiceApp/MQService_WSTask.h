@@ -1,4 +1,4 @@
 ﻿#pragma once
 
-XHTHREAD CALLBACK MessageQueue_WebsocketThread(LPVOID lParam);
-BOOL MessageQueue_Websocket_Handle(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode);
+XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam);
+bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode);

@@ -1,23 +1,21 @@
 CC = g++ -Wall -std=c++17
+PLATFORM = linux
+PLATVER = 
+PLATDIR = 
 RELEASE = 0
-UNICODE = 0  
-LOADBIN = 0
-LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpServer -lNetHelp_APIClient \
-      -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule -ljsoncpp
-LIBEX = -ldl -lpthread
-LOADSO = -Wl,-rpath=./,--disable-new-dtags
-LIBINCLUDE = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_Task.o XEngine_MQServiceApp.o
-
-ifeq ($(shell uname),Darwin)
-	LOADBIN = -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
-	LOADSO = 
-else
-	LOADBIN = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L /usr/local/lib/XEngine_Release/XEngine_NetHelp  \
-	          -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule -L ../XEngine_ThirdPart/jsoncpp
-endif
+UNICODE = 0
+LOADHDR = -I ./ 
+LOADSO = -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L /usr/local/lib/XEngine_Release/XEngine_NetHelp  \
+         -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule \
+		 -L ../XEngine_ThirdPart/jsoncpp
+LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpProtocol -lNetHelp_APIClient \
+      -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule \
+	  -ljsoncpp
+LIBEX = 
+OBJECTS = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_Task.o XEngine_MQServiceApp.o
 
 ifeq ($(RELEASE),1)
-FLAGS = -c -O2 
+FLAGS = -c 
 DEBUG = 
 else
 FLAGS = -c -lc_p
@@ -30,24 +28,42 @@ else
 UNICODE = 
 endif
 
-all:$(LIBINCLUDE)
-	$(CC) $(DEBUG) $(LIBINCLUDE) -o XEngine_MQServiceApp $(LOADBIN) $(LIB) $(LIBEX) $(LOADSO)
+ifeq ($(PLATFORM),linux)
+	ifeq (/etc/redhat-release,$(wildcard /etc/redhat-release))
+		PLATVER = -D __CENTOS__
+		PLATDIR = XEngine_Linux/Centos
+	else
+		PLATVER = -D __UBUNTU__
+		PLATDIR = XEngine_Linux/Ubuntu
+	endif
+	LIBEX = -lpthread -lrt -ldl
+	LOADBIN = -Wl,-rpath=./,--disable-new-dtags
+else ifeq ($(PLATFORM),mac)
+	CC += -Wno-deprecated-declarations
+	PLATVER = -D __MACOS__
+	PLATDIR = XEngine_Mac
+	LIBEX = -lpthread -ldl
+	LOADBIN = -Wl,-rpath,@loader_path/./
+endif
+
+all:$(OBJECTS)
+	$(CC) $(DEBUG) $(OBJECTS) -o XEngine_MQServiceApp $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
   
 MQService_Net.o:./MQService_Net.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_Net.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Net.cpp
 MQService_Config.o:./MQService_Config.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_Config.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Config.cpp 
 MQService_TCPTask.o:./MQService_TCPTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_TCPTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_TCPTask.cpp
 MQService_HttpTask.o:./MQService_HttpTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_HttpTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_HttpTask.cpp
 MQService_WSTask.o:./MQService_WSTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_WSTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_WSTask.cpp
 MQService_Task.o:./MQService_Task.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./MQService_Task.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Task.cpp
 
 XEngine_MQServiceApp.o:./XEngine_MQServiceApp.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) ./XEngine_MQServiceApp.cpp   
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./XEngine_MQServiceApp.cpp   
 
 
 InstallAll:InstallApp

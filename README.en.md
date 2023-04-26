@@ -30,11 +30,12 @@ this software support following features
 14. Unlimited load message types  
 15. timed message
 16. Access control(planning)
+17. binary message(only tcp)
 
 ## install
 
 #### XEngine Evn
-you must install XEngine,need V7.46 or above,install XEngine can be refer to xengine Readme docment  
+you must install XEngine,need V8.10 or above,install XEngine can be refer to xengine Readme docment  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -44,26 +45,35 @@ window Exection XEngine_WINEnv.bat
 Linux Exection:sudo ./XEngine_LINEnv.sh -i 3  
 Macos Exection:./XEngine_LINEnv.sh -i 3
 
-##### dependent environment
-need to mysql service support,exection XEngine_SQLFile/CreateDatabase.sql to create database  
-and exection:XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create table  
-
 #### Windows
 use vs open and complie,support windows 7sp1 and above   
 Just Run it.
 
 #### Linux
 Linux use Makefile to complie  
-supproted ubuntu x64 or centos x64  
+supproted ubuntu22.04 x64 or RockyLinux9 x64  
 
-#### MacOS
-Linux use Makefile to complie,terminal exection,Requires mac 12 and above  
-
-##### complie
+###### complie
 execute command in XEngine_Source path
 make complie  
 make FLAGS=InstallAll install  
 make FLAGS=CleanAll clear  
+If there is no error.you can see complied XEngine_MQServiceApp file in XEngine_Release  
+You can running at terminal.
+
+#### MacOS
+Linux use Makefile to complie,terminal exection,Requires mac 13 and above  
+###### complie
+same linux
+
+## Installation Instructions
+#### Install
+Modify the configuration file to what you need, and then run the service directly
+need to mysql service support,create database through CreateDatabase.sql,import XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create table.
+
+#### upgrade
+If it is an upgrade installation, after downloading the new version and modifying the configuration file, it can be run directly
+database you need to open the database matching fields and tables are consistent
 
 #### use
 

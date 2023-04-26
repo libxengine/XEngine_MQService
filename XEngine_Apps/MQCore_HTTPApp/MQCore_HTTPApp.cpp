@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <json/json.h>
@@ -6,13 +6,13 @@
 #pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
 #pragma comment(lib,"x86/XEngine_NetHelp/NetHelp_APIClient")
 #pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include <json/json.h>
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
@@ -20,17 +20,17 @@
 #include <XEngine_Include/XEngine_NetHelp/APIClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lNetHelp_APIClient -ljsoncpp
+//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_NetHelp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lNetHelp_APIClient -ljsoncpp -Wl,-rpath=../../XEngine_Source/XEngine_ThirdPart/jsoncpp,--disable-new-dtags
 
-SOCKET m_Socket;
+XSOCKET m_Socket;
 XNETHANDLE xhToken = 0;
-LPCTSTR lpszKey = _T("XEngine_Notify");  //主题
-LPCTSTR lpszPostUrl = _T("http://127.0.0.1:5201");
+LPCXSTR lpszKey = _X("XEngine_Notify");  //主题
+LPCXSTR lpszPostUrl = _X("http://127.0.0.1:5201");
 
 void MQ_Authorize()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -47,13 +47,13 @@ void MQ_Authorize()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody, &nLen))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Authorize:%s\n", ptszMsgBody);
+	_xtprintf("MQ_Authorize:%s\n", ptszMsgBody);
 
 	JSONCPP_STRING st_JsonError;
 	Json::CharReaderBuilder st_ReaderBuilder;
@@ -72,7 +72,7 @@ void MQ_Authorize()
 void MQ_UNRead()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -80,7 +80,7 @@ void MQ_UNRead()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUNREAD;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = "";  //所有未读
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
@@ -88,19 +88,19 @@ void MQ_UNRead()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_UNRead:%s\n", ptszMsgBody);
+	_xtprintf("MQ_UNRead:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_Create()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -108,7 +108,7 @@ void MQ_Create()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
@@ -116,20 +116,20 @@ void MQ_Create()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Create:%s\n", ptszMsgBody);
+	_xtprintf("MQ_Create:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
-void MQ_Post(LPCTSTR lpszMsgBuffer)
+void MQ_Post(LPCXSTR lpszMsgBuffer)
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -138,7 +138,7 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理
@@ -155,20 +155,20 @@ void MQ_Post(LPCTSTR lpszMsgBuffer)
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Post:%s\n", ptszMsgBody);
+	_xtprintf("MQ_Post:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
 void MQ_BindTopic()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -177,7 +177,7 @@ void MQ_BindTopic()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["nSerial"] = 1; //设置为1开始读取
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
@@ -186,19 +186,19 @@ void MQ_BindTopic()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_GetNumber:%s\n", ptszMsgBody);
+	_xtprintf("MQ_GetNumber:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_Get()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -207,7 +207,7 @@ void MQ_Get()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 
@@ -216,19 +216,19 @@ void MQ_Get()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Get:%s\n", ptszMsgBody);
+	_xtprintf("MQ_Get:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_ModifyMsg()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -237,7 +237,7 @@ void MQ_ModifyMsg()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQMSGMODIFY;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 1;             //序列号
@@ -256,19 +256,19 @@ void MQ_ModifyMsg()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_ModifyMsg:%s\n", ptszMsgBody);
+	_xtprintf("MQ_ModifyMsg:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_ModifyTopic()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -277,7 +277,7 @@ void MQ_ModifyTopic()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICMODIFY;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 
@@ -291,19 +291,19 @@ void MQ_ModifyTopic()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_ModifyTopic:%s\n", ptszMsgBody);
+	_xtprintf("MQ_ModifyTopic:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_Delete()
 {
 	int nLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	Json::Value st_JsonRoot;
@@ -312,7 +312,7 @@ void MQ_Delete()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)xhToken;
 
 	st_JsonMQProtocol["tszMQKey"] = "XEngine_Modify";
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
@@ -320,19 +320,19 @@ void MQ_Delete()
 	nLen = st_JsonRoot.toStyledString().length();
 	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
 
-	TCHAR* ptszMsgBody = NULL;
-	if (!APIClient_Http_Request(_T("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, tszMsgBuffer, NULL, &ptszMsgBody))
 	{
-		printf("发送投递失败！\n");
+		_xtprintf("发送投递失败！\n");
 		return;
 	}
-	printf("MQ_Delete:%s\n", ptszMsgBody);
+	_xtprintf("MQ_Delete:%s\n", ptszMsgBody);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -347,7 +347,7 @@ int main()
 	MQ_ModifyTopic();
 	MQ_Delete();
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

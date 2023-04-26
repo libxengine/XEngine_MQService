@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
-extern "C" DWORD Protocol_GetLastError(int* pInt_SysError = NULL);
+extern "C" XLONG Protocol_GetLastError(int* pInt_SysError = NULL);
 /************************************************************************/
 /*                        封装类函数                                    */
 /************************************************************************/
@@ -60,7 +60,7 @@ extern "C" DWORD Protocol_GetLastError(int* pInt_SysError = NULL);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCTSTR lpszMsgBuffer = NULL, int nMsgLen = 0);
+extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer = NULL, int nMsgLen = 0);
 /********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
 函数功能：获取序列打包函数
@@ -94,7 +94,7 @@ extern "C" BOOL ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* 
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType);
+extern "C" bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType);
 /********************************************************************
 函数名称：ProtocolModule_Packet_PassAuth
 函数功能：HTTP代理打包函数
@@ -123,7 +123,7 @@ extern "C" BOOL ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_Protocol
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
+extern "C" bool ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
 /********************************************************************
 函数名称：ProtocolModule_Packet_PassUser
 函数功能：HTTP用户信息打包函数
@@ -152,7 +152,7 @@ extern "C" BOOL ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_Pr
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, TCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
+extern "C" bool ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
 函数功能：未读消息打包创建函数
@@ -195,7 +195,7 @@ extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_P
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount);
+extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount);
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadDelete
 函数功能：删除数据并且导出
@@ -219,7 +219,7 @@ extern "C" BOOL ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBME
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR* ptszMsgBuffer, int* pInt_MsgLen);
+extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR* ptszMsgBuffer, int* pInt_MsgLen);
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
@@ -256,4 +256,4 @@ extern "C" BOOL ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, TCHAR* ptszM
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" BOOL ProtocolModule_Parse_Http(LPCTSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, TCHAR *ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);
+extern "C" bool ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, XCHAR *ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);
