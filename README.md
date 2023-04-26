@@ -29,11 +29,12 @@ c c++Message Service
 14. 不限制负载的消息类型  
 15. 定时消息
 16. 权限控制(planning)
+17. 二进制消息(only tcp)
 
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V7.46或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V8.10或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -45,7 +46,7 @@ macos执行:./XEngine_LINEnv.sh -i 3
 
 ##### 依赖环境
 需要MYSQL服务的支持,执行XEngine_SQLFile/CreateDatabase.sql  创建数据库  
-分别执行:执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建库  
+分别执行:执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建表  
 
 #### Windows
 使用VS打开并且编译,支持WINDOWS 7SP1以上系统  
@@ -53,18 +54,32 @@ macos执行:./XEngine_LINEnv.sh -i 3
 
 #### Linux
 Linux使用Makefile编译  
-UBUNTU20.04 x64或者CENTOS8 x64均可  
+UBUNTU22.04 x64或者RockyLinux9 x64均可  
 在控制台运行
 
-#### MacOS
-使用makefile编译,控制台运行,需要mac 12以及以上版本  
-在控制台运行
-
-##### 编译命令
+###### 编译命令
 在XEngine_Source目录下执行命令  
 make 编译  
 make FLAGS=InstallAll 安装库程序  
 make FLAGS=CleanAll 清理编译  
+如果没有错误,你可以在XEngine_Release目录下看到编译的XEngine_MQServiceApp  
+然后直接在终端运行它即可.
+
+#### MacOS
+使用makefile编译,控制台运行,需要mac 13以及以上版本  
+在控制台运行
+
+###### 编译命令
+同LINUX
+
+## 安装指导
+#### 安装
+修改配置文件为你需要的,然后直接运行服务即可
+需要MYSQL服务,使用CreateDatabase.sql创建数据库,然后导入执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建表  
+
+#### 升级
+如果是升级安装,下载新版本后修改配置文件就可以直接运行了
+数据库需要打开数据库匹配字段和表是否一致
 
 #### 使用说明
 
@@ -113,6 +128,8 @@ MQTT支持
 完善HTTP_CALL  
 允许主题解除绑定  
 允许删除主题  
+高性能内存队列  
+多次登录验证  
 
 ## 提交问题
 

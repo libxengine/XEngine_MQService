@@ -1,3 +1,29 @@
+XEngine_MQService V3.7.0.1001
+
+添加:定时发布是否跳过本身功能
+添加:数据库配置配置文件
+优化:编译脚本
+更新:匹配支持XEngine V8.x版本
+更新:打印的版本信息
+更新:mysql数据库字符集现在使用utf8mb4 和 unicode
+修改:mysql字符集现在使用UTF8连接
+修改:在登录后,可以通过HTTP GET方法获取数据了
+修改:现在可以设置清理和不清理定时发布的任务了
+修改:数据库的data数据类型修改为二进制类型,现在支持保存二进制了
+删除:数据库的msglen字段,不需要
+
+added:whether break self for time release
+added:db configure for configure module
+improved:makefile
+update:match xengine v8.x
+update:version printf log
+update:mysql charset to utf8mb4 and unicode
+modify:mysql charset to utf8 now
+modify:after login in,get message through get method of http
+modify:can be clear or not clear for time release
+modify:data to blob type for database,support binary data now
+delete:nMsgLen field of database
+======================================================================================
 XEngine_MQService V3.6.0.1001
 
 增加:主题所有者数据支持
