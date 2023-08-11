@@ -11,7 +11,7 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 			continue;
 		}
 		int nListCount = 0;
-		RFCCOMPONENTS_WSPKT_CLIENT** ppSst_ListAddr;
+		XENGINE_MANAGEPOOL_TASKEVENT** ppSst_ListAddr;
 
 		RfcComponents_WSPacket_GetPoolEx(xhWSPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)

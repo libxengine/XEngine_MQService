@@ -11,7 +11,7 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 			continue;
 		}
 		int nListCount = 0;
-		RFCCOMPONENTS_HTTP_PKTCLIENT** ppSst_ListAddr;
+		XENGINE_MANAGEPOOL_TASKEVENT** ppSst_ListAddr;
 
 		HttpProtocol_Server_GetPoolEx(xhHTTPPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)

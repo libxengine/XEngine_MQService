@@ -12,7 +12,7 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
 		}
 		int nListCount = 0;
 		XENGINE_PROTOCOLHDR st_ProtocolHdr;;
-		HELPCOMPONENT_PACKET_CLIENT** ppSst_ListAddr;
+		XENGINE_MANAGEPOOL_TASKEVENT** ppSst_ListAddr;
 
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
