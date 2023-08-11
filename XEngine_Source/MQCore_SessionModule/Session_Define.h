@@ -102,6 +102,20 @@ extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROT
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
+/********************************************************************
+函数名称：SessionModule_Client_DeleteByUser
+函数功能：通过同户名删除会话
+ 参数.一：lpszClientUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool SessionModule_Client_DeleteByUser(LPCXSTR lpszClientUser);
 /************************************************************************
 函数名称：SessionModule_Client_GetUser
 函数功能：通过会话ID获取用户

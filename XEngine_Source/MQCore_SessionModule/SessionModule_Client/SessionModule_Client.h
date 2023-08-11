@@ -28,6 +28,7 @@ public:
     bool SessionModule_Client_Destory();
     bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROTOCOL_USERINFO *pSt_UserInfo, int nNetType);
     bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
+    bool SessionModule_Client_DeleteByUser(LPCXSTR lpszClientUser);
     bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptszUserName = NULL);
     bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr = NULL);
     bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);

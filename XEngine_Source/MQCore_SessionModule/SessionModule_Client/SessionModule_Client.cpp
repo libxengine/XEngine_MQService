@@ -148,6 +148,36 @@ bool CSessionModule_Client::SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 
 	return true;
 }
+/********************************************************************
+函数名称：SessionModule_Client_DeleteByUser
+函数功能：通过同户名删除会话
+ 参数.一：lpszClientUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CSessionModule_Client::SessionModule_Client_DeleteByUser(LPCXSTR lpszClientUser)
+{
+	Session_IsErrorOccur = false;
+
+	st_Locker.lock();
+	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
+	{
+		if (0 == _tcsxnicmp(lpszClientUser, stl_MapIterator->second.st_UserInfo.tszUserName, _tcsxlen(lpszClientUser)))
+		{
+			stl_MapSession.erase(stl_MapIterator);
+			break;
+		}
+	}
+	st_Locker.unlock();
+
+	return true;
+}
 /************************************************************************
 函数名称：SessionModule_Client_GetUser
 函数功能：通过会话ID获取用户

@@ -45,6 +45,10 @@ extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 {
 	return m_SessionClient.SessionModule_Client_Delete(lpszClientAddr);
 }
+extern "C" bool SessionModule_Client_DeleteByUser(LPCXSTR lpszClientUser)
+{
+	return m_SessionClient.SessionModule_Client_DeleteByUser(lpszClientUser);
+}
 extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR * ptszUserName)
 {
 	return m_SessionClient.SessionModule_Client_GetUser(lpszSessionStr, ptszUserName);
