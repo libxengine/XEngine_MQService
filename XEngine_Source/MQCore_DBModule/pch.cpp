@@ -98,6 +98,10 @@ extern "C" bool DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 {
 	return m_DBUser.DBModule_MQUser_UserUPDate(pSt_UserInfo);
 }
+extern "C" bool DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO * **pppSt_UserInfo, int* pInt_ListCount)
+{
+	return m_DBUser.DBModule_MQUser_UserList(pppSt_UserInfo, pInt_ListCount);
+}
 /*************************************************************************
 						消息绑定导出函数
 **************************************************************************/

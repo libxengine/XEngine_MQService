@@ -74,11 +74,6 @@ void CALLBACK MessageQueue_Callback_WSLeave(LPCXSTR lpszClientAddr, XSOCKET hSoc
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, false);
 }
 //////////////////////////////////////////////////////////////////////////
-void CALLBACK MessageQueue_Callback_Timeout(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam)
-{
-	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, true);
-}
-//////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 {
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)

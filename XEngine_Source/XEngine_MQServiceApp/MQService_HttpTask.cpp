@@ -40,15 +40,54 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 }
 bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR** pptszListHdr, int nHdrCount)
 {
+	int nPKTLen = 4096;
+	XCHAR tszPKTBuffer[4096];
+	XCHAR tszKey[MAX_PATH];
+	XCHAR tszValue[MAX_PATH];
+
+	memset(tszKey, '\0', MAX_PATH);
+	memset(tszValue, '\0', MAX_PATH);
+	memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+
 	LPCXSTR lpszPostMethod = _X("POST");
 	LPCXSTR lpszGetMethod = _X("GET");
+	LPCXSTR lpszAPIGet = _X("get");
+	LPCXSTR lpszAPIUser = _X("user");
 
 	if (0 == _tcsxnicmp(lpszPostMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszPostMethod)))
 	{
 	}
 	else if (0 == _tcsxnicmp(lpszGetMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszGetMethod)))
 	{
-		//http://127.0.0.1:5201/api?function=get&token=112&key=xengine&serial=1
+		//http://127.0.0.1:5202/api?function=get&method=user
+		int nUrlCount = 0;
+		XCHAR** ppSt_ListUrl;
+		HttpProtocol_ServerHelp_GetParament(pSt_HTTPParam->tszHttpUri, &ppSt_ListUrl, &nUrlCount);
+		if (nUrlCount < 1)
+		{
+			ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, 400, "url parament is incorrent");
+			XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			return false;
+		}
+		//获取函数
+		BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
+		if (0 == _tcsxnicmp(lpszAPIGet, tszValue, _tcsxlen(lpszAPIGet)))
+		{
+			//用户
+			memset(tszValue, '\0', MAX_PATH);
+			BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
+			if (0 == _tcsxnicmp(lpszAPIUser, tszValue, _tcsxlen(lpszAPIUser)))
+			{
+				int nListCount = 0;
+				XENGINE_PROTOCOL_USERINFO** ppSt_UserInfo;
+				DBModule_MQUser_UserList(&ppSt_UserInfo, &nListCount);
+				ProtocolModule_Packet_UserList(tszPKTBuffer, &nPKTLen, &ppSt_UserInfo, nListCount);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
+
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
+			}
+		}
 	}
 	else
 	{

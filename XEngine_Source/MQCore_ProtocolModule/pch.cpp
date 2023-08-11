@@ -47,6 +47,14 @@ extern "C" bool ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO * pSt_P
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_PassUser(pSt_ProtocolUser, ptszMsgBuffer, pInt_MsgLen, nCode);
 }
+extern "C" bool ProtocolModule_Packet_Http(XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nCode, LPCXSTR lpszMsgBuffer)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_Http(ptszMsgBuffer, pInt_MsgLen, nCode, lpszMsgBuffer);
+}
+extern "C" bool ProtocolModule_Packet_UserList(XCHAR * ptszMsgBuffer, int* pInt_MsgLen, XENGINE_PROTOCOL_USERINFO * **pppSt_UserInfo, int nListCount)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_UserList(ptszMsgBuffer, pInt_MsgLen, pppSt_UserInfo, nListCount);
+}
 extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);

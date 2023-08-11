@@ -325,6 +325,25 @@ extern "C" bool DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 备注：
 *********************************************************************/
 extern "C" bool DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+/********************************************************************
+函数名称：DBModule_MQUser_UserList
+函数功能：获取用户列表
+ 参数.一：pppSt_UserInfo
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出用户表信息
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型
+  可空：N
+  意思：输出用户表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int* pInt_ListCount);
 /*************************************************************************
 						消息绑定导出函数
 **************************************************************************/
