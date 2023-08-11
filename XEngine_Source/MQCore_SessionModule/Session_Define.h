@@ -21,10 +21,6 @@ typedef enum
 	ENUM_MQCORE_SESSION_CLIENT_TYPE_HTTP = 3
 }ENUM_MQCORE_SESSION_CLIENT_TYPE;
 //////////////////////////////////////////////////////////////////////////
-//                        导出回调函数
-//////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam);
-//////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
 extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError = NULL);
@@ -34,27 +30,12 @@ extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError = NULL);
 /********************************************************************
 函数名称：SessionModule_Client_Init
 函数功能：初始化客户端会话管理器
- 参数.一：nSessionTime
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入会话超时时间,单位秒
- 参数.二：fpCall_Timeout
-  In/Out：In/Out
-  类型：回调函数
-  可空：N
-  意思：设置会话超时回调
- 参数.三：lParam
-  In/Out：In/Out
-  类型：无类型指针
-  可空：Y
-  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam = NULL);
+extern "C" bool SessionModule_Client_Init();
 /************************************************************************
 函数名称：SessionModule_Client_Destory
 函数功能：销毁会话管理器
@@ -192,17 +173,3 @@ extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
-/********************************************************************
-函数名称：SessionModule_Client_Heart
-函数功能：触发一次心跳
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要触发的客户端
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr);

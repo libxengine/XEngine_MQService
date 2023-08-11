@@ -39,9 +39,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	int nSDLen = 10240;
 	LPCXSTR lpszClientType;
 	XCHAR tszSDBuffer[10240];
-	XCHAR tszSessionStr[MAX_PATH];
-
-	memset(tszSessionStr, '\0', MAX_PATH);
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 	if (XENGINE_MQAPP_NETTYPE_TCP == nNetType)
@@ -61,15 +58,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	{
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_HB_SYN == pSt_ProtocolHdr->unOperatorCode)
 		{
-			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
-			{
-				_xstprintf(tszSessionStr, _X("%lld"), pSt_ProtocolHdr->xhToken);
-			}
-			else
-			{
-				_tcsxcpy(tszSessionStr, lpszClientAddr);
-			}
-			SessionModule_Client_Heart(tszSessionStr);
 			//如果设置了标志位或者是HTTP请求,那么返回消息
 			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
 			{
@@ -145,18 +133,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				st_UserInfo.nUserState = 1;
 				DBModule_MQUser_UserUPDate(&st_UserInfo);
 			}
-			if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
-			{
-				//HTTP使用SESSION
-				BaseLib_OperatorHandle_Create(&pSt_ProtocolHdr->xhToken);
-				_xstprintf(tszSessionStr, _X("%lld"), pSt_ProtocolHdr->xhToken);
-				SessionModule_Client_Create(tszSessionStr, &st_UserInfo, nNetType);
-			}
-			else
-			{
-				SessionModule_Client_Create(lpszClientAddr, &st_UserInfo, nNetType);
-			}
 			pSt_ProtocolHdr->wReserve = 0;
+			SessionModule_Client_Create(lpszClientAddr, &st_UserInfo, nNetType);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s客户端:%s,请求验证成功,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
@@ -333,28 +311,13 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 		memset(tszUserName, '\0', MAX_PATH);
 
-		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+		if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
 		{
-			_xstprintf(tszSessionStr, _X("%lld"), pSt_ProtocolHdr->xhToken);
-			if (!SessionModule_Client_GetUser(tszSessionStr, tszUserName))
-			{
-				pSt_ProtocolHdr->wReserve = 700;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证,Session:%s"), lpszClientType, lpszClientAddr, tszSessionStr);
-				return false;
-			}
-		}
-		else
-		{
-			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
-			{
-				pSt_ProtocolHdr->wReserve = 700;
-				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
-				return false;
-			}
+			pSt_ProtocolHdr->wReserve = 700;
+			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
+			return false;
 		}
 		memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 		

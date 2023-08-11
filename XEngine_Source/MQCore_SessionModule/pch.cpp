@@ -29,9 +29,9 @@ extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError)
 /************************************************************************/
 /*                        客户端会话                                    */
 /************************************************************************/
-extern "C" bool SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam)
+extern "C" bool SessionModule_Client_Init()
 {
-	return m_SessionClient.SessionModule_Client_Init(nSessionTime, fpCall_Timeout, lParam);
+	return m_SessionClient.SessionModule_Client_Init();
 }
 extern "C" bool SessionModule_Client_Destory()
 {
@@ -64,8 +64,4 @@ extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE
 extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType)
 {
 	return m_SessionClient.SessionModule_Client_GetType(lpszSessionStr, pInt_NetType);
-}
-extern "C" bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr)
-{
-	return m_SessionClient.SessionModule_Client_Heart(lpszClientAddr);
 }
