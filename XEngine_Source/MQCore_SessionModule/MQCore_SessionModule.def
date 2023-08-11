@@ -9,5 +9,6 @@ EXPORTS
 	SessionModule_Client_Delete
 	SessionModule_Client_GetUser
 	SessionModule_Client_GetAddr
+	SessionModule_Client_GetInfoByUser
 	SessionModule_Client_GetType
 	SessionModule_Client_Heart

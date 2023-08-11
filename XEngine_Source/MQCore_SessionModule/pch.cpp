@@ -37,9 +37,9 @@ extern "C" bool SessionModule_Client_Destory()
 {
 	return m_SessionClient.SessionModule_Client_Destory();
 }
-extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType)
+extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROTOCOL_USERINFO * pSt_UserInfo, int nNetType)
 {
-	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, lpszUserName, nNetType);
+	return m_SessionClient.SessionModule_Client_Create(lpszClientAddr, pSt_UserInfo, nNetType);
 }
 extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 {
@@ -52,6 +52,10 @@ extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR * pts
 extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR * ptszUserAddr)
 {
 	return m_SessionClient.SessionModule_Client_GetAddr(lpszUserName, ptszUserAddr);
+}
+extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
+{
+	return m_SessionClient.SessionModule_Client_GetInfoByUser(lpszUserName, pSt_UserInfo);
 }
 extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType)
 {

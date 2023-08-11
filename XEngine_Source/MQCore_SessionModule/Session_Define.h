@@ -72,11 +72,11 @@ extern "C" bool SessionModule_Client_Destory();
   类型：常量字符指针
   可空：N
   意思：输入客户端地址
- 参数.二：lpszUserName
+ 参数.二：pSt_UserInfo
   In/Out：In
-  类型：常量字符指针
+  类型：数据结构指针
   可空：N
-  意思：输入用户名
+  意思：输入用户信息
  参数.三：nNetType
   In/Out：In
   类型：整数型
@@ -87,7 +87,7 @@ extern "C" bool SessionModule_Client_Destory();
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType);
+extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROTOCOL_USERINFO * pSt_UserInfo, int nNetType);
 /********************************************************************
 函数名称：SessionModule_Client_Delete
 函数功能：删除一个用户
@@ -140,6 +140,25 @@ extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptsz
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr = NULL);
+/********************************************************************
+函数名称：SessionModule_Client_GetInfoByUser
+函数功能：通过用户名获取用户信息
+ 参数.一：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：pSt_UserInfo
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出用户信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 /********************************************************************
 函数名称：SessionModule_Client_GetType
 函数功能：通过客户端获得连接的网络类型

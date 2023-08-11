@@ -83,11 +83,11 @@ bool CSessionModule_Client::SessionModule_Client_Destory()
   类型：常量字符指针
   可空：N
   意思：输入客户端地址
- 参数.二：lpszUserName
+ 参数.二：pSt_UserInfo
   In/Out：In
-  类型：常量字符指针
+  类型：数据结构指针
   可空：N
-  意思：输入用户名
+  意思：输入用户信息
  参数.三：nNetType
   In/Out：In
   类型：整数型
@@ -98,7 +98,7 @@ bool CSessionModule_Client::SessionModule_Client_Destory()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CSessionModule_Client::SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType)
+bool CSessionModule_Client::SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROTOCOL_USERINFO *pSt_UserInfo, int nNetType)
 {
     Session_IsErrorOccur = false;
 
@@ -113,7 +113,7 @@ bool CSessionModule_Client::SessionModule_Client_Create(LPCXSTR lpszClientAddr, 
 
 	st_SessionInfo.nNetType = nNetType;
 	st_SessionInfo.nTimeStart = time(NULL);
-	_tcsxcpy(st_SessionInfo.tszUserName, lpszUserName);
+	st_SessionInfo.st_UserInfo = *pSt_UserInfo;
 	_tcsxcpy(st_SessionInfo.tszUserAddr, lpszClientAddr);
 
     st_Locker.lock();
@@ -187,7 +187,7 @@ bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr,
 	}
 	if (NULL != ptszUserName)
 	{
-		_tcsxcpy(ptszUserName, stl_MapIterator->second.tszUserName);
+		_tcsxcpy(ptszUserName, stl_MapIterator->second.st_UserInfo.tszUserName);
 	}
 	st_Locker.unlock_shared();
 	return true;
@@ -224,13 +224,62 @@ bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, X
 	st_Locker.lock_shared();
 	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
 	{
-		if (0 == _tcsxncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcsxlen(lpszUserName)))
+		if (0 == _tcsxncmp(lpszUserName, stl_MapIterator->second.st_UserInfo.tszUserName, _tcsxlen(lpszUserName)))
 		{
 			bFound = true;
 			if (NULL != ptszUserAddr)
 			{
 				_tcsxcpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
 			}
+			break;
+		}
+	}
+	st_Locker.unlock_shared();
+
+	if (!bFound)
+	{
+		Session_IsErrorOccur = true;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+		return false;
+	}
+	return true;
+}
+/********************************************************************
+函数名称：SessionModule_Client_GetInfoByUser
+函数功能：通过用户名获取用户信息
+ 参数.一：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：pSt_UserInfo
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出用户信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CSessionModule_Client::SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	Session_IsErrorOccur = false;
+
+	if (NULL == lpszUserName)
+	{
+		Session_IsErrorOccur = true;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return false;
+	}
+	bool bFound = false;
+	st_Locker.lock_shared();
+	for (auto stl_MapIterator = stl_MapSession.begin(); stl_MapIterator != stl_MapSession.end(); stl_MapIterator++)
+	{
+		if (0 == _tcsxncmp(lpszUserName, stl_MapIterator->second.st_UserInfo.tszUserName, _tcsxlen(lpszUserName)))
+		{
+			bFound = true;
+			*pSt_UserInfo = stl_MapIterator->second.st_UserInfo;
 			break;
 		}
 	}
@@ -349,7 +398,7 @@ XHTHREAD CALLBACK CSessionModule_Client::SessionModule_Client_Thread(XPVOID lPar
 		{
 			for (auto stl_ListIterator = stl_ListClient.begin(); stl_ListIterator != stl_ListClient.end(); stl_ListIterator++)
 			{
-				pClass_This->lpCall_Timeout(stl_ListIterator->tszUserAddr, stl_ListIterator->tszUserName, (ENUM_MQCORE_SESSION_CLIENT_TYPE)stl_ListIterator->nNetType, pClass_This->m_lParam);
+				pClass_This->lpCall_Timeout(stl_ListIterator->tszUserAddr, stl_ListIterator->st_UserInfo.tszUserName, (ENUM_MQCORE_SESSION_CLIENT_TYPE)stl_ListIterator->nNetType, pClass_This->m_lParam);
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));

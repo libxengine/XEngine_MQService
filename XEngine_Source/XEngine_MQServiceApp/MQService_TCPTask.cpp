@@ -104,7 +104,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求登录到服务失败,因为用户已经登录了"), lpszClientType, lpszClientAddr);
 				return false;
 			}
-			
 			_tcsxcpy(st_UserInfo.tszUserName, st_ProtocolAuth.tszUserName);
 			_tcsxcpy(st_UserInfo.tszUserPass, st_ProtocolAuth.tszUserPass);
 
@@ -151,11 +150,11 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				//HTTP使用SESSION
 				BaseLib_OperatorHandle_Create(&pSt_ProtocolHdr->xhToken);
 				_xstprintf(tszSessionStr, _X("%lld"), pSt_ProtocolHdr->xhToken);
-				SessionModule_Client_Create(tszSessionStr, st_UserInfo.tszUserName, nNetType);
+				SessionModule_Client_Create(tszSessionStr, &st_UserInfo, nNetType);
 			}
 			else
 			{
-				SessionModule_Client_Create(lpszClientAddr, st_UserInfo.tszUserName, nNetType);
+				SessionModule_Client_Create(lpszClientAddr, &st_UserInfo, nNetType);
 			}
 			pSt_ProtocolHdr->wReserve = 0;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
@@ -165,9 +164,11 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT == pSt_ProtocolHdr->unOperatorCode)
 		{
 			XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
-			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+			XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
 
-			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
+			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
+			memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+
 
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s客户端:%s,用户登出成功,暂时没有作用,用户名:%s,密码:%s"), lpszClientType, lpszClientAddr, st_ProtocolAuth.tszUserName, st_ProtocolAuth.tszUserPass);
 		}
