@@ -96,6 +96,15 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
+			if (SessionModule_Client_GetAddr(st_ProtocolAuth.tszUserName))
+			{
+				pSt_ProtocolHdr->wReserve = 700;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求登录到服务失败,因为用户已经登录了"), lpszClientType, lpszClientAddr);
+				return false;
+			}
+			
 			_tcsxcpy(st_UserInfo.tszUserName, st_ProtocolAuth.tszUserName);
 			_tcsxcpy(st_UserInfo.tszUserPass, st_ProtocolAuth.tszUserPass);
 

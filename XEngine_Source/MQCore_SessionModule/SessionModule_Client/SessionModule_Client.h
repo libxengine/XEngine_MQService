@@ -29,7 +29,7 @@ public:
     bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType);
     bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
     bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptszUserName = NULL);
-    bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr);
+    bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr = NULL);
     bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
     bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr);
 protected:

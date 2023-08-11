@@ -203,14 +203,14 @@ bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr,
  参数.二：ptszUserAddr
   In/Out：Out
   类型：字符指针
-  可空：N
+  可空：Y
   意思：输出用户地址
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr)
+bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr /* = NULL */)
 {
 	Session_IsErrorOccur = false;
 
@@ -227,7 +227,10 @@ bool CSessionModule_Client::SessionModule_Client_GetAddr(LPCXSTR lpszUserName, X
 		if (0 == _tcsxncmp(lpszUserName, stl_MapIterator->second.tszUserName, _tcsxlen(lpszUserName)))
 		{
 			bFound = true;
-			_tcsxcpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
+			if (NULL != ptszUserAddr)
+			{
+				_tcsxcpy(ptszUserAddr, stl_MapIterator->second.tszUserAddr);
+			}
 			break;
 		}
 	}
