@@ -14,4 +14,4 @@ EXPORTS
 	ProtocolModule_Packet_UNReadInsert
 	ProtocolModule_Packet_UNReadDelete
 
-	ProtocolModule_Parse_Http
+	ProtocolModule_Parse_Websocket

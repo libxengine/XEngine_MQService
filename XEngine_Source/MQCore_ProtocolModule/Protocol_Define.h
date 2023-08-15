@@ -311,8 +311,8 @@ extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR* ptszM
 /*                        解析类函数                                    */
 /************************************************************************/
 /********************************************************************
-函数名称：ProtocolModule_Parse_Http
-函数功能：HTTP协议解析
+函数名称：ProtocolModule_Parse_Websocket
+函数功能：websocket协议解析
  参数.一：lpszMsgBuffer
   In/Out：In
   类型：常量字符指针
@@ -343,4 +343,4 @@ extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR* ptszM
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, XCHAR *ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);
+extern "C" bool ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr = NULL, XCHAR *ptszMsgBuffer = NULL, int* pInt_MsgLen = NULL);

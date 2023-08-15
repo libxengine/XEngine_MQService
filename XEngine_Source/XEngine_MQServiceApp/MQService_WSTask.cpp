@@ -43,7 +43,7 @@ bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
+		ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
 		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
 	}
 	else

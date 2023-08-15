@@ -74,7 +74,7 @@ extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR * ptsz
 /************************************************************************/
 /*                        解析类函数                                    */
 /************************************************************************/
-extern "C" bool ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XCHAR *ptszMsgBuffer, int* pInt_MsgLen)
+extern "C" bool ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XCHAR *ptszMsgBuffer, int* pInt_MsgLen)
 {
-	return m_ProtocolParse.ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, ptszMsgBuffer, pInt_MsgLen);
+	return m_ProtocolParse.ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, ptszMsgBuffer, pInt_MsgLen);
 }

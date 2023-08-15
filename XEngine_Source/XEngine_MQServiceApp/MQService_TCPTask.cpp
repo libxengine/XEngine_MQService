@@ -117,7 +117,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求远程验证失败,HTTPCode:%d"), lpszClientType, lpszClientAddr, nHTTPCode);
 					return false;
 				}
-				ProtocolModule_Parse_Http(ptszSDBuffer, nSDLen, NULL, (XCHAR*)&st_UserInfo, &nRVLen);
+				ProtocolModule_Parse_Websocket(ptszSDBuffer, nSDLen, NULL, (XCHAR*)&st_UserInfo, &nRVLen);
 				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszSDBuffer);
 			}
 			else
