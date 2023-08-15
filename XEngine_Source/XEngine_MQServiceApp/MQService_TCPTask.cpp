@@ -45,10 +45,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	{
 		lpszClientType = _X("TCP");
 	}
-	else if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
-	{
-		lpszClientType = _X("HTTP");
-	}
 	else
 	{
 		lpszClientType = _X("WEBSOCKET");
@@ -59,7 +55,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_HB_SYN == pSt_ProtocolHdr->unOperatorCode)
 		{
 			//如果设置了标志位或者是HTTP请求,那么返回消息
-			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+			if (pSt_ProtocolHdr->byIsReply)
 			{
 				pSt_ProtocolHdr->unPacketSize = 0;
 				pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_HB_ACK;
