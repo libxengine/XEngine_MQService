@@ -730,8 +730,6 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 
 	if (nMsgLen > 0)
 	{
-		st_JsonPayload["nPayType"] = (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE)pSt_ProtocolHdr->byVersion;
-
 		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
 		{
 			int nBLen = nMsgLen;

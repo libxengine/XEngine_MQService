@@ -97,6 +97,10 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		{
 			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
 		}
+		if (!st_JsonRoot["byIsReply"].isNull())
+		{
+			pSt_ProtocolHdr->byIsReply = st_JsonRoot["byIsReply"].asInt();
+		}
 	}
 	
 	int nPos = 0;
@@ -134,8 +138,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 			st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
-		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
 		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
 	//后者负载的是验证协议
 	if (!st_JsonRoot["st_Auth"].isNull())
@@ -153,8 +157,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 			st_ProtocolAuth.enDeviceType = (ENUM_PROTOCOLDEVICE_TYPE)st_JsonAuth["enDeviceType"].asInt();
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERAUTH);
-		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
 		memcpy(ptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
 	}
 	if (!st_JsonRoot["st_User"].isNull())
 	{
@@ -189,15 +193,15 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 			_tcsxcpy(st_ProtocolInfo.tszEMailAddr, st_JsonUser["tszEMailAddr"].asCString());
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERINFO);
-		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
 		memcpy(ptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
 	}
 	//或者包含附加内容
 	if (!st_JsonRoot["st_Payload"].isNull())
 	{
 		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
 		
-		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == st_JsonPayLoad["nPayType"].asInt())
+		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
 		{
 			int nBLen = st_JsonPayLoad["nPayLen"].asInt();
 			OPenSsl_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
