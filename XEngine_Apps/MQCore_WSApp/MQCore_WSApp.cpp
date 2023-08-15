@@ -16,6 +16,7 @@
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
+#include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
@@ -107,6 +108,7 @@ void MQ_Create()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byIsReply"] = 1;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;
@@ -144,14 +146,14 @@ void MQ_Post(LPCXSTR lpszMsgBuffer)
 	Json::Value st_JsonPayload;
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN;
+	st_JsonRoot["byIsReply"] = 1;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理
 	st_JsonMQProtocol["nKeepTime"] = -1;          //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，PacketKey不能为空
 	st_JsonMQProtocol["nGetTimer"] = 0;
 
-	st_JsonPayload["nPayType"] = 0;
 	st_JsonPayload["nPayLen"] = (Json::Value::UInt)strlen(lpszMsgBuffer);
 	st_JsonPayload["tszPayData"] = lpszMsgBuffer;
 
@@ -189,9 +191,10 @@ void MQ_BindTopic()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byIsReply"] = 1;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 10;
+	st_JsonMQProtocol["nSerial"] = 1;
 
 	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 
@@ -225,6 +228,7 @@ void MQ_GetNumber()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byIsReply"] = 1;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 
@@ -259,6 +263,7 @@ void MQ_Get()
 	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
 	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byIsReply"] = 1;
 
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;      
@@ -297,12 +302,12 @@ int main()
 	memset(tszKeyBuffer, '\0', sizeof(tszKeyBuffer));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	if (!RfcComponents_WSConnector_Connect(tszKeyBuffer, tszMsgBuffer, &nLen, "127.0.0.1:5202"))
+	if (!RfcComponents_WSConnector_Connect(tszKeyBuffer, tszMsgBuffer, &nLen))
 	{
 		_xtprintf("RfcComponents_WSConnector_Connect:%lX", WSFrame_GetLastError());
 		return -1;
 	}
-	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5202))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5201))
 	{
 		_xtprintf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -333,7 +338,7 @@ int main()
 	}
 	MQ_Authorize();
 	MQ_Create();
-	MQ_Post("123hello");
+	MQ_Post("MTIzMTIz");
 	MQ_GetNumber();
 	MQ_BindTopic();
 	MQ_Get();
