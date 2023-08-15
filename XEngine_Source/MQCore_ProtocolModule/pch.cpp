@@ -55,6 +55,10 @@ extern "C" bool ProtocolModule_Packet_UserList(XCHAR * ptszMsgBuffer, int* pInt_
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_UserList(ptszMsgBuffer, pInt_MsgLen, pppSt_UserInfo, nListCount);
 }
+extern "C" bool ProtocolModule_Packet_TopicList(XCHAR * ptszMsgBuffer, int* pInt_MsgLen, XCHAR * **pppszTableName, int nListCount)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_TopicList(ptszMsgBuffer, pInt_MsgLen, pppszTableName, nListCount);
+}
 extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);

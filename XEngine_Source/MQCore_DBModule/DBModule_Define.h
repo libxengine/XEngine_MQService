@@ -233,6 +233,25 @@ extern "C" bool DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName);
 备注：
 *********************************************************************/
 extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable);
+/********************************************************************
+函数名称：DBModule_MQData_ShowTable
+函数功能：获取所有表名
+ 参数.一：pppszTableName
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出表名列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_ListCount);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/

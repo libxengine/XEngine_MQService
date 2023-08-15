@@ -9,6 +9,7 @@ EXPORTS
 	ProtocolModule_Packet_PassUser
 	ProtocolModule_Packet_Http
 	ProtocolModule_Packet_UserList
+	ProtocolModule_Packet_TopicList
 	ProtocolModule_Packet_UNReadCreate
 	ProtocolModule_Packet_UNReadInsert
 	ProtocolModule_Packet_UNReadDelete

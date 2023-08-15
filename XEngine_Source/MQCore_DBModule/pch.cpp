@@ -71,6 +71,10 @@ extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDs
 {
 	return m_DBData.DBModule_MQData_ModifyTable(lpszSrcTable, lpszDstTable);
 }
+extern "C" bool DBModule_MQData_ShowTable(XCHAR * **pppszTableName, int* pInt_ListCount)
+{
+	return m_DBData.DBModule_MQData_ShowTable(pppszTableName, pInt_ListCount);
+}
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
