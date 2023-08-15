@@ -197,21 +197,16 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 	{
 		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
 		
-		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING == st_JsonPayLoad["nPayType"].asInt())
+		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == st_JsonPayLoad["nPayType"].asInt())
 		{
-			memcpy(ptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
-			*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
+			int nBLen = st_JsonPayLoad["nPayLen"].asInt();
+			OPenSsl_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
+			*pInt_MsgLen += nBLen;
 		}
 		else
 		{
-			int nBLen = st_JsonPayLoad["nPayLen"].asInt();
-			XCHAR* ptszBaseBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
-			if (NULL == ptszBaseBuffer)
-			{
-				return false;
-			}
-			OPenSsl_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
-			*pInt_MsgLen += nBLen;
+			memcpy(ptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
+			*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
 		}
 	}
 	return true;
