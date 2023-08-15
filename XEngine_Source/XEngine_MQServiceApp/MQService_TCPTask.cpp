@@ -354,7 +354,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				if (DBModule_MQData_Query(&st_DBIndex))
 				{
 					//找到了返回错误
-					if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+					if (pSt_ProtocolHdr->byIsReply)
 					{
 						pSt_ProtocolHdr->wReserve = 701;
 						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -398,7 +398,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			//插入数据库
 			if (!DBModule_MQData_Insert(&st_DBQueue))
 			{
-				if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+				if (pSt_ProtocolHdr->byIsReply)
 				{
 					pSt_ProtocolHdr->wReserve = 702;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -408,7 +408,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				return false;
 			}
 			//返回成功没如果需要
-			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+			if (pSt_ProtocolHdr->byIsReply)
 			{
 				pSt_ProtocolHdr->wReserve = 0;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -535,7 +535,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			//创建表
 			if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
 			{
-				if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+				if (pSt_ProtocolHdr->byIsReply)
 				{
 					pSt_ProtocolHdr->wReserve = 751;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -553,7 +553,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			if (!DBModule_MQUser_OwnerInsert(&st_DBOwner))
 			{
-				if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+				if (pSt_ProtocolHdr->byIsReply)
 				{
 					pSt_ProtocolHdr->wReserve = 752;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -563,7 +563,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				return false;
 			}
 			//回复
-			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+			if (pSt_ProtocolHdr->byIsReply)
 			{
 				pSt_ProtocolHdr->wReserve = 0;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -590,7 +590,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
 			{
-				if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+				if (pSt_ProtocolHdr->byIsReply)
 				{
 					pSt_ProtocolHdr->wReserve = 761;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -603,7 +603,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
 			DBModule_MQUser_KeyDelete(&st_UserKey);
 			DBModule_MQUser_TimeDelete(&st_DBInfo);
-			if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+			if (pSt_ProtocolHdr->byIsReply)
 			{
 				pSt_ProtocolHdr->wReserve = 0;
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
@@ -718,7 +718,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			if (!DBModule_MQUser_OwnerQuery(&st_DBOwner))
 			{
-				if (pSt_ProtocolHdr->byIsReply || (XENGINE_MQAPP_NETTYPE_HTTP == nNetType))
+				if (pSt_ProtocolHdr->byIsReply)
 				{
 					pSt_ProtocolHdr->wReserve = 781;
 					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);

@@ -733,13 +733,15 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
 		{
 			int nBLen = nMsgLen;
-			XCHAR* ptszBaseBuffer = (XCHAR*)malloc(nBLen);
+			XCHAR* ptszBaseBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
 			if (NULL == ptszBaseBuffer)
 			{
 				Protocol_IsErrorOccur = true;
 				Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
 				return false;
 			}
+			memset(ptszBaseBuffer, '\0', XENGINE_MEMORY_SIZE_MAX);
+
 			OPenSsl_Codec_Base64(lpszMsgBuffer, ptszBaseBuffer, &nBLen, true);
 			st_JsonPayload["nPayLen"] = nBLen;
 			st_JsonPayload["tszPayData"] = ptszBaseBuffer;
