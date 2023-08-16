@@ -3,8 +3,8 @@
     "tszTopic":"XEngine_CommKey",
     "bDeamon":0,
     "nTCPPort":5200,
-    "nHttpPort":5201,
-    "nWSPort":5202,
+    "nWSPort":5201,
+    "nHttpPort":5202,
     "XMax":{
         "nMaxClient":10000,
         "nMaxQueue":10000,
@@ -14,8 +14,7 @@
         "nWSThread":2
     },
     "XTime":{
-        "nDBMonth":3,
-        "nSessionTime":60
+        "nDBMonth":3
     },
     "XLog":{
         "MaxSize":1024000,
@@ -23,10 +22,10 @@
         "LogLeave":32
     },
     "XSql":{
-        "SQLAddr":"42.194.178.57",
+        "SQLAddr":"10.0.3.155",
         "SQLPort":3306,
         "SQLUser":"root",
-        "SQLPass":"1111"
+        "SQLPass":"123123Qyt"
     },
     "XPass":{
         "nTimeout":2,
@@ -36,6 +35,7 @@
         "tszPassLogout":""
     },
     "XVer":[
+        "3.8.0.1001 Build20230816",
         "3.7.0.1001 Build20230426",
         "3.6.0.1001 Build20230222",
         "3.5.0.1001 Build20230106",
