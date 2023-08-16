@@ -11,7 +11,7 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 			continue;
 		}
 		int nListCount = 0;
-		RFCCOMPONENTS_HTTP_PKTCLIENT** ppSst_ListAddr;
+		XENGINE_MANAGEPOOL_TASKEVENT** ppSst_ListAddr;
 
 		HttpProtocol_Server_GetPoolEx(xhHTTPPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)
@@ -40,64 +40,66 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 }
 bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR** pptszListHdr, int nHdrCount)
 {
+	int nPKTLen = 4096;
+	XCHAR tszPKTBuffer[4096];
+	XCHAR tszKey[MAX_PATH];
+	XCHAR tszValue[MAX_PATH];
+
+	memset(tszKey, '\0', MAX_PATH);
+	memset(tszValue, '\0', MAX_PATH);
+	memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
+
 	LPCXSTR lpszPostMethod = _X("POST");
 	LPCXSTR lpszGetMethod = _X("GET");
+	LPCXSTR lpszAPIGet = _X("get");
+	LPCXSTR lpszAPIUser = _X("user");
+	LPCXSTR lpszAPITopic = _X("topic");
+
 	if (0 == _tcsxnicmp(lpszPostMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszPostMethod)))
 	{
-		int nPLen = 0;
-		XCHAR tszMsgBuffer[4096];
-		XENGINE_PROTOCOLHDR st_ProtocolHdr;
-
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else if (0 == _tcsxnicmp(lpszGetMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszGetMethod)))
 	{
-		//http://127.0.0.1:5201/api?function=get&token=112&key=xengine&serial=1
-		HttpProtocol_ServerHelp_GetParament(pSt_HTTPParam->tszHttpUri, &pptszListHdr, &nHdrCount);
-		if (4 != nHdrCount)
+		int nUrlCount = 0;
+		XCHAR** ppSt_ListUrl;
+		HttpProtocol_ServerHelp_GetParament(pSt_HTTPParam->tszHttpUri, &ppSt_ListUrl, &nUrlCount);
+		if (nUrlCount < 1)
 		{
-			int nPKTLen = 8196;
-			XCHAR tszPKTBuffer[8196];
-			RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
-
-			memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
-			memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
-
-			st_HTTPHdr.nHttpCode = 400;
-			st_HTTPHdr.bIsClose = true;
-
-			HttpProtocol_Server_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr);
-			NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, tszPKTBuffer, nPKTLen);
+			ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, 400, "url parament is incorrent");
+			XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 			return false;
 		}
-		XCHAR tszKey[128];
-		XCHAR tszValue[128];
-		XENGINE_PROTOCOLHDR st_ProtocolHdr;
-		XENGINE_PROTOCOL_XMQ st_MQProtocol;
+		//获取函数
+		BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
+		if (0 == _tcsxnicmp(lpszAPIGet, tszValue, _tcsxlen(lpszAPIGet)))
+		{
+			memset(tszValue, '\0', MAX_PATH);
+			BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
+			if (0 == _tcsxnicmp(lpszAPIUser, tszValue, _tcsxlen(lpszAPIUser)))
+			{
+				//用户 http://127.0.0.1:5202/api?function=get&method=user
+				int nListCount = 0;
+				XENGINE_PROTOCOL_USERINFO** ppSt_UserInfo;
+				DBModule_MQUser_UserList(&ppSt_UserInfo, &nListCount);
+				ProtocolModule_Packet_UserList(tszPKTBuffer, &nPKTLen, &ppSt_UserInfo, nListCount);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
 
-		memset(tszKey, '\0', sizeof(tszKey));
-		memset(tszValue, '\0', sizeof(tszValue));
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
+			}
+			else if (0 == _tcsxnicmp(lpszAPITopic, tszValue, _tcsxlen(lpszAPITopic)))
+			{
+				//主题 http://127.0.0.1:5202/api?function=get&method=topic
+				int nListCount = 0;
+				XCHAR** ppszTableName;
+				DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+				ProtocolModule_Packet_TopicList(tszPKTBuffer, &nPKTLen, &ppszTableName, nListCount);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszTableName, nListCount);
 
-		BaseLib_OperatorString_GetKeyValue(pptszListHdr[1], "=", tszKey, tszValue);
-
-		st_ProtocolHdr.xhToken = _ttxoll(tszValue);
-		st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-		st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
-		st_ProtocolHdr.xhToken = sizeof(XENGINE_PROTOCOL_XMQ);
-		st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-		BaseLib_OperatorString_GetKeyValue(pptszListHdr[2], "=", tszKey, st_MQProtocol.tszMQKey);
-		BaseLib_OperatorString_GetKeyValue(pptszListHdr[3], "=", tszKey, tszValue);
-		st_MQProtocol.nSerial = _ttxoll(tszValue);
-
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
+			}
+		}
 	}
 	else
 	{

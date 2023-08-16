@@ -21,8 +21,8 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
 //                      公有函数
 ///////////////////////////////////////////////////////////////////////////////
 /********************************************************************
-函数名称：ProtocolModule_Parse_Http
-函数功能：HTTP协议解析
+函数名称：ProtocolModule_Parse_Websocket
+函数功能：websocket协议解析
  参数.一：lpszMsgBuffer
   In/Out：In
   类型：常量字符指针
@@ -53,7 +53,7 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -97,8 +97,13 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 		{
 			pSt_ProtocolHdr->byVersion = st_JsonRoot["byVersion"].asInt();
 		}
+		if (!st_JsonRoot["byIsReply"].isNull())
+		{
+			pSt_ProtocolHdr->byIsReply = st_JsonRoot["byIsReply"].asInt();
+		}
 	}
 	
+	int nPos = 0;
 	*pInt_MsgLen = 0;
 	XENGINE_PROTOCOL_XMQ st_MQProtocol;
 	XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
@@ -133,6 +138,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 			st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
+		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
 	}
 	//后者负载的是验证协议
 	if (!st_JsonRoot["st_Auth"].isNull())
@@ -150,6 +157,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 			st_ProtocolAuth.enDeviceType = (ENUM_PROTOCOLDEVICE_TYPE)st_JsonAuth["enDeviceType"].asInt();
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERAUTH);
+		memcpy(ptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
+		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
 	}
 	if (!st_JsonRoot["st_User"].isNull())
 	{
@@ -184,34 +193,25 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Http(LPCXSTR lpszMsgBuffer, int
 			_tcsxcpy(st_ProtocolInfo.tszEMailAddr, st_JsonUser["tszEMailAddr"].asCString());
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_USERINFO);
+		memcpy(ptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
+		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
 	}
 	//或者包含附加内容
 	if (!st_JsonRoot["st_Payload"].isNull())
 	{
 		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
-		*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
-	}
-
-	int nPos = 0;
-	if (!st_JsonRoot["st_MQProtocol"].isNull())
-	{
-		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-		nPos += sizeof(XENGINE_PROTOCOL_XMQ);
-	}
-	if (!st_JsonRoot["st_Auth"].isNull())
-	{
-		memcpy(ptszMsgBuffer + nPos, &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
-		nPos += sizeof(XENGINE_PROTOCOL_USERAUTH);
-	}
-	if (!st_JsonRoot["st_User"].isNull())
-	{
-		memcpy(ptszMsgBuffer + nPos, &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
-		nPos += sizeof(XENGINE_PROTOCOL_USERINFO);
-	}
-	if (!st_JsonRoot["st_Payload"].isNull())
-	{
-		Json::Value st_JsonPayLoad = st_JsonRoot["st_Payload"];
-		memcpy(ptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
+		
+		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
+		{
+			int nBLen = st_JsonPayLoad["nPayLen"].asInt();
+			OPenSsl_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
+			*pInt_MsgLen += nBLen;
+		}
+		else
+		{
+			memcpy(ptszMsgBuffer + nPos, st_JsonPayLoad["tszPayData"].asCString(), st_JsonPayLoad["nPayLen"].asInt());
+			*pInt_MsgLen += st_JsonPayLoad["nPayLen"].asInt();
+		}
 	}
 	return true;
 }

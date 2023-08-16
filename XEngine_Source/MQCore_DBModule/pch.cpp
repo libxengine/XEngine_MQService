@@ -71,6 +71,10 @@ extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDs
 {
 	return m_DBData.DBModule_MQData_ModifyTable(lpszSrcTable, lpszDstTable);
 }
+extern "C" bool DBModule_MQData_ShowTable(XCHAR * **pppszTableName, int* pInt_ListCount)
+{
+	return m_DBData.DBModule_MQData_ShowTable(pppszTableName, pInt_ListCount);
+}
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
@@ -97,6 +101,10 @@ extern "C" bool DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO * pSt_UserI
 extern "C" bool DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO * pSt_UserInfo)
 {
 	return m_DBUser.DBModule_MQUser_UserUPDate(pSt_UserInfo);
+}
+extern "C" bool DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO * **pppSt_UserInfo, int* pInt_ListCount)
+{
+	return m_DBUser.DBModule_MQUser_UserList(pppSt_UserInfo, pInt_ListCount);
 }
 /*************************************************************************
 						消息绑定导出函数

@@ -286,6 +286,95 @@ bool CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt
 
 	return true;
 }
+/********************************************************************
+函数名称：DBModule_MQUser_UserList
+函数功能：获取用户列表
+ 参数.一：pppSt_UserInfo
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出用户表信息
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型
+  可空：N
+  意思：输出用户表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQUser::DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int* pInt_ListCount)
+{
+	DBModule_IsErrorOccur = false;
+
+	//查询
+	XNETHANDLE xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	XCHAR tszSQLStatement[256];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo`"));
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return false;
+	}
+	*pInt_ListCount = (int)nllLine;
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserInfo, (int)nllLine, sizeof(XENGINE_PROTOCOL_USERINFO));
+	for (__int64u i = 0; i < nllLine; i++)
+	{
+		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+		if (NULL != pptszResult[1])
+		{
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserName, pptszResult[1]);
+		}
+		if (NULL != pptszResult[2])
+		{
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserPass, pptszResult[2]);
+		}
+		if (NULL != pptszResult[3])
+		{
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszEMailAddr, pptszResult[3]);
+		}
+		if (NULL != pptszResult[4])
+		{
+			(*pppSt_UserInfo)[i]->nPhoneNumber = _ttxoll(pptszResult[4]);
+		}
+		if (NULL != pptszResult[5])
+		{
+			(*pppSt_UserInfo)[i]->nIDNumber = _ttxoll(pptszResult[5]);
+		}
+		if (NULL != pptszResult[6])
+		{
+			(*pppSt_UserInfo)[i]->nUserState = _ttxoi(pptszResult[6]);
+		}
+		if (NULL != pptszResult[7])
+		{
+			(*pppSt_UserInfo)[i]->nUserLevel = _ttxoi(pptszResult[7]);
+		}
+		if (NULL != pptszResult[8])
+		{
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszLoginTime, pptszResult[8]);
+		}
+		if (NULL != pptszResult[9])
+		{
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszCreateTime, pptszResult[9]);
+		}
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return true;
+}
 //////////////////////////////////////////////////////////////////////////
 /********************************************************************
 函数名称：DBModule_MQUser_KeyInsert

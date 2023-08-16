@@ -24,18 +24,19 @@ this software support following features
 8. message get time  
 9. message subcribe  
 10. support Permission Validation  
-11. support multi protocol(TCP,HTTP,WEBSOCKET)  
+11. support multi protocol(TCP,WEBSOCKET)  
 12. Active delivery acquisition mode or passive subscription notification module  
 13. get order and start serial pos setting  
 14. Unlimited load message types  
 15. timed message
 16. Access control(planning)
-17. binary message(only tcp)
+17. binary message
+18. http interface management
 
 ## install
 
 #### XEngine Evn
-you must install XEngine,need V8.10 or above,install XEngine can be refer to xengine Readme docment  
+you must install XEngine,need V8.15 or above,install XEngine can be refer to xengine Readme docment  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -95,7 +96,7 @@ database you need to open the database matching fields and tables are consistent
 You can refer to the document under the docment directory. It contains API protocol and service description.  
 
 ## Test Server Address
-Address:app.xyry.org Port:TCP 5200,HTTP 5201,WEBSOCKET 5202  
+Address:app.xyry.org Port:TCP 5200,WEBSOCKET 5201,HTTP Management Interface 5202  
 
 ## Participate in contribution
 

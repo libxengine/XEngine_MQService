@@ -12,7 +12,5 @@ bool CALLBACK MessageQueue_Callback_WSLogin(LPCXSTR lpszClientAddr, XSOCKET hSoc
 void CALLBACK MessageQueue_Callback_WSRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam);
 void CALLBACK MessageQueue_Callback_WSLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);
 
-void CALLBACK MessageQueue_Callback_Timeout(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam);
-
 void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart);
 bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto);
