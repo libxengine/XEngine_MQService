@@ -11,7 +11,7 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 			continue;
 		}
 		int nListCount = 0;
-		RFCCOMPONENTS_WSPKT_CLIENT** ppSst_ListAddr;
+		XENGINE_MANAGEPOOL_TASKEVENT** ppSst_ListAddr;
 
 		RfcComponents_WSPacket_GetPoolEx(xhWSPacket, nThreadPos, &ppSst_ListAddr, &nListCount);
 		for (int i = 0; i < nListCount; i++)
@@ -43,7 +43,7 @@ bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-		ProtocolModule_Parse_Http(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
+		ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszMsgBuffer, &nPLen);
 		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszMsgBuffer, nPLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
 	}
 	else

@@ -33,7 +33,6 @@ typedef struct
     struct
     {
         int nDBMonth;
-        int nSessionTime;
     }st_XTime;
     struct
     {

@@ -7,8 +7,11 @@ EXPORTS
 	ProtocolModule_Packet_MQNumber
 	ProtocolModule_Packet_PassAuth
 	ProtocolModule_Packet_PassUser
+	ProtocolModule_Packet_Http
+	ProtocolModule_Packet_UserList
+	ProtocolModule_Packet_TopicList
 	ProtocolModule_Packet_UNReadCreate
 	ProtocolModule_Packet_UNReadInsert
 	ProtocolModule_Packet_UNReadDelete
 
-	ProtocolModule_Parse_Http
+	ProtocolModule_Parse_Websocket

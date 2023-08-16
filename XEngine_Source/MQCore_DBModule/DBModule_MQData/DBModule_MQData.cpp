@@ -686,3 +686,66 @@ bool CDBModule_MQData::DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR
 	
 	return true;
 }
+/********************************************************************
+函数名称：DBModule_MQData_ShowTable
+函数功能：获取所有表名
+ 参数.一：pppszTableName
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出表名列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_ListCount)
+{
+	DBModule_IsErrorOccur = false;
+
+	if (NULL == pInt_ListCount)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return false;
+	}
+	//查询
+	XNETHANDLE xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	XCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	//名称为,消息名为必填
+	_xstprintf(tszSQLStatement, _X("SHOW TABLES"));
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return false;
+	}
+	*pInt_ListCount = (int)nllLine;
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppszTableName, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
+	for (__int64u i = 0; i < nllLine; i++)
+	{
+		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+		if (NULL != pptszResult[0])
+		{
+			_tcsxcpy((*pppszTableName)[i], pptszResult[0]);
+		}
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return true;
+}

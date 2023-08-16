@@ -23,18 +23,19 @@ c c++Message Service
 8. 消息次数  
 9. 消息订阅  
 10. 支持权限验证  
-11. 支持多种协议(TCP,HTTP,WEBSOCKET)  
+11. 支持多种协议(TCP,WEBSOCKET)  
 12. 主动投递获取模式或者被动订阅通知模块  
 13. 获取顺序与开始序列号设置  
 14. 不限制负载的消息类型  
 15. 定时消息
 16. 权限控制(planning)
-17. 二进制消息(only tcp)
+17. 二进制消息
+18. http接口管理
 
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V8.10或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V8.15或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -101,7 +102,7 @@ make FLAGS=CleanAll 清理编译
 你可以参考docment目录下的文档.里面包含了API协议和服务说明.
 
 ## 测试服务器
-地址:app.xyry.org 端口:TCP 5200,HTTP 5201,WEBSOCKET 5202  
+地址:app.xyry.org 端口:TCP 5200,WEBSOCKET 5201,管理接口HTTP 5202  
 
 ## 参与贡献
 
@@ -126,10 +127,8 @@ MQTT支持
 支持时区设置  
 完善消息订阅(永存)  
 完善HTTP_CALL  
-允许主题解除绑定  
-允许删除主题  
 高性能内存队列  
-多次登录验证  
+扩充HTTP管理接口  
 
 ## 提交问题
 

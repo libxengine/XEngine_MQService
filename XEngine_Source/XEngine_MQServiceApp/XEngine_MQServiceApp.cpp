@@ -147,12 +147,12 @@ int main(int argc, char** argv)
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库服务成功"));
 
-	if (!SessionModule_Client_Init(st_ServiceCfg.st_XTime.nSessionTime, MessageQueue_Callback_Timeout))
+	if (!SessionModule_Client_Init())
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
 		goto NETSERVICEEXIT;
 	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化客户端会话管理器成功,会话超时时间:%d 秒"), st_ServiceCfg.st_XTime.nSessionTime);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化客户端会话管理器成功"));
 
 	if (st_ServiceCfg.nTCPPort > 0)
 	{

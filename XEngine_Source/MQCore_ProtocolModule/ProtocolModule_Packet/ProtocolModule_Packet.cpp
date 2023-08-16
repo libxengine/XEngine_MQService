@@ -73,156 +73,9 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
 	}
 	else
 	{
-		ProtocolModule_Packet_HttpCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
+		ProtocolModule_Packet_WSCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 	}
 	return true;
-}
-/********************************************************************
-函数名称：ProtocolModule_Packet_TCPCommon
-函数功能：通用封包类
- 参数.一：pSt_ProtocolHdr
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：协议头
- 参数.二：pSt_MQProtocol
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：消息头
- 参数.三：ptszMsgBuffer
-  In/Out：Out
-  类型：字符指针
-  可空：N
-  意思：导出封装号的协议
- 参数.四：pInt_MsgLen
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：导出封装的协议的长度
- 参数.五：lpszMsgBuffer
-  In/Out：In
-  类型：常量字符指针
-  可空：Y
-  意思：要封装的数据
- 参数.六：nMsgLen
-  In/Out：In
-  类型：整数型
-  可空：Y
-  意思：要封装数据的长度
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
-{
-    Protocol_IsErrorOccur = false;
-
-    if ((NULL == pSt_ProtocolHdr) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
-    {
-        Protocol_IsErrorOccur = true;
-        Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-        return false;
-    }
-	
-	if (NULL == pSt_MQProtocol)
-	{
-		pSt_ProtocolHdr->unPacketSize = nMsgLen;
-		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-
-		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + nMsgLen;
-	}
-	else
-	{
-		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
-		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-
-		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-		if (NULL != lpszMsgBuffer)
-		{
-			memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
-		}
-		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
-	}
-   
-    return true;
-}
-/********************************************************************
-函数名称：ProtocolModule_Packet_HttpCommon
-函数功能：HTTP通用封包类
- 参数.一：pSt_ProtocolHdr
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：协议头
- 参数.二：pSt_MQProtocol
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：消息头
- 参数.三：ptszMsgBuffer
-  In/Out：Out
-  类型：字符指针
-  可空：N
-  意思：导出封装号的协议
- 参数.四：pInt_MsgLen
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：导出封装的协议的长度
- 参数.五：lpszMsgBuffer
-  In/Out：In
-  类型：常量字符指针
-  可空：Y
-  意思：要封装的数据
- 参数.六：nMsgLen
-  In/Out：In
-  类型：整数型
-  可空：Y
-  意思：要封装数据的长度
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_HttpCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
-{
-    Json::Value st_JsonRoot;
-    Json::Value st_JsonMQProtocol;
-    Json::Value st_JsonPayload;
-	Json::StreamWriterBuilder st_JsonBuilder;
-
-	st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
-	st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
-	st_JsonRoot["xhToken"] = (Json::Value::UInt64)pSt_ProtocolHdr->xhToken;
-	st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
-	st_JsonRoot["byVersion"] = pSt_ProtocolHdr->byVersion;
-
-	if (NULL != pSt_MQProtocol)
-	{
-		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
-		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
-		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
-		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
-		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
-		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-	}
-	
-    if (nMsgLen > 0)
-    {
-        st_JsonPayload["nPayType"] = (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE)pSt_ProtocolHdr->byVersion;
-        st_JsonPayload["nPayLen"] = nMsgLen;
-        st_JsonPayload["tszPayData"] = lpszMsgBuffer;
-
-        st_JsonRoot["st_Payload"] = st_JsonPayload;
-    }
-    st_JsonBuilder["emitUTF8"] = true;
-
-    *pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
-    memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
-
-    return true;
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
@@ -423,6 +276,159 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 	return true;
 }
 /********************************************************************
+函数名称：ProtocolModule_Packet_Http
+函数功能：HTTP封包类
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：协议头
+ 参数.二：pSt_MQProtocol
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：消息头
+ 参数.三：nCode
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：返回的状态值
+ 参数.四：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：返回的消息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_Http(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode /* = 0 */, LPCXSTR lpszMsgBuffer /* = NULL */)
+{
+	Json::Value st_JsonRoot;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonRoot["msg"] = lpszMsgBuffer;
+	st_JsonRoot["code"] = nCode;
+
+	st_JsonBuilder["emitUTF8"] = true;
+
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_UserList
+函数功能：用户信息打包
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出打包大小
+ 参数.三：pppSt_UserInfo
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.四：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_UserList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int nListCount)
+{
+	Protocol_IsErrorOccur = false;
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonArray;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	for (int i = 0; i < nListCount; i++)
+	{
+		Json::Value st_JsonObject;
+		st_JsonObject["tszUserName"] = (*pppSt_UserInfo)[i]->tszUserName;
+		st_JsonObject["tszUserPass"] = (*pppSt_UserInfo)[i]->tszUserPass;
+		st_JsonObject["tszEMailAddr"] = (*pppSt_UserInfo)[i]->tszEMailAddr;
+		st_JsonObject["nPhoneNumber"] = (Json::Value::Int64)(*pppSt_UserInfo)[i]->nPhoneNumber;
+		st_JsonObject["nIDNumber"] = (Json::Value::Int64)(*pppSt_UserInfo)[i]->nIDNumber;
+		st_JsonObject["nUserState"] = (*pppSt_UserInfo)[i]->nUserState;
+		st_JsonObject["nUserLevel"] = (*pppSt_UserInfo)[i]->nUserLevel;
+		st_JsonObject["tszLoginTime"] = (*pppSt_UserInfo)[i]->tszLoginTime;
+		st_JsonObject["tszCreateTime"] = (*pppSt_UserInfo)[i]->tszCreateTime;
+		st_JsonArray.append(st_JsonObject);
+	}
+	st_JsonRoot["code"] = 0;
+	st_JsonRoot["Array"] = st_JsonArray;
+	st_JsonRoot["Count"] = st_JsonArray.size();
+
+	st_JsonBuilder["emitUTF8"] = true;
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_TopicList
+函数功能：主题列表打包
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出打包大小
+ 参数.三：pppszTableName
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.四：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_TopicList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** pppszTableName, int nListCount)
+{
+	Protocol_IsErrorOccur = false;
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonArray;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	for (int i = 0; i < nListCount; i++)
+	{
+		Json::Value st_JsonObject;
+		st_JsonObject["tszTopicName"] = (*pppszTableName)[i];
+		st_JsonArray.append(st_JsonObject);
+	}
+	st_JsonRoot["code"] = 0;
+	st_JsonRoot["Array"] = st_JsonArray;
+	st_JsonRoot["Count"] = st_JsonArray.size();
+
+	st_JsonBuilder["emitUTF8"] = true;
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return true;
+}
+/********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
 函数功能：未读消息打包创建函数
  参数.一：pSt_ProtocolHdr
@@ -585,5 +591,172 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken,
 
 	delete pSt_UNRead;
 	pSt_UNRead = NULL;
+	return true;
+}
+///////////////////////////////////////////////////////////////////////////////
+//                      保护函数
+///////////////////////////////////////////////////////////////////////////////
+/********************************************************************
+函数名称：ProtocolModule_Packet_TCPCommon
+函数功能：通用封包类
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：协议头
+ 参数.二：pSt_MQProtocol
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：消息头
+ 参数.三：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：导出封装号的协议
+ 参数.四：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：导出封装的协议的长度
+ 参数.五：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：要封装的数据
+ 参数.六：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：要封装数据的长度
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_TCPCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == pSt_ProtocolHdr) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+
+	if (NULL == pSt_MQProtocol)
+	{
+		pSt_ProtocolHdr->unPacketSize = nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + nMsgLen;
+	}
+	else
+	{
+		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+
+		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+		if (NULL != lpszMsgBuffer)
+		{
+			memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, nMsgLen);
+		}
+		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ) + nMsgLen;
+	}
+
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Packet_WSCommon
+函数功能：Websocket通用封包类
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：协议头
+ 参数.二：pSt_MQProtocol
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：消息头
+ 参数.三：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：导出封装号的协议
+ 参数.四：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：导出封装的协议的长度
+ 参数.五：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：要封装的数据
+ 参数.六：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：Y
+  意思：要封装数据的长度
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+{
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonMQProtocol;
+	Json::Value st_JsonPayload;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
+	st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
+	st_JsonRoot["xhToken"] = (Json::Value::UInt64)pSt_ProtocolHdr->xhToken;
+	st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
+	st_JsonRoot["byVersion"] = pSt_ProtocolHdr->byVersion;
+
+	if (NULL != pSt_MQProtocol)
+	{
+		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
+		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
+		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
+		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
+		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
+		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+	}
+
+	if (nMsgLen > 0)
+	{
+		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
+		{
+			int nBLen = nMsgLen;
+			XCHAR* ptszBaseBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
+			if (NULL == ptszBaseBuffer)
+			{
+				Protocol_IsErrorOccur = true;
+				Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
+				return false;
+			}
+			memset(ptszBaseBuffer, '\0', XENGINE_MEMORY_SIZE_MAX);
+
+			OPenSsl_Codec_Base64(lpszMsgBuffer, ptszBaseBuffer, &nBLen, true);
+			st_JsonPayload["nPayLen"] = nBLen;
+			st_JsonPayload["tszPayData"] = ptszBaseBuffer;
+		}
+		else
+		{
+			st_JsonPayload["nPayLen"] = nMsgLen;
+			st_JsonPayload["tszPayData"] = lpszMsgBuffer;
+		}
+		st_JsonRoot["st_Payload"] = st_JsonPayload;
+	}
+	st_JsonBuilder["emitUTF8"] = true;
+
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+
 	return true;
 }

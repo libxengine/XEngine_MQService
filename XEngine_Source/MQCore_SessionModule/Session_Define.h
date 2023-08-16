@@ -21,10 +21,6 @@ typedef enum
 	ENUM_MQCORE_SESSION_CLIENT_TYPE_HTTP = 3
 }ENUM_MQCORE_SESSION_CLIENT_TYPE;
 //////////////////////////////////////////////////////////////////////////
-//                        导出回调函数
-//////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT)(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser, ENUM_MQCORE_SESSION_CLIENT_TYPE enClientType, XPVOID lParam);
-//////////////////////////////////////////////////////////////////////////
 //                        导出函数
 //////////////////////////////////////////////////////////////////////////
 extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError = NULL);
@@ -34,27 +30,12 @@ extern "C" XLONG SessionModule_GetLastError(int* pInt_SysError = NULL);
 /********************************************************************
 函数名称：SessionModule_Client_Init
 函数功能：初始化客户端会话管理器
- 参数.一：nSessionTime
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入会话超时时间,单位秒
- 参数.二：fpCall_Timeout
-  In/Out：In/Out
-  类型：回调函数
-  可空：N
-  意思：设置会话超时回调
- 参数.三：lParam
-  In/Out：In/Out
-  类型：无类型指针
-  可空：Y
-  意思：回调函数自定义参数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_Init(int nSessionTime, CALLBACK_MESSAGEQUEUE_SESSIONMODULE_CLIENT_TIMEOUT fpCall_Timeout, XPVOID lParam = NULL);
+extern "C" bool SessionModule_Client_Init();
 /************************************************************************
 函数名称：SessionModule_Client_Destory
 函数功能：销毁会话管理器
@@ -72,11 +53,11 @@ extern "C" bool SessionModule_Client_Destory();
   类型：常量字符指针
   可空：N
   意思：输入客户端地址
- 参数.二：lpszUserName
+ 参数.二：pSt_UserInfo
   In/Out：In
-  类型：常量字符指针
+  类型：数据结构指针
   可空：N
-  意思：输入用户名
+  意思：输入用户信息
  参数.三：nNetType
   In/Out：In
   类型：整数型
@@ -87,7 +68,7 @@ extern "C" bool SessionModule_Client_Destory();
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpszUserName, int nNetType);
+extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, XENGINE_PROTOCOL_USERINFO * pSt_UserInfo, int nNetType);
 /********************************************************************
 函数名称：SessionModule_Client_Delete
 函数功能：删除一个用户
@@ -102,6 +83,20 @@ extern "C" bool SessionModule_Client_Create(LPCXSTR lpszClientAddr, LPCXSTR lpsz
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_Delete(LPCXSTR lpszClientAddr);
+/********************************************************************
+函数名称：SessionModule_Client_DeleteByUser
+函数功能：通过同户名删除会话
+ 参数.一：lpszClientUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要操作的客户端
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool SessionModule_Client_DeleteByUser(LPCXSTR lpszClientUser);
 /************************************************************************
 函数名称：SessionModule_Client_GetUser
 函数功能：通过会话ID获取用户
@@ -132,14 +127,33 @@ extern "C" bool SessionModule_Client_GetUser(LPCXSTR lpszSessionStr, XCHAR* ptsz
  参数.二：ptszUserAddr
   In/Out：Out
   类型：字符指针
-  可空：N
+  可空：Y
   意思：输出用户地址
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr);
+extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUserAddr = NULL);
+/********************************************************************
+函数名称：SessionModule_Client_GetInfoByUser
+函数功能：通过用户名获取用户信息
+ 参数.一：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户名
+ 参数.二：pSt_UserInfo
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出用户信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 /********************************************************************
 函数名称：SessionModule_Client_GetType
 函数功能：通过客户端获得连接的网络类型
@@ -159,17 +173,3 @@ extern "C" bool SessionModule_Client_GetAddr(LPCXSTR lpszUserName, XCHAR* ptszUs
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
-/********************************************************************
-函数名称：SessionModule_Client_Heart
-函数功能：触发一次心跳
- 参数.一：lpszClientAddr
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要触发的客户端
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" bool SessionModule_Client_Heart(LPCXSTR lpszClientAddr);

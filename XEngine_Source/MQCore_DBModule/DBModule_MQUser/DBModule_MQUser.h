@@ -23,6 +23,7 @@ public:
 	bool DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 	bool DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 	bool DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+	bool DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int* pInt_ListCount);
 public:
 	bool DBModule_MQUser_KeyInsert(XENGINE_DBUSERKEY* pSt_UserKey);
 	bool DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey);

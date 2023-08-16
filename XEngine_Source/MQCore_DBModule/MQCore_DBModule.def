@@ -13,6 +13,7 @@ EXPORTS
 	DBModule_MQData_CreateTable
 	DBModule_MQData_DeleteTable
 	DBModule_MQData_ModifyTable
+	DBModule_MQData_ShowTable
 
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory
@@ -20,6 +21,7 @@ EXPORTS
 	DBModule_MQUser_UserQuery
 	DBModule_MQUser_UserDelete
 	DBModule_MQUser_UserUPDate
+	DBModule_MQUser_UserList
 
 	DBModule_MQUser_KeyInsert
 	DBModule_MQUser_KeyQuery
