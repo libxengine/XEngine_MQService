@@ -360,9 +360,9 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UserList(XCHAR* ptszMsgBuffer
 		st_JsonObject["tszUserName"] = (*pppSt_UserInfo)[i]->tszUserName;
 		st_JsonObject["tszUserPass"] = (*pppSt_UserInfo)[i]->tszUserPass;
 		st_JsonObject["tszEMailAddr"] = (*pppSt_UserInfo)[i]->tszEMailAddr;
-		st_JsonObject["nPhoneNumber"] = (*pppSt_UserInfo)[i]->nPhoneNumber;
+		st_JsonObject["nPhoneNumber"] = (Json::Value::Int64)(*pppSt_UserInfo)[i]->nPhoneNumber;
 		st_JsonObject["nIDNumber"] = (Json::Value::Int64)(*pppSt_UserInfo)[i]->nIDNumber;
-		st_JsonObject["nUserState"] = (Json::Value::Int64)(*pppSt_UserInfo)[i]->nUserState;
+		st_JsonObject["nUserState"] = (*pppSt_UserInfo)[i]->nUserState;
 		st_JsonObject["nUserLevel"] = (*pppSt_UserInfo)[i]->nUserLevel;
 		st_JsonObject["tszLoginTime"] = (*pppSt_UserInfo)[i]->tszLoginTime;
 		st_JsonObject["tszCreateTime"] = (*pppSt_UserInfo)[i]->tszCreateTime;
