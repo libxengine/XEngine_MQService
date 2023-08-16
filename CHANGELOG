@@ -1,3 +1,31 @@
+XEngine_MQService V3.8.0.1001
+
+增加:websocket的二进制消息负载能力支持
+增加:HTTP管理接口功能
+增加:HTTP接口获取用户列表
+增加:HTTP接口获取主题列表
+增加:取消订阅消息支持
+更新:匹配支持XEngine V8.15版本
+更新:不在支持HTTP客户端了
+修改:禁止用户重复登录
+修改:会话模块保存用户信息的时候会保存整个用户表了
+修改:ProtocolModule_Parse_http 为 ProtocolModule_Parse_Websocket 函数名
+修改:ProtocolModule_Packet_HttpCommon 为 ProtocolModule_Packet_WSCommon 函数名
+修正:websocket协议解析没有byIsReply 字段解析的问题
+
+added:binary message payload supported for websocket
+added:unsubscribe message supported
+added:http management interface functions
+added:get user list for http api
+added:get topic list for http api
+update:xengine match v8.15
+update:http client function is removed
+modify:Prevent users from logging in repeatedly
+modify:saved user info table for session module when client create
+modify:ProtocolModule_Parse_http to ProtocolModule_Parse_Websocket function name
+modify:ProtocolModule_Packet_HttpCommon to ProtocolModule_Packet_WSCommon function name
+fixed:the problem that websocket parse have not byIsReply flag
+======================================================================================
 XEngine_MQService V3.7.0.1001
 
 添加:定时发布是否跳过本身功能
