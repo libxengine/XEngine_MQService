@@ -25,7 +25,8 @@ typedef struct
 	__int64x nQueueSerial;                                                //包序列号
 	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
-	XBYTE byMsgType;                                                       //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
+	XBYTE byMsgType;                                                      //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
+	XBYTE byMsgAttr;                                                      //消息属性
 }XENGINE_DBMESSAGEQUEUE;
 typedef struct
 {

@@ -54,14 +54,26 @@
 ///////////////////////////////////////////////////////////////////////////
 #pragma pack(push)
 #pragma pack(1)
+typedef struct
+{
+	XBYTE byAttrAll : 1;                                                 //通知所有
+	XBYTE byAttrDisk : 1;                                                //消息存储标记
+	XBYTE byAttrResver2 : 1;
+	XBYTE byAttrResver3 : 1;
+	XBYTE byAttrResver4 : 1;
+	XBYTE byAttrResver5 : 1;
+	XBYTE byAttrResver6 : 1;
+	XBYTE byAttrResver7 : 1;
+}XENGINE_PROTOCOL_MSGATTR, * LPXENGINE_PROTOCOL_MSGATTR;
 //消息队列服务协议
 typedef struct 
 {
-	XCHAR tszMQKey[256];                                                   //此消息的KEY，不能为空
+	XCHAR tszMQKey[256];                                                  //此消息的KEY，不能为空
 	__int64x nSerial;                                                     //包序列号
 	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区
 	int nKeepTime;                                                        //保持时间,单位秒,-1 永久存在 0 一次就结束,>0 保存秒数
 	int nGetTimer;                                                        //可以获取的次数
+	XENGINE_PROTOCOL_MSGATTR st_MSGAttr;                                  //消息属性
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;
 typedef struct 
 {
