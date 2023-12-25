@@ -415,37 +415,65 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			}
 			//是否需要通知
-			int nListCount = 0;
 			if (0 == st_MQProtocol.nPubTime)
 			{
-				//定时任务不通知
-				XENGINE_DBUSERKEY** ppSt_ListUser;
-				if (DBModule_MQUser_KeyList(NULL, st_MQProtocol.tszMQKey, &ppSt_ListUser, &nListCount))
+				//设置为0,不是定时发布
+				if (1 == st_MQProtocol.st_MSGAttr.byAttrAll)
 				{
-					int nTCPLen = 0;
-					XCHAR tszTCPBuffer[4096];
-					memset(tszTCPBuffer, '\0', sizeof(tszTCPBuffer));
-
-					pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszTCPBuffer, &nTCPLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+					int nListCount = 0;
+					XCHAR** pptszListAddr;
+					SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount);
 					for (int i = 0; i < nListCount; i++)
 					{
 						//跳过自己
-						if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)))
+						if (0 == _tcsxncmp(lpszClientAddr, pptszListAddr[i], _tcsxlen(lpszClientAddr)))
 						{
 							continue;
 						}
-						XCHAR tszUserAddr[128];
-						memset(tszUserAddr, '\0', sizeof(tszUserAddr));
+						nSDLen = 0;
+						int nMSGLen = 0;
+						int nClientType = 0;
+						memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
-						SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
-						XEngine_MQXService_Send(tszUserAddr, tszTCPBuffer, nTCPLen, nNetType);
+						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
+						
+						SessionModule_Client_GetType(pptszListAddr[i], &nClientType);
+						ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType);
+						BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
 					}
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
+				}
+				else
+				{
+					int nListCount = 0;
+					XENGINE_DBUSERKEY** ppSt_ListUser;
+					if (DBModule_MQUser_KeyList(NULL, st_MQProtocol.tszMQKey, &ppSt_ListUser, &nListCount))
+					{
+						int nTCPLen = 0;
+						XCHAR tszTCPBuffer[4096];
+						memset(tszTCPBuffer, '\0', sizeof(tszTCPBuffer));
+
+						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszTCPBuffer, &nTCPLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+						for (int i = 0; i < nListCount; i++)
+						{
+							//跳过自己
+							if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)))
+							{
+								continue;
+							}
+							XCHAR tszUserAddr[128];
+							memset(tszUserAddr, '\0', sizeof(tszUserAddr));
+
+							SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
+							XEngine_MQXService_Send(tszUserAddr, tszTCPBuffer, nTCPLen, nNetType);
+						}
+						BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+					}
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
 				}
 			}
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
-			
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET == pSt_ProtocolHdr->unOperatorCode)
 		{

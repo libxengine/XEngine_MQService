@@ -65,3 +65,7 @@ extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_N
 {
 	return m_SessionClient.SessionModule_Client_GetType(lpszSessionStr, pInt_NetType);
 }
+extern "C" bool SessionModule_Client_GetListAddr(XCHAR * **ppptszClientList, int* pInt_ListCount)
+{
+	return m_SessionClient.SessionModule_Client_GetListAddr(ppptszClientList, pInt_ListCount);
+}
