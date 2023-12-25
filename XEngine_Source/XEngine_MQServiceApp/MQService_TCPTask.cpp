@@ -463,11 +463,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-
-						SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
-						SessionModule_Client_GetType(tszUserAddr, &nClientType);
-						ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
-						XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
+						//只有在线用户才需要即时通知
+						if (SessionModule_Client_GetExist(NULL, tszUserName))
+						{
+							SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
+							SessionModule_Client_GetType(tszUserAddr, &nClientType);
+							ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+							XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
+						}
 					}
 					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
