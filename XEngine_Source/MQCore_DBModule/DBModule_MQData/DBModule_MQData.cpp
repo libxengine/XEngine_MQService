@@ -100,7 +100,7 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
-	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,nQueueGetTime,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s',%lld,%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
 	nRet += pSt_DBInfo->nMsgLen;
 
@@ -178,32 +178,28 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	}
 	if (NULL != pptszResult[4])
 	{
-		pSt_DBInfo->nQueueGetTime = _ttxoll(pptszResult[4]);
+		_tcsxcpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[4]);
 	}
 	if (NULL != pptszResult[5])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[5]);
+		_tcsxcpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[5]);
 	}
 	if (NULL != pptszResult[6])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[6]);
+		pSt_DBInfo->nMsgLen = pInt_Length[6];
+		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[6], pSt_DBInfo->nMsgLen);
 	}
 	if (NULL != pptszResult[7])
 	{
-		pSt_DBInfo->nMsgLen = pInt_Length[7];
-		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[7], pSt_DBInfo->nMsgLen);
+		pSt_DBInfo->byMsgType = _ttxoi(pptszResult[7]);
 	}
 	if (NULL != pptszResult[8])
 	{
-		pSt_DBInfo->byMsgType = _ttxoi(pptszResult[8]);
+		pSt_DBInfo->byMsgAttr = _ttxoi(pptszResult[8]);
 	}
 	if (NULL != pptszResult[9])
 	{
-		pSt_DBInfo->byMsgAttr = _ttxoi(pptszResult[9]);
-	}
-	if (NULL != pptszResult[10])
-	{
-		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[10]);
+		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return true;
@@ -238,7 +234,7 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
-	__int64u nRet = _xstprintf(tszSQLStatement, _X("UPDATE `%s` SET nQueueGetTime = %lld,tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueGetTime, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("UPDATE `%s` SET tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
 	nRet += pSt_DBInfo->nMsgLen;
@@ -342,32 +338,28 @@ bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSer
 		}
 		if (NULL != pptszResult[4])
 		{
-			(*pppSt_DBMessage)[i]->nQueueGetTime = _ttxoll(pptszResult[4]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[6]);
+			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[6];
+			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[6], (*pppSt_DBMessage)[i]->nMsgLen);
 		}
 		if (NULL != pptszResult[7])
 		{
-			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[7];
-			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[7], (*pppSt_DBMessage)[i]->nMsgLen);
+			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[7]);
 		}
 		if (NULL != pptszResult[8])
 		{
-			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[8]);
+			(*pppSt_DBMessage)[i]->byMsgAttr = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			(*pppSt_DBMessage)[i]->byMsgAttr = _ttxoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[9]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
@@ -452,32 +444,28 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[4])
 		{
-			pSt_DBStart->nQueueGetTime = _ttxoll(pptszResult[4]);
+			_tcsxcpy(pSt_DBStart->tszQueueLeftTime, pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBStart->tszQueuePublishTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueuePublishTime, pptszResult[6]);
+			pSt_DBStart->nMsgLen = pInt_Length[6];
+			memcpy(pSt_DBStart->tszMsgBuffer, pptszResult[6], pSt_DBStart->nMsgLen);
 		}
 		if (NULL != pptszResult[7])
 		{
-			pSt_DBStart->nMsgLen = pInt_Length[7];
-			memcpy(pSt_DBStart->tszMsgBuffer, pptszResult[7], pSt_DBStart->nMsgLen);
+			pSt_DBStart->byMsgType = _ttxoi(pptszResult[7]);
 		}
 		if (NULL != pptszResult[8])
 		{
-			pSt_DBStart->byMsgType = _ttxoi(pptszResult[8]);
+			pSt_DBStart->byMsgAttr = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			pSt_DBStart->byMsgAttr = _ttxoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcsxcpy(pSt_DBStart->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy(pSt_DBStart->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -517,32 +505,28 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		}
 		if (NULL != pptszResult[4])
 		{
-			pSt_DBEnd->nQueueGetTime = _ttxoll(pptszResult[4]);
+			_tcsxcpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[4]);
 		}
 		if (NULL != pptszResult[5])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[5]);
 		}
 		if (NULL != pptszResult[6])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[6]);
+			pSt_DBEnd->nMsgLen = pInt_Length[6];
+			memcpy(pSt_DBEnd->tszMsgBuffer, pptszResult[6], pSt_DBEnd->nMsgLen);
 		}
 		if (NULL != pptszResult[7])
 		{
-			pSt_DBEnd->nMsgLen = pInt_Length[7];
-			memcpy(pSt_DBEnd->tszMsgBuffer, pptszResult[7], pSt_DBEnd->nMsgLen);
+			pSt_DBEnd->byMsgType = _ttxoi(pptszResult[7]);
 		}
 		if (NULL != pptszResult[8])
 		{
-			pSt_DBEnd->byMsgType = _ttxoi(pptszResult[8]);
+			pSt_DBEnd->byMsgAttr = _ttxoi(pptszResult[8]);
 		}
 		if (NULL != pptszResult[9])
 		{
-			pSt_DBEnd->byMsgAttr = _ttxoi(pptszResult[9]);
-		}
-		if (NULL != pptszResult[10])
-		{
-			_tcsxcpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[10]);
+			_tcsxcpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[9]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -603,7 +587,6 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 		"`tszUserName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '谁发布的消息',"
         "`tszQueueName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '所属队列',"
         "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
-        "`nQueueGetTime` bigint NOT NULL COMMENT '获取次数',"
         "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',"
         "`tszQueuePublishTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '发布时间',"
         "`tszQueueData` longblob NOT NULL COMMENT '保存数据',"

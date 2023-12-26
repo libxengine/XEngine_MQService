@@ -523,7 +523,6 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
 		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
 		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
-		st_JsonObject["nQueueGetTime"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueGetTime;
 		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
 		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
@@ -722,9 +721,12 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 	{
 		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
 		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
-		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
 		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
 		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
+
+		XBYTE byMSGAttr = 0;
+		memcpy(&byMSGAttr, &pSt_MQProtocol->st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+		st_JsonMQProtocol["byMSGAttr"] = byMSGAttr;
 		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 	}
 

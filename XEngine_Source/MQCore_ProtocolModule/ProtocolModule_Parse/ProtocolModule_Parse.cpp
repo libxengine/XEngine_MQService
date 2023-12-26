@@ -125,10 +125,6 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		{
 			st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
 		}
-		if (!st_JsonMQProtocol["nGetTimer"].isNull())
-		{
-			st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
-		}
 		if (!st_JsonMQProtocol["nKeepTime"].isNull())
 		{
 			st_MQProtocol.nKeepTime = st_JsonMQProtocol["nKeepTime"].asInt();
@@ -136,6 +132,11 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		if (!st_JsonMQProtocol["nPubTime"].isNull())
 		{
 			st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
+		}
+		if (!st_JsonMQProtocol["byMSGAttr"].isNull())
+		{
+			XBYTE byMSGAttr = st_JsonMQProtocol["byMSGAttr"].asUInt();
+			memcpy(&st_MQProtocol.st_MSGAttr, &byMSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
 		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
