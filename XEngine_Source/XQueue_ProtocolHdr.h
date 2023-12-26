@@ -56,7 +56,7 @@
 typedef struct
 {
 	XBYTE byAttrAll : 1;                                                 //通知所有
-	XBYTE byAttrDisk : 1;                                                //消息存储标记
+	XBYTE byAttrSelf : 1;                                                //自己也能接受
 	XBYTE byAttrResver2 : 1;
 	XBYTE byAttrResver3 : 1;
 	XBYTE byAttrResver4 : 1;

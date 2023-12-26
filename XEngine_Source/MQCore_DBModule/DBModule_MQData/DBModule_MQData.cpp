@@ -304,7 +304,7 @@ bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSer
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` WHERE nQueueSerial > %lld"), lpszQueueName, nSerial);
+	_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` WHERE nQueueSerial >= %lld"), lpszQueueName, nSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;

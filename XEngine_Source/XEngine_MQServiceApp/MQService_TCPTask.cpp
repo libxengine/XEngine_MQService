@@ -854,14 +854,16 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				if (nDBCount > 0)
 				{
 					//更新用户KEY
-					st_UserKey.nKeySerial = ppSt_UserKey[i]->nKeySerial + nDBCount + 1;
+					st_UserKey.nKeySerial = ppSt_UserKey[i]->nKeySerial + nDBCount;
 					_tcsxcpy(st_UserKey.tszUserName, tszUserName);
 					_tcsxcpy(st_UserKey.tszKeyName, ppSt_UserKey[i]->tszKeyName);
 					DBModule_MQUser_KeyUPDate(&st_UserKey);
 					ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount);
+					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBMessage, nDBCount);
 				}
 			}
 			ProtocolModule_Packet_UNReadDelete(xhUNRead, tszSDBuffer, &nSDLen);
+			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserKey, nListCount);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,请求未读消息成功,用户名:%s,发送未读消息成功,发送的主题个数:%d"), lpszClientType, lpszClientAddr, tszUserName, nListCount);
 		}
