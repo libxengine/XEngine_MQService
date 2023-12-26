@@ -417,12 +417,17 @@ bool CSessionModule_Client::SessionModule_Client_GetExist(LPCXSTR lpszClientAddr
   类型：整数型指针
   可空：N
   意思：输出列表个数
+ 参数.三：bAddr
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否获取地址列表,否则用户列表
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount)
+bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount, bool bAddr)
 {
 	Session_IsErrorOccur = false;
 
@@ -433,7 +438,14 @@ bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClie
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
 	for (int i = 0; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++, i++)
 	{
-		_tcsxcpy((*ppptszClientList)[i], stl_MapIterator->second.tszUserAddr);
+		if (bAddr)
+		{
+			_tcsxcpy((*ppptszClientList)[i], stl_MapIterator->second.tszUserAddr);
+		}
+		else
+		{
+			_tcsxcpy((*ppptszClientList)[i], stl_MapIterator->second.st_UserInfo.tszUserName);
+		}
 	}
 	st_Locker.unlock_shared();
 	return true;

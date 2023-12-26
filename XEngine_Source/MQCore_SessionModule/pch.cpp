@@ -69,7 +69,7 @@ extern "C" bool SessionModule_Client_GetExist(LPCXSTR lpszClientAddr, LPCXSTR lp
 {
 	return m_SessionClient.SessionModule_Client_GetExist(lpszClientAddr, lpszClientUser);
 }
-extern "C" bool SessionModule_Client_GetListAddr(XCHAR * **ppptszClientList, int* pInt_ListCount)
+extern "C" bool SessionModule_Client_GetListAddr(XCHAR * **ppptszClientList, int* pInt_ListCount, bool bAddr)
 {
-	return m_SessionClient.SessionModule_Client_GetListAddr(ppptszClientList, pInt_ListCount);
+	return m_SessionClient.SessionModule_Client_GetListAddr(ppptszClientList, pInt_ListCount, bAddr);
 }

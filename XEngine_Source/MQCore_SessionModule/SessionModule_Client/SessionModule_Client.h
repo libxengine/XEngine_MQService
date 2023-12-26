@@ -34,7 +34,7 @@ public:
     bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
     bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
     bool SessionModule_Client_GetExist(LPCXSTR lpszClientAddr = NULL, LPCXSTR lpszClientUser = NULL);
-    bool SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount);
+    bool SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount, bool bAddr = true);
 private:
     shared_mutex st_Locker;
 private:

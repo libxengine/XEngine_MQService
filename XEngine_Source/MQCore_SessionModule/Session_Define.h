@@ -205,9 +205,14 @@ extern "C" bool SessionModule_Client_GetExist(LPCXSTR lpszClientAddr = NULL, LPC
   类型：整数型指针
   可空：N
   意思：输出列表个数
+ 参数.三：bAddr
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否获取地址列表,否则用户列表
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount);
+extern "C" bool SessionModule_Client_GetListAddr(XCHAR * **ppptszClientList, int* pInt_ListCount, bool bAddr = true);
