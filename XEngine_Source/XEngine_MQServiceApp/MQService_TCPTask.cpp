@@ -405,7 +405,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					for (int i = 0; i < nListCount; i++)
 					{
 						//跳过自己
-						if (0 == _tcsxncmp(lpszClientAddr, pptszListAddr[i], _tcsxlen(lpszClientAddr)))
+						if (0 == _tcsxncmp(lpszClientAddr, pptszListAddr[i], _tcsxlen(lpszClientAddr)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
 						{
 							continue;
 						}
@@ -431,7 +431,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					for (int i = 0; i < nListCount; i++)
 					{
 						//跳过自己
-						if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)))
+						if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
 						{
 							continue;
 						}
@@ -549,6 +549,15 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							st_UserKey.nKeySerial++;
 							continue;
 						}
+					}
+					//是不是自己发布的
+					XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
+					memcpy(&st_MSGAttr, &st_MessageQueue.byMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+					//如果不能发送自己并且是自己的消息,那么就跳过
+					if (0 == st_MSGAttr.byAttrSelf && (0 == _tcsxnicmp(st_MessageQueue.tszUserName, tszUserName, _tcsxlen(tszUserName))))
+					{
+						st_UserKey.nKeySerial++;
+						continue;
 					}
 					break;
 				}
@@ -858,7 +867,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					_tcsxcpy(st_UserKey.tszUserName, tszUserName);
 					_tcsxcpy(st_UserKey.tszKeyName, ppSt_UserKey[i]->tszKeyName);
 					DBModule_MQUser_KeyUPDate(&st_UserKey);
-					ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount);
+					ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount, tszUserName);
 					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBMessage, nDBCount);
 				}
 			}

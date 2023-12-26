@@ -497,12 +497,17 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
   类型：整数型
   可空：N
   意思：输入要打包的数据个数
+ 参数.四：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要过滤的用户
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -517,14 +522,23 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 	Json::Value st_JsonSubArray;
 	for (int i = 0; i < nListCount; i++)
 	{
+		XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
+		memcpy(&st_MSGAttr, &(*pppSt_DBMessage)[i]->byMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+
+		if ((0 == st_MSGAttr.byAttrSelf) && (0 == _tcsxnicmp(lpszUserName, (*pppSt_DBMessage)[i]->tszUserName, _tcsxlen((*pppSt_DBMessage)[i]->tszUserName))))
+		{
+			continue;
+		}
 		Json::Value st_JsonObject;
 		st_JsonObject["tszQueueName"] = (*pppSt_DBMessage)[i]->tszQueueName;
+		st_JsonObject["tszUserName"] = (*pppSt_DBMessage)[i]->tszUserName;
 		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
 		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
 		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
 		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
 		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
 		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
+		st_JsonObject["byMsgAttr"] = (*pppSt_DBMessage)[i]->byMsgAttr;
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
 		st_JsonSub.append(st_JsonObject);
 	}

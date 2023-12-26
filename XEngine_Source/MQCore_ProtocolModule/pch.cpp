@@ -63,9 +63,9 @@ extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);
 }
-extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int nListCount)
+extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, pppSt_DBMessage, nListCount);
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, pppSt_DBMessage, nListCount, lpszUserName);
 }
 extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR * ptszMsgBuffer, int* pInt_MsgLen)
 {

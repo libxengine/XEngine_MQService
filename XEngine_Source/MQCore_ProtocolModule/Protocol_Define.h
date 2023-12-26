@@ -277,12 +277,17 @@ extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_P
   类型：整数型
   可空：N
   意思：输入要打包的数据个数
+ 参数.四：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要过滤的用户
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount);
+extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName);
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadDelete
 函数功能：删除数据并且导出
