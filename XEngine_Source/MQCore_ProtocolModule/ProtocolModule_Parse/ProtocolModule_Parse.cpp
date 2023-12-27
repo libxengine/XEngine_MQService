@@ -121,6 +121,10 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		{
 			_tcsxcpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		}
+		if (!st_JsonMQProtocol["tszMQUsr"].isNull())
+		{
+			_tcsxcpy(st_MQProtocol.tszMQUsr, st_JsonMQProtocol["tszMQUsr"].asCString());
+		}
 		if (!st_JsonMQProtocol["nSerial"].isNull())
 		{
 			st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();

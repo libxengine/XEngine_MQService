@@ -100,7 +100,7 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
-	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszUserBelong,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserBelong, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
 	nRet += pSt_DBInfo->nMsgLen;
 
@@ -164,42 +164,56 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 	XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
-	if (NULL != pptszResult[1])
+	int nPos = 1;
+	if (NULL != pptszResult[nPos])
 	{
-		_tcsxcpy(pSt_DBInfo->tszUserName, pptszResult[1]);
+		_tcsxcpy(pSt_DBInfo->tszUserName, pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[2])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueueName, pptszResult[2]);
+		_tcsxcpy(pSt_DBInfo->tszUserBelong, pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[3])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		pSt_DBInfo->nQueueSerial = _ttxoll(pptszResult[3]);
+		_tcsxcpy(pSt_DBInfo->tszQueueName, pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[4])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[4]);
+		pSt_DBInfo->nQueueSerial = _ttxoll(pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[5])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[5]);
+		_tcsxcpy(pSt_DBInfo->tszQueueLeftTime, pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[6])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		pSt_DBInfo->nMsgLen = pInt_Length[6];
-		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[6], pSt_DBInfo->nMsgLen);
+		_tcsxcpy(pSt_DBInfo->tszQueuePublishTime, pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[7])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		pSt_DBInfo->byMsgType = _ttxoi(pptszResult[7]);
+		pSt_DBInfo->nMsgLen = pInt_Length[nPos];
+		memcpy(pSt_DBInfo->tszMsgBuffer, pptszResult[nPos], pSt_DBInfo->nMsgLen);
 	}
-	if (NULL != pptszResult[8])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		pSt_DBInfo->byMsgAttr = _ttxoi(pptszResult[8]);
+		pSt_DBInfo->byMsgType = _ttxoi(pptszResult[nPos]);
 	}
-	if (NULL != pptszResult[9])
+	nPos++;
+	if (NULL != pptszResult[nPos])
 	{
-		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[9]);
+		pSt_DBInfo->byMsgAttr = _ttxoi(pptszResult[nPos]);
+	}
+	nPos++;
+	if (NULL != pptszResult[nPos])
+	{
+		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[nPos]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return true;
@@ -234,7 +248,7 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
-	__int64u nRet = _xstprintf(tszSQLStatement, _X("UPDATE `%s` SET tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("UPDATE `%s` SET tszUserBelong = '%s',tszQueueLeftTime = '%s',tszQueuePublishTime = '%s',tszQueueData = '"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserBelong, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
 	nRet += pSt_DBInfo->nMsgLen;
@@ -324,42 +338,51 @@ bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSer
 		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
-		if (NULL != pptszResult[1])
+		int nPos = 1;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszUserName, pptszResult[1]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszUserName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[2])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[2]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[3])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			(*pppSt_DBMessage)[i]->nQueueSerial = _ttxoll(pptszResult[3]);
+			(*pppSt_DBMessage)[i]->nQueueSerial = _ttxoll(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[4])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[4]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[5])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[6])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[6];
-			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[6], (*pppSt_DBMessage)[i]->nMsgLen);
+			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[nPos];
+			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[nPos], (*pppSt_DBMessage)[i]->nMsgLen);
 		}
-		if (NULL != pptszResult[7])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[7]);
+			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[8])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			(*pppSt_DBMessage)[i]->byMsgAttr = _ttxoi(pptszResult[8]);
+			(*pppSt_DBMessage)[i]->byMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[9])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[9]);
+			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[nPos]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
@@ -430,42 +453,51 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 
-		if (NULL != pptszResult[1])
+		int nPos = 1;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBStart->tszUserName, pptszResult[1]);
+			_tcsxcpy(pSt_DBStart->tszUserName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[2])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueueName, pptszResult[2]);
+			_tcsxcpy(pSt_DBStart->tszQueueName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[3])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBStart->nQueueSerial = _ttxoll(pptszResult[3]);
+			pSt_DBStart->nQueueSerial = _ttxoll(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[4])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueueLeftTime, pptszResult[4]);
+			_tcsxcpy(pSt_DBStart->tszQueueLeftTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[5])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueuePublishTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBStart->tszQueuePublishTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[6])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBStart->nMsgLen = pInt_Length[6];
-			memcpy(pSt_DBStart->tszMsgBuffer, pptszResult[6], pSt_DBStart->nMsgLen);
+			pSt_DBStart->nMsgLen = pInt_Length[nPos];
+			memcpy(pSt_DBStart->tszMsgBuffer, pptszResult[nPos], pSt_DBStart->nMsgLen);
 		}
-		if (NULL != pptszResult[7])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBStart->byMsgType = _ttxoi(pptszResult[7]);
+			pSt_DBStart->byMsgType = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[8])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBStart->byMsgAttr = _ttxoi(pptszResult[8]);
+			pSt_DBStart->byMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[9])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBStart->tszQueueCreateTime, pptszResult[9]);
+			_tcsxcpy(pSt_DBStart->tszQueueCreateTime, pptszResult[nPos]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -491,42 +523,51 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
 		
-		if (NULL != pptszResult[1])
+		int nPos = 1;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBEnd->tszUserName, pptszResult[1]);
+			_tcsxcpy(pSt_DBEnd->tszUserName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[2])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueueName, pptszResult[2]);
+			_tcsxcpy(pSt_DBEnd->tszQueueName, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[3])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBEnd->nQueueSerial = _ttxoll(pptszResult[3]);
+			pSt_DBEnd->nQueueSerial = _ttxoll(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[4])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[4]);
+			_tcsxcpy(pSt_DBEnd->tszQueueLeftTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[5])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[5]);
+			_tcsxcpy(pSt_DBEnd->tszQueuePublishTime, pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[6])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBEnd->nMsgLen = pInt_Length[6];
-			memcpy(pSt_DBEnd->tszMsgBuffer, pptszResult[6], pSt_DBEnd->nMsgLen);
+			pSt_DBEnd->nMsgLen = pInt_Length[nPos];
+			memcpy(pSt_DBEnd->tszMsgBuffer, pptszResult[nPos], pSt_DBEnd->nMsgLen);
 		}
-		if (NULL != pptszResult[7])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBEnd->byMsgType = _ttxoi(pptszResult[7]);
+			pSt_DBEnd->byMsgType = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[8])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBEnd->byMsgAttr = _ttxoi(pptszResult[8]);
+			pSt_DBEnd->byMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
-		if (NULL != pptszResult[9])
+		nPos++;
+		if (NULL != pptszResult[nPos])
 		{
-			_tcsxcpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[9]);
+			_tcsxcpy(pSt_DBEnd->tszQueueCreateTime, pptszResult[nPos]);
 		}
 		DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	}
@@ -585,6 +626,7 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
     _xstprintf(tszSQLQuery, _X("CREATE TABLE IF NOT EXISTS `%s` ("
         "`ID` int NOT NULL AUTO_INCREMENT,"
 		"`tszUserName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '谁发布的消息',"
+		"`tszUserBelong` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '所属用户',"
         "`tszQueueName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '所属队列',"
         "`nQueueSerial` bigint NOT NULL COMMENT '消息序列',"
         "`tszQueueLeftTime` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '过期时间',"

@@ -18,6 +18,7 @@ typedef struct
 {
 	XCHAR tszMsgBuffer[8192];                                             //消息内容
 	XCHAR tszUserName[256];                                               //谁发布的消息
+	XCHAR tszUserBelong[256];                                             //谁可以读取此消息
 	XCHAR tszQueueName[256];                                              //此消息的KEY
 	XCHAR tszQueueLeftTime[64];                                           //过期时间
 	XCHAR tszQueuePublishTime[64];                                        //发布时间

@@ -57,7 +57,7 @@ typedef struct
 {
 	XBYTE byAttrAll : 1;                                                 //通知所有
 	XBYTE byAttrSelf : 1;                                                //自己也能接受
-	XBYTE byAttrResver2 : 1;
+	XBYTE byAttrReply : 1;                                               //对方必须回复
 	XBYTE byAttrResver3 : 1;
 	XBYTE byAttrResver4 : 1;
 	XBYTE byAttrResver5 : 1;
@@ -70,6 +70,7 @@ typedef struct
 typedef struct 
 {
 	XCHAR tszMQKey[MAX_PATH];                                             //此消息的KEY，不能为空
+	XCHAR tszMQUsr[MAX_PATH];                                             //此消息接受用户
 	__int64x nSerial;                                                     //包序列号
 	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区
 	int nKeepTime;                                                        //可用时间,单位秒,>0 超时秒数

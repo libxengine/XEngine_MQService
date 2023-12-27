@@ -582,6 +582,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		}
 		Json::Value st_JsonObject;
 		st_JsonObject["tszQueueName"] = (*pppSt_DBMessage)[i]->tszQueueName;
+		st_JsonObject["tszUserBelong"] = (*pppSt_DBMessage)[i]->tszUserBelong;
 		st_JsonObject["tszUserName"] = (*pppSt_DBMessage)[i]->tszUserName;
 		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
 		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
@@ -785,6 +786,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 	if (NULL != pSt_MQProtocol)
 	{
 		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
+		st_JsonMQProtocol["tszMQUsr"] = pSt_MQProtocol->tszMQUsr;
 		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
 		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
 		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
