@@ -333,6 +333,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			_tcsxcpy(st_DBQueue.tszUserBelong, st_MQProtocol.tszMQUsr);
 			_tcsxcpy(st_DBQueue.tszQueueName, st_MQProtocol.tszMQKey);
 			memcpy(st_DBQueue.tszMsgBuffer, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_DBQueue.nMsgLen);
+			memcpy(&st_DBQueue.nMsgAttr, &st_MQProtocol.st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 		
 			if (st_MQProtocol.nKeepTime > 0)
 			{
@@ -421,7 +422,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType);
 						BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
 					}
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
 				}
 				else
 				{
@@ -453,7 +453,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						}
 					}
 					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
-					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,通知客户端个数:%d"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, nListCount);
 				}
 				_xstprintf(st_DBQueue.tszQueuePublishTime, _X("0"));
 			}
@@ -481,6 +480,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,投递数据到消息队列成功,发布时间:%s"), lpszClientType, lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, st_DBQueue.tszQueuePublishTime);
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET == pSt_ProtocolHdr->unOperatorCode)
 		{

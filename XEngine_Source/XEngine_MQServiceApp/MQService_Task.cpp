@@ -40,8 +40,8 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 
 		if (pSt_DBInfo->bBreak)
 		{
-			//跳过自己
-			if (0 == _tcsxncmp(st_DBInfo.tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(st_DBInfo.tszUserName)))
+			//是否跳过自己
+			if (0 == _tcsxncmp(st_DBInfo.tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(st_DBInfo.tszUserName)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
 			{
 				continue;
 			}

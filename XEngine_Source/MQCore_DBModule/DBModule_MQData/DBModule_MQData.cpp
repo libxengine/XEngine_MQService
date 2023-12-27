@@ -461,6 +461,11 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		nPos++;
 		if (NULL != pptszResult[nPos])
 		{
+			_tcsxcpy(pSt_DBStart->tszUserBelong, pptszResult[nPos]);
+		}
+		nPos++;
+		if (NULL != pptszResult[nPos])
+		{
 			_tcsxcpy(pSt_DBStart->tszQueueName, pptszResult[nPos]);
 		}
 		nPos++;
@@ -527,6 +532,11 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		if (NULL != pptszResult[nPos])
 		{
 			_tcsxcpy(pSt_DBEnd->tszUserName, pptszResult[nPos]);
+		}
+		nPos++;
+		if (NULL != pptszResult[nPos])
+		{
+			_tcsxcpy(pSt_DBEnd->tszUserBelong, pptszResult[nPos]);
 		}
 		nPos++;
 		if (NULL != pptszResult[nPos])
