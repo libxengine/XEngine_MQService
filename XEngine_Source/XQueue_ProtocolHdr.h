@@ -71,7 +71,7 @@ typedef struct
 	XCHAR tszMQKey[MAX_PATH];                                             //此消息的KEY，不能为空
 	XCHAR tszMQUsr[MAX_PATH];                                             //此消息接受用户
 	__int64x nSerial;                                                     //包序列号
-	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区
+	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区,-1表示投递的消息通过用户主动获取,0表示即时发布消息给当前订阅的在线用户,>0表示发布的日期
 	int nKeepTime;                                                        //可用时间,单位秒,>0 超时秒数
 	XENGINE_PROTOCOL_MSGATTR st_MSGAttr;                                  //消息属性
 }XENGINE_PROTOCOL_XMQ, * LPXENGINE_PROTOCOL_XMQ;

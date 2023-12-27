@@ -35,7 +35,6 @@ typedef struct
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
 	bool bActive;                                                         //是否激活过
-	bool bBreak;                                                          //跳过自身
 }XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct
