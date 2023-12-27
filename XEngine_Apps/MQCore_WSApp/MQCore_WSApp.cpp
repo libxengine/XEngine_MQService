@@ -21,7 +21,7 @@
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp -Wl,-rpath=../../XEngine_Source/XEngine_ThirdPart/jsoncpp,--disable-new-dtags
+//g++ -std=c++17 -Wall -g MQCore_WSApp.cpp -o MQCore_WSApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_RfcComponents -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXEngine_Algorithm -lXClient_Socket -lRfcComponents_WSProtocol -ljsoncpp
 
 XSOCKET m_Socket;
 LPCXSTR lpszKey = _X("XEngine_Notify");  //主题
@@ -149,10 +149,19 @@ void MQ_Post(LPCXSTR lpszMsgBuffer)
 	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN;
 	st_JsonRoot["byIsReply"] = 1;
 
+	XSHOT nMSGAttr = 0;
+	XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
+	memset(&st_MSGAttr, '\0', sizeof(XENGINE_PROTOCOL_MSGATTR));
+
+	st_MSGAttr.byAttrSelf = 1;
+	memcpy(&nMSGAttr, &st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+
 	st_JsonMQProtocol["tszMQKey"] = lpszKey;
 	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理
-	st_JsonMQProtocol["nKeepTime"] = -1;          //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，PacketKey不能为空
+	st_JsonMQProtocol["nKeepTime"] = 0;          //生效时间
+	st_JsonMQProtocol["nPubTime"] = -1;         
 	st_JsonMQProtocol["nGetTimer"] = 0;
+	st_JsonMQProtocol["nMSGAttr"] = nMSGAttr;
 
 	st_JsonPayload["nPayLen"] = (Json::Value::UInt)strlen(lpszMsgBuffer);
 	st_JsonPayload["tszPayData"] = lpszMsgBuffer;

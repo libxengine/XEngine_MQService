@@ -511,7 +511,7 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 {
 	DBModule_IsErrorOccur = false;
 
-	if ((NULL == lpszUser) && (NULL == lpszKeyName))
+	if ((NULL == lpszUser) || (NULL == lpszKeyName))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
@@ -525,15 +525,15 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 	//名称为,消息名为必填
-	if ((NULL != lpszUser) && (NULL != lpszKeyName))
+	if (_tcsxlen(lpszUser) > 0 && _tcsxlen(lpszKeyName) > 0)
 	{
 		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), lpszUser, lpszKeyName);
 	}
-	else if ((NULL != lpszUser) && (NULL == lpszKeyName))
+	else if ((_tcsxlen(lpszUser) > 0) && (_tcsxlen(lpszKeyName) == 0))
 	{
 		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s'"), lpszUser);
 	}
-	else if ((NULL == lpszUser) && (NULL != lpszKeyName))
+	else if ((_tcsxlen(lpszUser) == 0) && (_tcsxlen(lpszKeyName) > 0))
 	{
 		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
 	}
@@ -731,7 +731,7 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeInsert(XENGINE_DBTIMERELEASE* pSt_DBI
 	XCHAR tszSQLStatement[10240];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,bActive,bBreak,tszCreateTime) VALUES('%s',%lld,%lld,0,%d,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime, pSt_DBInfo->bBreak);
+	_xstprintf(tszSQLStatement, _X("INSERT INTO `UserTime` (tszQueueName,nIDMsg,nIDTime,bActive,tszCreateTime) VALUES('%s',%lld,%lld,0,now())"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, pSt_DBInfo->nIDTime);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 	{
 		DBModule_IsErrorOccur = true;
@@ -804,11 +804,7 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 		}
 		if (NULL != pptszResult[4])
 		{
-			(*pppSt_DBInfo)[i]->bBreak = _ttxoi(pptszResult[4]);
-		}
-		if (NULL != pptszResult[5])
-		{
-			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[4]);
 		}
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);

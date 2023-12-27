@@ -429,6 +429,57 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_TopicList(XCHAR* ptszMsgBuffe
 	return true;
 }
 /********************************************************************
+函数名称：ProtocolModule_Packet_OnlineList
+函数功能：在线用户打包
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出打包大小
+ 参数.三：ppptszListUser
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.四：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_OnlineList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** ppptszListUser, int nListCount)
+{
+	Protocol_IsErrorOccur = false;
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonArray;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	for (int i = 0; i < nListCount; i++)
+	{
+		Json::Value st_JsonObject;
+		st_JsonObject["tszUserAddr"] = (*ppptszListUser)[i];
+		st_JsonArray.append(st_JsonObject);
+	}
+	st_JsonRoot["code"] = 0;
+	st_JsonRoot["Array"] = st_JsonArray;
+	st_JsonRoot["Count"] = st_JsonArray.size();
+
+	st_JsonBuilder["emitUTF8"] = true;
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return true;
+}
+/********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
 函数功能：未读消息打包创建函数
  参数.一：pSt_ProtocolHdr
@@ -497,12 +548,17 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
   类型：整数型
   可空：N
   意思：输入要打包的数据个数
+ 参数.四：lpszUserName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要过滤的用户
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -517,14 +573,23 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 	Json::Value st_JsonSubArray;
 	for (int i = 0; i < nListCount; i++)
 	{
+		XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
+		memcpy(&st_MSGAttr, &(*pppSt_DBMessage)[i]->nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+
+		if ((0 == st_MSGAttr.byAttrSelf) && (0 == _tcsxnicmp(lpszUserName, (*pppSt_DBMessage)[i]->tszUserName, _tcsxlen((*pppSt_DBMessage)[i]->tszUserName))))
+		{
+			continue;
+		}
 		Json::Value st_JsonObject;
 		st_JsonObject["tszQueueName"] = (*pppSt_DBMessage)[i]->tszQueueName;
+		st_JsonObject["tszUserBelong"] = (*pppSt_DBMessage)[i]->tszUserBelong;
+		st_JsonObject["tszUserName"] = (*pppSt_DBMessage)[i]->tszUserName;
 		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
 		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
 		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
 		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
-		st_JsonObject["nQueueGetTime"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueGetTime;
 		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
+		st_JsonObject["nMsgAttr"] = (*pppSt_DBMessage)[i]->nMsgAttr;
 		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
 		st_JsonSub.append(st_JsonObject);
@@ -721,10 +786,14 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 	if (NULL != pSt_MQProtocol)
 	{
 		st_JsonMQProtocol["tszMQKey"] = pSt_MQProtocol->tszMQKey;
+		st_JsonMQProtocol["tszMQUsr"] = pSt_MQProtocol->tszMQUsr;
 		st_JsonMQProtocol["nSerial"] = (Json::Value::Int64)pSt_MQProtocol->nSerial;
-		st_JsonMQProtocol["nGetTimer"] = pSt_MQProtocol->nGetTimer;
 		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
 		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
+
+		XSHOT nMSGAttr = 0;
+		memcpy(&nMSGAttr, &pSt_MQProtocol->st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+		st_JsonMQProtocol["nMSGAttr"] = nMSGAttr;
 		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 	}
 

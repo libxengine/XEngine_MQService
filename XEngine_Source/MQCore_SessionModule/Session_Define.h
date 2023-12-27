@@ -173,3 +173,46 @@ extern "C" bool SessionModule_Client_GetInfoByUser(LPCXSTR lpszUserName, XENGINE
 备注：
 *********************************************************************/
 extern "C" bool SessionModule_Client_GetType(LPCXSTR lpszSessionStr, int* pInt_NetType);
+/********************************************************************
+函数名称：SessionModule_Client_GetExist
+函数功能：指定客户端是否存在
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：输入客户端地址
+ 参数.二：lpszClientUser
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：输入客户端用户
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：不能同时为NULL,可以使用一个参数
+*********************************************************************/
+extern "C" bool SessionModule_Client_GetExist(LPCXSTR lpszClientAddr = NULL, LPCXSTR lpszClientUser = NULL);
+/********************************************************************
+函数名称：SessionModule_Client_GetList
+函数功能：获取客户端地址列表
+ 参数.一：ppptszClientList
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出客户端列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+ 参数.三：bAddr
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否获取地址列表,否则用户列表
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool SessionModule_Client_GetListAddr(XCHAR * **ppptszClientList, int* pInt_ListCount, bool bAddr = true);

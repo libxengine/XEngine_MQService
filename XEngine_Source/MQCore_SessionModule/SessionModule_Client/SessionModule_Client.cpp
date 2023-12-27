@@ -340,3 +340,113 @@ bool CSessionModule_Client::SessionModule_Client_GetType(LPCXSTR lpszSessionStr,
 	st_Locker.unlock_shared();
 	return true;
 }
+/********************************************************************
+函数名称：SessionModule_Client_GetExist
+函数功能：指定客户端是否存在
+ 参数.一：lpszClientAddr
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：输入客户端地址
+ 参数.二：lpszClientUser
+  In/Out：In
+  类型：常量字符指针
+  可空：Y
+  意思：输入客户端用户
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：不能同时为NULL,可以使用一个参数
+*********************************************************************/
+bool CSessionModule_Client::SessionModule_Client_GetExist(LPCXSTR lpszClientAddr, LPCXSTR lpszClientUser)
+{
+	Session_IsErrorOccur = false;
+
+	if (NULL == lpszClientUser && NULL == lpszClientAddr)
+	{
+		Session_IsErrorOccur = true;
+		Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_PARAMENT;
+		return false;
+	}
+
+	st_Locker.lock_shared();
+	if (NULL == lpszClientAddr)
+	{
+		bool bFound = false;
+		unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
+		for (int i = 0; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++, i++)
+		{
+			if (0 == _tcsxnicmp(lpszClientUser, stl_MapIterator->second.st_UserInfo.tszUserName, _tcsxlen(stl_MapIterator->second.st_UserInfo.tszUserName)))
+			{
+				bFound = true;
+				break;
+			}
+		}
+		if (!bFound)
+		{
+			Session_IsErrorOccur = true;
+			Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+			st_Locker.unlock_shared();
+			return false;
+		}
+	}
+	else
+	{
+		unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+		if (stl_MapIterator == stl_MapSession.end())
+		{
+			Session_IsErrorOccur = true;
+			Session_dwErrorCode = ERROR_MQ_MODULE_SESSION_NOTFOUND;
+			st_Locker.unlock_shared();
+			return false;
+		}
+	}
+	st_Locker.unlock_shared();
+	return true;
+}
+/********************************************************************
+函数名称：SessionModule_Client_GetList
+函数功能：获取客户端地址列表
+ 参数.一：ppptszClientList
+  In/Out：Out
+  类型：三级指针
+  可空：N
+  意思：输出客户端列表
+ 参数.二：pInt_ListCount
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出列表个数
+ 参数.三：bAddr
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否获取地址列表,否则用户列表
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClientList, int* pInt_ListCount, bool bAddr)
+{
+	Session_IsErrorOccur = false;
+
+	*pInt_ListCount = stl_MapSession.size();
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)ppptszClientList, stl_MapSession.size(), 128);
+
+	st_Locker.lock_shared();
+	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
+	for (int i = 0; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++, i++)
+	{
+		if (bAddr)
+		{
+			_tcsxcpy((*ppptszClientList)[i], stl_MapIterator->second.tszUserAddr);
+		}
+		else
+		{
+			_tcsxcpy((*ppptszClientList)[i], stl_MapIterator->second.st_UserInfo.tszUserName);
+		}
+	}
+	st_Locker.unlock_shared();
+	return true;
+}

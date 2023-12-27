@@ -121,6 +121,58 @@ void MQ_Authorize()
 		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
 }
+//获取未读消息
+void MQ_GetUNRead(int nType = 0)
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
+	XCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUNREAD;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byIsReply = true;                  //必须为真
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
+
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+
+	while (true)
+	{
+		nLen = 0;
+		XCHAR* ptszMsgBuffer;
+
+		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+		if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+		{
+			if (0 == st_ProtocolHdr.wReserve)
+			{
+				_xtprintf("接受到数据,长度：%d，内容：%s\n", st_ProtocolHdr.unPacketSize, ptszMsgBuffer);
+			}
+			else
+			{
+				_xtprintf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
+			}
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
 //删除用户
 void MQ_DeleteUser()
 {
@@ -222,7 +274,7 @@ typedef struct
 	int a;
 	int b;
 }XENGINE_SQLBINARY;
-void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0)
+void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf = false)
 {
 	int nLen = 0;
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
@@ -240,9 +292,11 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0)
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	st_XMQProtocol.nSerial = 0;          //序列号,0服务会自动处理
-	st_XMQProtocol.nKeepTime = -1;        //保存时间，单位秒，如果为0，获取一次后被抛弃。-1 永久存在，PacketKey不能为空
+	st_XMQProtocol.nKeepTime = 0;      
+	st_XMQProtocol.nPubTime = nPubTime;
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
+	st_XMQProtocol.st_MSGAttr.byAttrSelf = bSelf;
 	if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == nType)
 	{
 		XENGINE_SQLBINARY st_SQLBinary;
@@ -379,6 +433,7 @@ void MQ_TimePublish()
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + _tcsxlen(lpszMsgBuffer);
 	st_XMQProtocol.nSerial = 0;          //要获取的序列号,如果为0,服务会自动处理
 	st_XMQProtocol.nPubTime = time(NULL) + 30; //当前时间+60秒
+	st_XMQProtocol.st_MSGAttr.byAttrSelf = 1;
 	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
@@ -571,14 +626,16 @@ int main(int argc, char** argv)
 
 	MQ_Register();
 	MQ_Authorize();
+	MQ_GetUNRead();
 	MQ_Create();
-	MQ_Post(NULL, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN);
+	MQ_Post(NULL, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN, -1, true);
 	MQ_BindTopic();
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN);
 
+	MQ_Post(lpszMsgBuffer, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING, 0);
 	for (int i = 0; i < 10; i++)
 	{
-		MQ_Post(lpszMsgBuffer, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
+		MQ_Post(lpszMsgBuffer, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING, -1, true);
 	}
 	MQ_GetNumber();
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
