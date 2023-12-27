@@ -13,5 +13,3 @@ copy /y "D:\XEngine\XEngine_SourceCode\Debug\HelpComponents_DataBase.dll" "./"
 
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\RfcComponents_HttpProtocol.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\RfcComponents_WSProtocol.dll" "./"
-
-copy /y "D:\XEngine\XEngine_SourceCode\Debug\libcurl-d.dll" "./"
