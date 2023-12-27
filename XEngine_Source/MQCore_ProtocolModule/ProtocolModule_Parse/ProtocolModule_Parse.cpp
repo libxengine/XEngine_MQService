@@ -121,13 +121,13 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		{
 			_tcsxcpy(st_MQProtocol.tszMQKey, st_JsonMQProtocol["tszMQKey"].asCString());
 		}
+		if (!st_JsonMQProtocol["tszMQUsr"].isNull())
+		{
+			_tcsxcpy(st_MQProtocol.tszMQUsr, st_JsonMQProtocol["tszMQUsr"].asCString());
+		}
 		if (!st_JsonMQProtocol["nSerial"].isNull())
 		{
 			st_MQProtocol.nSerial = st_JsonMQProtocol["nSerial"].asInt();
-		}
-		if (!st_JsonMQProtocol["nGetTimer"].isNull())
-		{
-			st_MQProtocol.nGetTimer = st_JsonMQProtocol["nGetTimer"].asInt();
 		}
 		if (!st_JsonMQProtocol["nKeepTime"].isNull())
 		{
@@ -136,6 +136,11 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		if (!st_JsonMQProtocol["nPubTime"].isNull())
 		{
 			st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
+		}
+		if (!st_JsonMQProtocol["nMSGAttr"].isNull())
+		{
+			XSHOT nMSGAttr = st_JsonMQProtocol["nMSGAttr"].asUInt();
+			memcpy(&st_MQProtocol.st_MSGAttr, &nMSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
 		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));

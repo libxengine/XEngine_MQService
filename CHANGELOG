@@ -1,3 +1,31 @@
+XEngine_MQService V3.9.0.1001
+
+增加:消息属性的通知所有和通知自身的支持
+增加:为指定用户发送消息
+增加:http管理接口获取在线用户列表
+优化:内存的消息通知处理方法
+优化:查询数据库的方法
+修正:当消息通知的时候客户端网络类型不正确的问题
+修正:无论用户是否在线都进行消息通知的问题
+修正:DBModule_MQUser_KeyList函数列举数据不正确的问题
+修正:未读协议内存溢出
+修正:未读协议序列号处理错误
+删除:获取消息次数支持
+删除:定时发布的break字段
+
+added:message attritube supported with notify all and notify self
+added:send a message for a specific user
+added:get online user list for http restful
+improved:memory and process way for msg notify
+improved:query sql point handle way
+fixed:client nettype is incorrent when message notify
+fixed:Doesn't handle whether the client is online or not when a message notification is made
+fixed:DBModule_MQUser_KeyList function list is incorrent
+fixed:unread protocol memory leak
+fixed:unread protocol serial handle is incorrent
+delete:get time number supported
+delete:time publish break field
+======================================================================================
 XEngine_MQService V3.8.0.1001
 
 增加:websocket的二进制消息负载能力支持

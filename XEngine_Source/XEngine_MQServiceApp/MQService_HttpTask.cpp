@@ -54,6 +54,7 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 	LPCXSTR lpszAPIGet = _X("get");
 	LPCXSTR lpszAPIUser = _X("user");
 	LPCXSTR lpszAPITopic = _X("topic");
+	LPCXSTR lpszAPIOnline = _X("online");
 
 	if (0 == _tcsxnicmp(lpszPostMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszPostMethod)))
 	{
@@ -86,6 +87,19 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 
 				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
+			}
+			else if (0 == _tcsxnicmp(lpszAPIOnline, tszValue, _tcsxlen(lpszAPIOnline)))
+			{
+				//获取在线用户 http://127.0.0.1:5202/api?function=get&method=online&type=0
+				int nListCount = 0;
+				XCHAR** pptszListAddr;
+
+				BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
+				SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, _ttxoi(tszValue));
+				ProtocolModule_Packet_OnlineList(tszPKTBuffer, &nPKTLen, &pptszListAddr, nListCount);
+				BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取在线用户列表请求成功,获取到的列表个数:%d"), lpszClientAddr, nListCount);
 			}
 			else if (0 == _tcsxnicmp(lpszAPITopic, tszValue, _tcsxlen(lpszAPITopic)))
 			{

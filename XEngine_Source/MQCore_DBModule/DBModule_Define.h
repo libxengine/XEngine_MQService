@@ -18,14 +18,15 @@ typedef struct
 {
 	XCHAR tszMsgBuffer[8192];                                             //消息内容
 	XCHAR tszUserName[256];                                               //谁发布的消息
+	XCHAR tszUserBelong[256];                                             //谁可以读取此消息
 	XCHAR tszQueueName[256];                                              //此消息的KEY
 	XCHAR tszQueueLeftTime[64];                                           //过期时间
 	XCHAR tszQueuePublishTime[64];                                        //发布时间
 	XCHAR tszQueueCreateTime[64];                                         //创建时间
 	__int64x nQueueSerial;                                                //包序列号
-	__int64x nQueueGetTime;                                               //可以获取的次数
 	int nMsgLen;                                                          //消息大小
-	XBYTE byMsgType;                                                       //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
+	XSHOT nMsgAttr;                                                       //消息属性
+	XBYTE byMsgType;                                                      //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
 }XENGINE_DBMESSAGEQUEUE;
 typedef struct
 {
@@ -34,7 +35,6 @@ typedef struct
 	__int64x nIDMsg;                                                      //消息ID
 	__int64x nIDTime;                                                     //发布时间
 	bool bActive;                                                         //是否激活过
-	bool bBreak;                                                          //跳过自身
 }XENGINE_DBTIMERELEASE;
 //用户消息
 typedef struct

@@ -23,6 +23,8 @@
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include "../XQueue_ProtocolHdr.h"
 #include "Session_Define.h"
 #include "Session_Error.h"
@@ -45,3 +47,7 @@ typedef std::string tstring;
 *********************************************************************/
 extern bool Session_IsErrorOccur;
 extern XLONG Session_dwErrorCode;
+
+#ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#endif

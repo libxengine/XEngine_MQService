@@ -37,14 +37,10 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 		int nNetType = 0;
 		XCHAR tszUserAddr[128];
 		memset(tszUserAddr, '\0', sizeof(tszUserAddr));
-
-		if (pSt_DBInfo->bBreak)
+		//是否跳过自己
+		if (0 == _tcsxncmp(st_DBInfo.tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(st_DBInfo.tszUserName)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
 		{
-			//跳过自己
-			if (0 == _tcsxncmp(st_DBInfo.tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(st_DBInfo.tszUserName)))
-			{
-				continue;
-			}
+			continue;
 		}
 		SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 		SessionModule_Client_GetType(tszUserAddr, &nNetType);
