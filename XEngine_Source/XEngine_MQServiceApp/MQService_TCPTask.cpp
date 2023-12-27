@@ -330,6 +330,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			st_DBQueue.nQueueSerial = st_MQProtocol.nSerial;
 			st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
 			_tcsxcpy(st_DBQueue.tszUserName, tszUserName);
+			_tcsxcpy(st_DBQueue.tszUserBelong, st_MQProtocol.tszMQUsr);
 			_tcsxcpy(st_DBQueue.tszQueueName, st_MQProtocol.tszMQKey);
 			memcpy(st_DBQueue.tszMsgBuffer, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), st_DBQueue.nMsgLen);
 		
@@ -552,7 +553,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					}
 					//是不是自己发布的
 					XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
-					memcpy(&st_MSGAttr, &st_MessageQueue.byMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+					memcpy(&st_MSGAttr, &st_MessageQueue.nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 					//如果不能发送自己并且是自己的消息,那么就跳过
 					if (0 == st_MSGAttr.byAttrSelf && (0 == _tcsxnicmp(st_MessageQueue.tszUserName, tszUserName, _tcsxlen(tszUserName))))
 					{

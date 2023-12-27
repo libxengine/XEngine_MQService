@@ -137,10 +137,10 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		{
 			st_MQProtocol.nPubTime = st_JsonMQProtocol["nPubTime"].asInt64();
 		}
-		if (!st_JsonMQProtocol["byMSGAttr"].isNull())
+		if (!st_JsonMQProtocol["nMSGAttr"].isNull())
 		{
-			XBYTE byMSGAttr = st_JsonMQProtocol["byMSGAttr"].asUInt();
-			memcpy(&st_MQProtocol.st_MSGAttr, &byMSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+			XSHOT nMSGAttr = st_JsonMQProtocol["nMSGAttr"].asUInt();
+			memcpy(&st_MQProtocol.st_MSGAttr, &nMSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 		}
 		*pInt_MsgLen += sizeof(XENGINE_PROTOCOL_XMQ);
 		memcpy(ptszMsgBuffer + nPos, &st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));

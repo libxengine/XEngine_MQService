@@ -64,7 +64,6 @@ typedef struct
 	XBYTE byAttrResver6 : 1;
 	XBYTE byAttrResver7 : 1;
 	XBYTE byAttrResver;
-	XSHOT nAttrResver;
 }XENGINE_PROTOCOL_MSGATTR, * LPXENGINE_PROTOCOL_MSGATTR;
 //消息队列服务协议
 typedef struct 

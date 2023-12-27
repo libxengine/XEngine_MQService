@@ -25,8 +25,8 @@ typedef struct
 	XCHAR tszQueueCreateTime[64];                                         //创建时间
 	__int64x nQueueSerial;                                                //包序列号
 	int nMsgLen;                                                          //消息大小
+	XSHOT nMsgAttr;                                                       //消息属性
 	XBYTE byMsgType;                                                      //消息类型,参考:ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE
-	XBYTE byMsgAttr;                                                      //消息属性
 }XENGINE_DBMESSAGEQUEUE;
 typedef struct
 {

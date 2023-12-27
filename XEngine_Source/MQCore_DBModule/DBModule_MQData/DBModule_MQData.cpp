@@ -100,12 +100,12 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
-	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszUserBelong,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserBelong, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
+	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszUserBelong,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszUserBelong, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, pSt_DBInfo->nMsgLen);
 	nRet += pSt_DBInfo->nMsgLen;
 
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
-	int nLen = _xstprintf(tszSQLCoder, _X("',%d,%d,now())"), pSt_DBInfo->byMsgType, pSt_DBInfo->byMsgAttr);
+	int nLen = _xstprintf(tszSQLCoder, _X("',%d,%d,now())"), pSt_DBInfo->byMsgType, pSt_DBInfo->nMsgAttr);
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
 	nRet += nLen;
 
@@ -208,7 +208,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	nPos++;
 	if (NULL != pptszResult[nPos])
 	{
-		pSt_DBInfo->byMsgAttr = _ttxoi(pptszResult[nPos]);
+		pSt_DBInfo->nMsgAttr = _ttxoi(pptszResult[nPos]);
 	}
 	nPos++;
 	if (NULL != pptszResult[nPos])
@@ -254,7 +254,7 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	nRet += pSt_DBInfo->nMsgLen;
 
 	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
-	int nLen = _xstprintf(tszSQLCoder, _X("',nDataType = %d,nDataAttr = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->byMsgType, pSt_DBInfo->byMsgAttr, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+	int nLen = _xstprintf(tszSQLCoder, _X("',nDataType = %d,nDataAttr = %d WHERE tszUserName = '%s' AND tszQueueName = '%s' AND nQueueSerial = %lld"), pSt_DBInfo->byMsgType, pSt_DBInfo->nMsgAttr, pSt_DBInfo->tszUserName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
 	nRet += nLen;
 
@@ -377,7 +377,7 @@ bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSer
 		nPos++;
 		if (NULL != pptszResult[nPos])
 		{
-			(*pppSt_DBMessage)[i]->byMsgAttr = _ttxoi(pptszResult[nPos]);
+			(*pppSt_DBMessage)[i]->nMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
 		nPos++;
 		if (NULL != pptszResult[nPos])
@@ -492,7 +492,7 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		nPos++;
 		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBStart->byMsgAttr = _ttxoi(pptszResult[nPos]);
+			pSt_DBStart->nMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
 		nPos++;
 		if (NULL != pptszResult[nPos])
@@ -562,7 +562,7 @@ bool CDBModule_MQData::DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pIn
 		nPos++;
 		if (NULL != pptszResult[nPos])
 		{
-			pSt_DBEnd->byMsgAttr = _ttxoi(pptszResult[nPos]);
+			pSt_DBEnd->nMsgAttr = _ttxoi(pptszResult[nPos]);
 		}
 		nPos++;
 		if (NULL != pptszResult[nPos])

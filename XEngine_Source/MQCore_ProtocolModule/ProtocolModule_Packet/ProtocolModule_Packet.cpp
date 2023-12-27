@@ -574,7 +574,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 	for (int i = 0; i < nListCount; i++)
 	{
 		XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
-		memcpy(&st_MSGAttr, &(*pppSt_DBMessage)[i]->byMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+		memcpy(&st_MSGAttr, &(*pppSt_DBMessage)[i]->nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 
 		if ((0 == st_MSGAttr.byAttrSelf) && (0 == _tcsxnicmp(lpszUserName, (*pppSt_DBMessage)[i]->tszUserName, _tcsxlen((*pppSt_DBMessage)[i]->tszUserName))))
 		{
@@ -589,8 +589,8 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
 		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
 		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
+		st_JsonObject["nMsgAttr"] = (*pppSt_DBMessage)[i]->nMsgAttr;
 		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
-		st_JsonObject["byMsgAttr"] = (*pppSt_DBMessage)[i]->byMsgAttr;
 		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
 		st_JsonSub.append(st_JsonObject);
 	}
@@ -791,9 +791,9 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 		st_JsonMQProtocol["nKeepTime"] = pSt_MQProtocol->nKeepTime;
 		st_JsonMQProtocol["nPubTime"] = (Json::Value::Int64)pSt_MQProtocol->nPubTime;
 
-		XBYTE byMSGAttr = 0;
-		memcpy(&byMSGAttr, &pSt_MQProtocol->st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
-		st_JsonMQProtocol["byMSGAttr"] = byMSGAttr;
+		XSHOT nMSGAttr = 0;
+		memcpy(&nMSGAttr, &pSt_MQProtocol->st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+		st_JsonMQProtocol["nMSGAttr"] = nMSGAttr;
 		st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
 	}
 
