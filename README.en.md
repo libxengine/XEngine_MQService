@@ -32,6 +32,7 @@ this software support following features
 16. Access control(planning)
 17. binary message
 18. http interface management
+19. message attritube
 
 ## install
 
