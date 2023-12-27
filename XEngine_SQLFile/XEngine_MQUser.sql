@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : QCloud
+ Source Server         : mysql
  Source Server Type    : MySQL
- Source Server Version : 80032 (8.0.32-0ubuntu0.22.04.2)
- Source Host           : 42.194.178.57:3306
+ Source Server Version : 80035 (8.0.35-0ubuntu0.22.04.1)
+ Source Host           : 10.0.3.155:3306
  Source Schema         : XEngine_MQUser
 
  Target Server Type    : MySQL
- Target Server Version : 80032 (8.0.32-0ubuntu0.22.04.2)
+ Target Server Version : 80035 (8.0.35-0ubuntu0.22.04.1)
  File Encoding         : 65001
 
- Date: 24/04/2023 15:00:41
+ Date: 27/12/2023 14:25:53
 */
 
 SET NAMES utf8mb4;
@@ -69,7 +69,6 @@ CREATE TABLE `UserTime`  (
   `nIDMsg` bigint NOT NULL COMMENT '队列唯一ID',
   `nIDTime` bigint NOT NULL COMMENT '发布时间',
   `bActive` tinyint NULL DEFAULT NULL COMMENT '是否激活过',
-  `bBreak` tinyint NULL DEFAULT NULL COMMENT '是否跳过自身',
   `tszCreateTime` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间'
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
