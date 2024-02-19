@@ -83,6 +83,9 @@ make FLAGS=CleanAll 清理编译
 如果是升级安装,下载新版本后修改配置文件就可以直接运行了
 数据库需要打开数据库匹配字段和表是否一致
 
+## 视频教程
+你也可以观看视频教程来了解我们的代码框架情况:https://www.bilibili.com/video/BV1uH4y1a7QV
+
 #### 使用说明
 
 1.  切换到MASTER分支
