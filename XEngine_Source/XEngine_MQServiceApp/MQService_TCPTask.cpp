@@ -97,9 +97,9 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				int nRVLen = 0;
 				int nHTTPCode = 0;
 				XCHAR* ptszSDBuffer = NULL;
-				NETHELP_HTTPCLIENT st_HTTPParament;
+				XCLIENT_APIHTTP st_HTTPParament;
 
-				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
+				memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
 
 				st_HTTPParament.nTimeConnect = 2;
 
@@ -162,11 +162,11 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					int nSDLen = 0;
 					int nHTTPCode = 0;
 					XCHAR tszSDBuffer[1024];
-					NETHELP_HTTPCLIENT st_HTTPParament;
+					XCLIENT_APIHTTP st_HTTPParament;
 					XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth;
 
 					memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-					memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
+					memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
 					memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 					st_HTTPParament.nTimeConnect = 2;
@@ -203,8 +203,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassRegister) > 0)
 			{
 				int nHTTPCode = 0;
-				NETHELP_HTTPCLIENT st_HTTPParament;
-				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
+				XCLIENT_APIHTTP st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
 
 				st_HTTPParament.nTimeConnect = 2;
 
@@ -254,8 +254,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassUNReg) > 0)
 			{
 				int nHTTPCode = 0;
-				NETHELP_HTTPCLIENT st_HTTPParament;
-				memset(&st_HTTPParament, '\0', sizeof(NETHELP_HTTPCLIENT));
+				XCLIENT_APIHTTP st_HTTPParament;
+				memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
 
 				st_HTTPParament.nTimeConnect = 2;
 
