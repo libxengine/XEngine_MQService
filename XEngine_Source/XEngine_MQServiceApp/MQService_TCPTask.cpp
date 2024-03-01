@@ -192,7 +192,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
 
 				st_HTTPParament.nTimeConnect = 2;
-
 				ProtocolModule_Packet_PassUser(&st_UserInfo, tszSDBuffer, &nSDLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG);
 				APIClient_Http_Request(_X("POST"), st_ServiceCfg.st_XPass.tszPassRegister, tszSDBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
 				if (200 != nHTTPCode)
@@ -266,7 +265,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					return false;
 				}
 			}
-
 			pSt_ProtocolHdr->wReserve = 0;
 			XENGINE_DBUSERKEY st_UserKey;
 			XENGINE_DBTOPICOWNER st_DBOwner;
