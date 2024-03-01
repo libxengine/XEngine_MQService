@@ -55,10 +55,10 @@
 #pragma pack(1)
 typedef struct
 {
-	XBYTE byAttrAll : 1;                                                 //通知所有
+	XBYTE byAttrAll : 1;                                                 //通知所有,不限主题,仅在线列表有效
 	XBYTE byAttrSelf : 1;                                                //自己也能接受
 	XBYTE byAttrReply : 1;                                               //对方必须回复
-	XBYTE byAttrResver3 : 1;
+	XBYTE byAttrActive : 1;                                              //主动获取不受限制,比如超时的,不是自己发给自己的
 	XBYTE byAttrResver4 : 1;
 	XBYTE byAttrResver5 : 1;
 	XBYTE byAttrResver6 : 1;

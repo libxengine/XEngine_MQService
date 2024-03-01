@@ -330,7 +330,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				time_t nTimeStart = time(NULL);
 				time_t nTimeEnd = nTimeStart + st_MQProtocol.nKeepTime;
 				BaseLib_OperatorTimeSpan_CalForTime(nTimeStart, nTimeEnd, &st_LibTime);
-				_xstprintf(st_DBQueue.tszQueueLeftTime, _X("%04d-%02d-%02d %02d:%02d:%02d"), st_LibTime.wYear, st_LibTime.wMonth, st_LibTime.wDay, st_LibTime.wHour, st_LibTime.wMinute, st_LibTime.wSecond);
+				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueueLeftTime, NULL, true, &st_LibTime);
 			}
 			//处理序列号
 			if (st_DBQueue.nQueueSerial > 0)
@@ -494,6 +494,51 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,主题:%s,获取消息数据失败,获取指定消息序列:%lld 失败,错误:%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
 					return false;
+				}
+				//获得此消息属性
+				XENGINE_PROTOCOL_MSGATTR st_MSGAttr = {};
+				memcpy(&st_MSGAttr, &st_MessageQueue.nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+				//所属用户
+				if (_tcsxlen(st_MessageQueue.tszUserBelong) > 0)
+				{
+					if (1 != st_MSGAttr.byAttrActive)
+					{
+						pSt_ProtocolHdr->wReserve = 723;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+						XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,主题:%s,获取消息数据失败,获取指定消息序列:%lld 失败,错误:此消息不属于此用户"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
+						return false;
+					}
+				}
+				//过期任务
+				if (_tcsxlen(st_MessageQueue.tszQueueLeftTime) > 2)
+				{
+					//有过期时间,判断是否过期
+					__int64x nTimeRet = 0;
+					XCHAR tszTimeStr[MAX_PATH] = {};
+					BaseLib_OperatorTime_TimeToStr(tszTimeStr);
+					BaseLib_OperatorTimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeStr, &nTimeRet, 3);
+					//如果超时并且不允许主动获取,返回错误
+					if ((nTimeRet < 0) && (1 != st_MSGAttr.byAttrActive))
+					{
+						pSt_ProtocolHdr->wReserve = 724;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+						XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,主题:%s,获取消息数据失败,获取指定消息序列:%lld 失败,错误:消息超时"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
+						return false;
+					}
+				}
+				//定时发布任务
+				if (_tcsxlen(st_MessageQueue.tszQueuePublishTime) > 0)
+				{
+					if (1 != st_MSGAttr.byAttrActive)
+					{
+						pSt_ProtocolHdr->wReserve = 725;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+						XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,主题:%s,获取消息数据失败,获取指定消息序列:%lld 失败,错误:此为定时发布任务"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
+						return false;
+					}
 				}
 			}
 			else
