@@ -588,6 +588,15 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							continue;
 						}
 					}
+					//判断是否指定了用户
+					if (_tcsxlen(st_MessageQueue.tszUserBelong) > 0)
+					{
+						if (0 != _tcsxnicmp(st_MessageQueue.tszUserBelong, tszUserName, _tcsxlen(tszUserName)))
+						{
+							st_UserKey.nKeySerial++;
+							continue;
+						}
+					}
 					//是不是自己发布的
 					XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
 					memcpy(&st_MSGAttr, &st_MessageQueue.nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
