@@ -299,7 +299,11 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			return false;
 		}
 		memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
-		
+		//如果没有填充消息,那就使用默认
+		if (0 == _tcsxlen(st_MQProtocol.tszMQKey))
+		{
+			_tcsxcpy(st_MQProtocol.tszMQKey, st_ServiceCfg.tszTopic);
+		}
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST;
@@ -308,7 +312,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			memset(&st_DBQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 			memset(&st_DBIndex, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
-
+			
 			st_DBQueue.byMsgType = pSt_ProtocolHdr->byVersion;
 			st_DBQueue.nQueueSerial = st_MQProtocol.nSerial;
 			st_DBQueue.nMsgLen = nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ);
@@ -476,6 +480,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			memset(&st_MessageQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
 			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
+
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET;
 			if (st_MQProtocol.nSerial > 0)
 			{
