@@ -93,7 +93,12 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				//获取在线用户 http://127.0.0.1:5202/api?function=get&method=online&type=0
 				int nListCount = 0;
 				XCHAR** pptszListAddr;
-
+				if (nUrlCount < 2)
+				{
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, 400, "url parament is incorrent");
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					return false;
+				}
 				BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
 				SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, _ttxoi(tszValue));
 				ProtocolModule_Packet_OnlineList(tszPKTBuffer, &nPKTLen, &pptszListAddr, nListCount);
