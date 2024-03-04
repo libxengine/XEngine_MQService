@@ -842,7 +842,7 @@ bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int n
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE serial > %d"), lpszTableName, nSerial);
+	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE nQueueSerial > %d"), lpszTableName, nSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;

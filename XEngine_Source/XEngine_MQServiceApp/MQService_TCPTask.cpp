@@ -893,7 +893,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		{
 			int nListCount = 0;
 			XENGINE_DBUSERKEY** ppSt_UserKey;
-			DBModule_MQUser_KeyList(tszUserName, st_MQProtocol.tszMQKey, &ppSt_UserKey, &nListCount);
+			DBModule_MQUser_KeyList(tszUserName, _X(""), &ppSt_UserKey, &nListCount);
 
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUNREAD;
 			XHANDLE xhUNRead = ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, XENGINE_MQAPP_NETTYPE_TCP == nNetType ? ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN : ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON);
