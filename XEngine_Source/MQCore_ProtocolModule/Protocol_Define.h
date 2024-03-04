@@ -270,6 +270,35 @@ extern "C" bool ProtocolModule_Packet_TopicList(XCHAR* ptszMsgBuffer, int* pInt_
 *********************************************************************/
 extern "C" bool ProtocolModule_Packet_OnlineList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** ppptszListUser, int nListCount);
 /********************************************************************
+函数名称：ProtocolModule_Packet_TopicName
+函数功能：主题信息打包函数
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出打包大小
+ 参数.三：lpszTopicName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要打包的主题名
+ 参数.四：nTopicCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Packet_TopicName(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszTopicName, int nTopicCount);
+/********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
 函数功能：未读消息打包创建函数
  参数.一：pSt_ProtocolHdr

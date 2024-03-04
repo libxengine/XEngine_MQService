@@ -33,6 +33,7 @@ public:
     bool ProtocolModule_Packet_UserList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int nListCount);
     bool ProtocolModule_Packet_TopicList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** pppszTableName, int nListCount);
     bool ProtocolModule_Packet_OnlineList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** ppptszListUser, int nListCount);
+    bool ProtocolModule_Packet_TopicName(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszTopicName, int nTopicCount);
 public:
 	XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType);
 	bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, LPCXSTR lpszKeyName, int nListCount);
