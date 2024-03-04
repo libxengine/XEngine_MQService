@@ -129,35 +129,6 @@ extern "C" bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 *********************************************************************/
 extern "C" bool DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 /********************************************************************
-函数名称：DBModule_MQData_List
-函数功能：枚举指定主题序列号后的数据
- 参数.一：lpszQueueName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要处理的主题
- 参数.二：nSerial
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入主题序列号
- 参数.三：pppSt_DBMessage
-  In/Out：Out
-  类型：三级指针
-  可空：N
-  意思：输出数据队列信息
- 参数.四：pInt_ListCount
-  In/Out：Out
-  类型：整数型
-  可空：N
-  意思：输出数据队列大小
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" bool DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount);
-/********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
  参数.一：lpszName

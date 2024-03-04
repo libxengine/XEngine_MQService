@@ -298,12 +298,16 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
 			return false;
 		}
-		memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
-		//如果没有填充消息,那就使用默认
-		if (0 == _tcsxlen(st_MQProtocol.tszMQKey))
+		if (nMsgLen >= sizeof(XENGINE_PROTOCOL_XMQ))
 		{
-			_tcsxcpy(st_MQProtocol.tszMQKey, st_ServiceCfg.tszTopic);
+			memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
+			//如果没有填充消息,那就使用默认
+			if (0 == _tcsxlen(st_MQProtocol.tszMQKey))
+			{
+				_tcsxcpy(st_MQProtocol.tszMQKey, st_ServiceCfg.tszTopic);
+			}
 		}
+		
 		if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST;
