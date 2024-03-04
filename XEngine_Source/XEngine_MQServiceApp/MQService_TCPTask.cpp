@@ -901,22 +901,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			for (int i = 0; i < nListCount; i++)
 			{
 				int nDBCount = 0;
-				XENGINE_DBUSERKEY st_UserKey;
-				XENGINE_DBMESSAGEQUEUE** ppSt_DBMessage;
-
-				memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
-
-				DBModule_MQData_List(ppSt_UserKey[i]->tszKeyName, ppSt_UserKey[i]->nKeySerial, &ppSt_DBMessage, &nDBCount);
-				if (nDBCount > 0)
-				{
-					//更新用户KEY
-					st_UserKey.nKeySerial = ppSt_UserKey[i]->nKeySerial + nDBCount;
-					_tcsxcpy(st_UserKey.tszUserName, tszUserName);
-					_tcsxcpy(st_UserKey.tszKeyName, ppSt_UserKey[i]->tszKeyName);
-					DBModule_MQUser_KeyUPDate(&st_UserKey);
-					ProtocolModule_Packet_UNReadInsert(xhUNRead, &ppSt_DBMessage, nDBCount, tszUserName);
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBMessage, nDBCount);
-				}
+				DBModule_MQData_GetLeftCount(ppSt_UserKey[i]->tszKeyName, ppSt_UserKey[i]->nKeySerial, &nDBCount);
+				ProtocolModule_Packet_UNReadInsert(xhUNRead, ppSt_UserKey[i]->tszKeyName, nDBCount);
 			}
 			ProtocolModule_Packet_UNReadDelete(xhUNRead, tszSDBuffer, &nSDLen);
 			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserKey, nListCount);

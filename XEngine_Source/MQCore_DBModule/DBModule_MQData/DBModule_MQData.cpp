@@ -801,3 +801,66 @@ bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* p
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return true;
 }
+/********************************************************************
+函数名称：DBModule_MQData_GetLeftCount
+函数功能：获取剩余个数
+ 参数.一：lpszTableName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入表名称
+ 参数.二：nSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入开始的序列号
+参数.三：pInt_Count
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+{
+	DBModule_IsErrorOccur = false;
+
+	if (NULL == pInt_Count)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return false;
+	}
+	//查询
+	XNETHANDLE xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	XCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE serial > %d"), lpszTableName, nSerial);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return false;
+	}
+	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+	if (NULL != pptszResult[0])
+	{
+		*pInt_Count = _ttxoi(pptszResult[0]);
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return true;
+}

@@ -28,6 +28,7 @@ public:
 	bool DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName);
 	bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDstTable);
 	bool DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_ListCount);
+	bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count);
 private:
 	XNETHANDLE xhDBSQL;
 };

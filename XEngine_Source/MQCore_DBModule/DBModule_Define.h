@@ -252,6 +252,30 @@ extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDs
 备注：
 *********************************************************************/
 extern "C" bool DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_ListCount);
+/********************************************************************
+函数名称：DBModule_MQData_GetLeftCount
+函数功能：获取剩余个数
+ 参数.一：lpszTableName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入表名称
+ 参数.二：nSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入开始的序列号
+参数.三：pInt_Count
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/

@@ -75,6 +75,10 @@ extern "C" bool DBModule_MQData_ShowTable(XCHAR * **pppszTableName, int* pInt_Li
 {
 	return m_DBData.DBModule_MQData_ShowTable(pppszTableName, pInt_ListCount);
 }
+extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+{
+	return m_DBData.DBModule_MQData_GetLeftCount(lpszTableName, nSerial, pInt_Count);
+}
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
