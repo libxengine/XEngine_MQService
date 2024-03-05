@@ -51,10 +51,6 @@ extern "C" bool DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Modify(pSt_DBInfo);
 }
-extern "C" bool DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int* pInt_ListCount)
-{
-	return m_DBData.DBModule_MQData_List(lpszQueueName, nSerial, pppSt_DBMessage, pInt_ListCount);
-}
 extern "C" bool DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x * pInt_DBCount, XENGINE_DBMESSAGEQUEUE * pSt_DBStart, XENGINE_DBMESSAGEQUEUE * pSt_DBEnd)
 {
 	return m_DBData.DBModule_MQData_GetSerial(lpszName, pInt_DBCount, pSt_DBStart, pSt_DBEnd);
@@ -74,6 +70,10 @@ extern "C" bool DBModule_MQData_ModifyTable(LPCXSTR lpszSrcTable, LPCXSTR lpszDs
 extern "C" bool DBModule_MQData_ShowTable(XCHAR * **pppszTableName, int* pInt_ListCount)
 {
 	return m_DBData.DBModule_MQData_ShowTable(pppszTableName, pInt_ListCount);
+}
+extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+{
+	return m_DBData.DBModule_MQData_GetLeftCount(lpszTableName, nSerial, pInt_Count);
 }
 /*************************************************************************
 						消息用户导出函数

@@ -480,6 +480,50 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_OnlineList(XCHAR* ptszMsgBuff
 	return true;
 }
 /********************************************************************
+函数名称：ProtocolModule_Packet_TopicName
+函数功能：主题信息打包函数
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出打包大小
+ 参数.三：lpszTopicName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要打包的主题名
+ 参数.四：nTopicCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_TopicName(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszTopicName, int nTopicCount)
+{
+	Protocol_IsErrorOccur = false;
+	
+	Json::Value st_JsonRoot;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonRoot["code"] = 0;
+	st_JsonRoot["lpszTopicName"] = lpszTopicName;
+	st_JsonRoot["Count"] = nTopicCount;
+
+	st_JsonBuilder["emitUTF8"] = true;
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return true;
+}
+/********************************************************************
 函数名称：ProtocolModule_Packet_UNReadCreate
 函数功能：未读消息打包创建函数
  参数.一：pSt_ProtocolHdr
@@ -532,33 +576,28 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
 }
 /********************************************************************
 函数名称：ProtocolModule_Packet_UNReadInsert
-函数功能：维度消息打包数据插入
+函数功能：消息打包数据插入
  参数.一：xhToken
   In/Out：In
   类型：句柄
   可空：N
   意思：输入要操作的句柄
- 参数.二：pppSt_DBMessage
+ 参数.二：lpszKeyName
   In/Out：In
   类型：三级指针
   可空：N
-  意思：输入要打包的数据
+  意思：输入队列名称
  参数.三：nListCount
   In/Out：In
   类型：整数型
   可空：N
-  意思：输入要打包的数据个数
- 参数.四：lpszUserName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要过滤的用户
+  意思：输入队列个数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, LPCXSTR lpszKeyName, int nListCount)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -569,35 +608,10 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken,
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
 		return false;
 	}
-	Json::Value st_JsonSub;
 	Json::Value st_JsonSubArray;
-	for (int i = 0; i < nListCount; i++)
-	{
-		XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
-		memcpy(&st_MSGAttr, &(*pppSt_DBMessage)[i]->nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
 
-		if ((0 == st_MSGAttr.byAttrSelf) && (0 == _tcsxnicmp(lpszUserName, (*pppSt_DBMessage)[i]->tszUserName, _tcsxlen((*pppSt_DBMessage)[i]->tszUserName))))
-		{
-			continue;
-		}
-		Json::Value st_JsonObject;
-		st_JsonObject["tszQueueName"] = (*pppSt_DBMessage)[i]->tszQueueName;
-		st_JsonObject["tszUserBelong"] = (*pppSt_DBMessage)[i]->tszUserBelong;
-		st_JsonObject["tszUserName"] = (*pppSt_DBMessage)[i]->tszUserName;
-		st_JsonObject["tszQueueLeftTime"] = (*pppSt_DBMessage)[i]->tszQueueLeftTime;
-		st_JsonObject["tszQueuePublishTime"] = (*pppSt_DBMessage)[i]->tszQueuePublishTime;
-		st_JsonObject["tszQueueCreateTime"] = (*pppSt_DBMessage)[i]->tszQueueCreateTime;
-		st_JsonObject["nQueueSerial"] = (Json::Value::Int64)(*pppSt_DBMessage)[i]->nQueueSerial;
-		st_JsonObject["nMsgLen"] = (*pppSt_DBMessage)[i]->nMsgLen;
-		st_JsonObject["nMsgAttr"] = (*pppSt_DBMessage)[i]->nMsgAttr;
-		st_JsonObject["byMsgType"] = (*pppSt_DBMessage)[i]->byMsgType;
-		st_JsonObject["tszMsgBuffer"] = (*pppSt_DBMessage)[i]->tszMsgBuffer;
-		st_JsonSub.append(st_JsonObject);
-	}
-
-	st_JsonSubArray["Array"] = st_JsonSub;
-	st_JsonSubArray["Name"] = (*pppSt_DBMessage)[0]->tszQueueName;
-	st_JsonSubArray["Count"] = st_JsonSub.size();
+	st_JsonSubArray["Name"] = lpszKeyName;
+	st_JsonSubArray["Count"] = nListCount;
 	pSt_UNRead->st_JsonArray.append(st_JsonSubArray);
 	return true;
 }

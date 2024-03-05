@@ -273,122 +273,6 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	return true;
 }
 /********************************************************************
-函数名称：DBModule_MQData_List
-函数功能：枚举指定主题序列号后的数据
- 参数.一：lpszQueueName
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入要处理的主题
- 参数.二：nSerial
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入主题序列号
- 参数.三：pppSt_DBMessage
-  In/Out：Out
-  类型：三级指针
-  可空：N
-  意思：输出数据队列信息
- 参数.四：pInt_ListCount
-  In/Out：Out
-  类型：整数型
-  可空：N
-  意思：输出数据队列大小
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-bool CDBModule_MQData::DBModule_MQData_List(LPCXSTR lpszQueueName, __int64x nSerial, XENGINE_DBMESSAGEQUEUE*** pppSt_DBMessage, int* pInt_ListCount)
-{
-	DBModule_IsErrorOccur = false;
-
-	if (NULL == lpszQueueName)
-	{
-		DBModule_IsErrorOccur = true;
-		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
-		return false;
-	}
-	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-
-	XCHAR tszSQLStatement[1024];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
-	//名称为,消息名为必填
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `%s` WHERE nQueueSerial >= %lld"), lpszQueueName, nSerial);
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
-	{
-		DBModule_IsErrorOccur = true;
-		DBModule_dwErrorCode = DataBase_GetLastError();
-		return false;
-	}
-	if (nllLine <= 0)
-	{
-		DBModule_IsErrorOccur = true;
-		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
-		return false;
-	}
-	*pInt_ListCount = (int)nllLine;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBMessage, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
-	for (__int64u i = 0; i < nllLine; i++)
-	{
-		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
-		XLONG* pInt_Length = DataBase_MySQL_GetLength(xhDBSQL, xhTable);
-
-		int nPos = 1;
-		if (NULL != pptszResult[nPos])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszUserName, pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueName, pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			(*pppSt_DBMessage)[i]->nQueueSerial = _ttxoll(pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueLeftTime, pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueuePublishTime, pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			(*pppSt_DBMessage)[i]->nMsgLen = pInt_Length[nPos];
-			memcpy((*pppSt_DBMessage)[i]->tszMsgBuffer, pptszResult[nPos], (*pppSt_DBMessage)[i]->nMsgLen);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			(*pppSt_DBMessage)[i]->byMsgType = _ttxoi(pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			(*pppSt_DBMessage)[i]->nMsgAttr = _ttxoi(pptszResult[nPos]);
-		}
-		nPos++;
-		if (NULL != pptszResult[nPos])
-		{
-			_tcsxcpy((*pppSt_DBMessage)[i]->tszQueueCreateTime, pptszResult[nPos]);
-		}
-	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
-	return true;
-}
-/********************************************************************
 函数名称：DBModule_MQData_GetSerial
 函数功能：获取序列号
  参数.一：lpszName
@@ -797,6 +681,69 @@ bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* p
 		{
 			_tcsxcpy((*pppszTableName)[i], pptszResult[0]);
 		}
+	}
+	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	return true;
+}
+/********************************************************************
+函数名称：DBModule_MQData_GetLeftCount
+函数功能：获取剩余个数
+ 参数.一：lpszTableName
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入表名称
+ 参数.二：nSerial
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入开始的序列号
+参数.三：pInt_Count
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出统计信息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+{
+	DBModule_IsErrorOccur = false;
+
+	if (NULL == pInt_Count)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return false;
+	}
+	//查询
+	XNETHANDLE xhTable = 0;
+	__int64u nllLine = 0;
+	__int64u nllRow = 0;
+
+	XCHAR tszSQLStatement[1024];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE nQueueSerial > %d"), lpszTableName, nSerial);
+	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	if (nllLine <= 0)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
+		return false;
+	}
+	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+
+	if (NULL != pptszResult[0])
+	{
+		*pInt_Count = _ttxoi(pptszResult[0]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 	return true;

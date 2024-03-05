@@ -63,13 +63,17 @@ extern "C" bool ProtocolModule_Packet_OnlineList(XCHAR * ptszMsgBuffer, int* pIn
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_OnlineList(ptszMsgBuffer, pInt_MsgLen, ppptszListUser, nListCount);
 }
+extern "C" bool ProtocolModule_Packet_TopicName(XCHAR * ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszTopicName, int nTopicCount)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_TopicName(ptszMsgBuffer, pInt_MsgLen, lpszTopicName, nTopicCount);
+}
 extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);
 }
-extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, XENGINE_DBMESSAGEQUEUE * **pppSt_DBMessage, int nListCount, LPCXSTR lpszUserName)
+extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, LPCXSTR lpszKeyName, int nListCount)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, pppSt_DBMessage, nListCount, lpszUserName);
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, lpszKeyName, nListCount);
 }
 extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR * ptszMsgBuffer, int* pInt_MsgLen)
 {
