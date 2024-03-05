@@ -91,9 +91,15 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 			else if (0 == _tcsxnicmp(lpszAPIOnline, tszValue, _tcsxlen(lpszAPIOnline)))
 			{
 				//获取在线用户 http://127.0.0.1:5202/api?function=get&method=online&type=0
+				if (3 != nUrlCount)
+				{
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, 400, "url parament is incorrent");
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					return false;
+				}
 				int nListCount = 0;
 				XCHAR** pptszListAddr;
-
+				
 				BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
 				SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, _ttxoi(tszValue));
 				ProtocolModule_Packet_OnlineList(tszPKTBuffer, &nPKTLen, &pptszListAddr, nListCount);
@@ -103,15 +109,26 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 			}
 			else if (0 == _tcsxnicmp(lpszAPITopic, tszValue, _tcsxlen(lpszAPITopic)))
 			{
-				//主题 http://127.0.0.1:5202/api?function=get&method=topic
-				int nListCount = 0;
-				XCHAR** ppszTableName;
-				DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
-				ProtocolModule_Packet_TopicList(tszPKTBuffer, &nPKTLen, &ppszTableName, nListCount);
-				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszTableName, nListCount);
-
-				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
+				//主题 http://127.0.0.1:5202/api?function=get&method=topic&name=comm
+				if (2 == nUrlCount)
+				{
+					int nListCount = 0;
+					XCHAR** ppszTableName;
+					DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+					ProtocolModule_Packet_TopicList(tszPKTBuffer, &nPKTLen, &ppszTableName, nListCount);
+					BaseLib_OperatorMemory_Free((XPPPMEM)&ppszTableName, nListCount);
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
+				}
+				else
+				{
+					int nDBCount = 0;
+					BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
+					DBModule_MQData_GetLeftCount(tszValue, 0, &nDBCount);
+					ProtocolModule_Packet_TopicName(tszPKTBuffer, &nPKTLen, tszValue, nDBCount);
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题消息个数:%d"), lpszClientAddr, nDBCount);
+				}
 			}
 		}
 	}

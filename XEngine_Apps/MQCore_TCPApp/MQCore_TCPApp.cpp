@@ -18,7 +18,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
-//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXClient_Socket
+
+//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXClient_Socket
 
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;

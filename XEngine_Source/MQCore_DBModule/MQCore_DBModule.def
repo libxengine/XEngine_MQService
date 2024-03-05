@@ -8,12 +8,12 @@ EXPORTS
 	DBModule_MQData_Insert
 	DBModule_MQData_Query
 	DBModule_MQData_Modify
-	DBModule_MQData_List
 	DBModule_MQData_GetSerial
 	DBModule_MQData_CreateTable
 	DBModule_MQData_DeleteTable
 	DBModule_MQData_ModifyTable
 	DBModule_MQData_ShowTable
+	DBModule_MQData_GetLeftCount
 
 	DBModule_MQUser_Init
 	DBModule_MQUser_Destory
