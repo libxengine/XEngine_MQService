@@ -298,7 +298,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
 			return false;
 		}
-		if (nMsgLen >= sizeof(XENGINE_PROTOCOL_XMQ))
+		if (nMsgLen >= (int)sizeof(XENGINE_PROTOCOL_XMQ))
 		{
 			memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 			//如果没有填充消息,那就使用默认

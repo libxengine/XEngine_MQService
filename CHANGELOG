@@ -1,3 +1,31 @@
+XEngine_MQService V3.10.0.1001
+
+增加:消息属性增加无限制消息获取
+增加:http的获取主题消息支持队列统计了
+更新:匹配XEngine V8.25版本API
+修改:退出协议不在需要验证用户和密码,因为只对自己做登出
+修改:用户删除需要身份ID了
+修改:消息队列支持默认主题名设置了
+修改:获取指定消息时会处理消息识别的一些问题
+修改:未读消息协议修改为统计剩余消息了
+修改:获取在线列表会验证url参数了
+修正:用户登出的http hook没有用户信息的问题
+修正:获取消息对于指定消息没有正确处理的问题
+删除:数据库模块的DBModule_MQData_List函数
+
+added:message attr add proactive message get.
+added:get topic of http restful support get message count
+update:match xengine v8.25
+modify:does not ver user pass and user name when user logout.just ver self
+modify:delete user need id number
+modify:support default topic name set for mq protocol
+modify:some issues with message identification will be handled when obtaining the specified message
+modify:unread message protocol is modify to left count
+modify:get online user list ver url parament now
+fixed:user logout httppass is not user info
+fixed:getting messages will process messages that are not sent to self
+delete:DBModule_MQData_List function for dbmoudle
+======================================================================================
 XEngine_MQService V3.9.0.1001
 
 增加:消息属性的通知所有和通知自身的支持
