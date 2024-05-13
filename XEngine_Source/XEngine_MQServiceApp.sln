@@ -4,10 +4,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_MQServiceApp", "XEngine_MQServiceApp\XEngine_MQServiceApp.vcxproj", "{34C9695F-7097-412F-ACC2-A3979A91D776}"
+	ProjectSection(ProjectDependencies) = postProject
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11} = {32D3FC68-6252-4D20-BB07-6C98BD753D11}
+		{5475F316-F9E9-4FF5-95ED-F7C9474709A3} = {5475F316-F9E9-4FF5-95ED-F7C9474709A3}
+		{77321E0D-15DB-4C6E-8872-115CBBE41F27} = {77321E0D-15DB-4C6E-8872-115CBBE41F27}
+		{B0EB2A7A-53C1-4E9F-A851-19539099671C} = {B0EB2A7A-53C1-4E9F-A851-19539099671C}
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89} = {F6520D2C-BB8E-45BB-964B-F5D6A4318A89}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ConfigModule", "MQCore_ConfigModule\MQCore_ConfigModule.vcxproj", "{32D3FC68-6252-4D20-BB07-6C98BD753D11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ProtocolModule", "MQCore_ProtocolModule\MQCore_ProtocolModule.vcxproj", "{B0EB2A7A-53C1-4E9F-A851-19539099671C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_SessionModule", "MQCore_SessionModule\MQCore_SessionModule.vcxproj", "{77321E0D-15DB-4C6E-8872-115CBBE41F27}"
 EndProject
@@ -23,6 +37,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "XEngine_Depend\XEngine_Module\jsoncpp\jsoncpp.vcxproj", "{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_InfoReport", "XEngine_Depend\XEngine_Module\XEngine_InfoReport\XEngine_InfoReport.vcxproj", "{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
