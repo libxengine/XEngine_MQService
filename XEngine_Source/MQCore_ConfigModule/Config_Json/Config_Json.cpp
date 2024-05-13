@@ -139,6 +139,49 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XReport.bEnable = st_JsonXReport["bEnable"].asBool();
 	_tcsxcpy(pSt_ServerConfig->st_XReport.tszAPIUrl, st_JsonXReport["tszAPIUrl"].asCString());
 	_tcsxcpy(pSt_ServerConfig->st_XReport.tszServiceName, st_JsonXReport["tszServiceName"].asCString());
+    return true;
+}
+bool CConfig_Json::Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG* pSt_ServerConfig)
+{
+	Config_IsErrorOccur = false;
+
+	if ((NULL == lpszConfigFile) || (NULL == pSt_ServerConfig))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	JSONCPP_STRING st_JsonError;
+	Json::Value st_JsonRoot;
+	Json::CharReaderBuilder st_JsonBuilder;
+
+	FILE* pSt_File = _xtfopen(lpszConfigFile, _X("rb"));
+	if (NULL == pSt_File)
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	int nCount = 0;
+	XCHAR tszMsgBuffer[4096];
+	while (1)
+	{
+		int nRet = fread(tszMsgBuffer + nCount, 1, 2048, pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		nCount += nRet;
+	}
+	fclose(pSt_File);
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_JsonBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nCount, &st_JsonRoot, &st_JsonError))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
+		return false;
+	}
 
 	if (st_JsonRoot["XVer"].empty())
 	{
@@ -147,13 +190,13 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 		return false;
 	}
 	Json::Value st_JsonXVer = st_JsonRoot["XVer"];
-    pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
+	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
 
-    for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
-    {
-        pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer[i].asCString());
-    }
-    return true;
+	for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
+	{
+		pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer[i].asCString());
+	}
+	return true;
 }
 bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig)
 {

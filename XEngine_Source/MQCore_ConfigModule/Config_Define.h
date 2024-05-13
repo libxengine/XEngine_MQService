@@ -85,4 +85,5 @@ extern "C" XLONG Config_GetLastError(int *pInt_ErrorCode = NULL);
 /*                        文件配置读取                                  */
 /************************************************************************/
 extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig);
+extern "C" bool Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG* pSt_ServerConfig);
 extern "C" bool Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig);
