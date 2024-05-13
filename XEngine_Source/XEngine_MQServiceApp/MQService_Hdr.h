@@ -39,7 +39,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/HttpProtocol_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
-
+#include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Define.h"
+#include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Error.h"
 
 #ifdef _UNICODE
 typedef std::wstring tstring;
@@ -96,11 +97,13 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_DBModule.lib")
+#pragma comment(lib,"../x64/Debug/XEngine_InfoReport.lib")
 #else
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DBModule.lib")
+#pragma comment(lib,"../Debug/XEngine_InfoReport.lib")
 #endif
 #else
 #ifdef _WIN64
@@ -108,11 +111,13 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DBModule.lib")
+#pragma comment(lib,"../x64/Release/XEngine_InfoReport.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Release/MQCore_DBModule.lib")
+#pragma comment(lib,"../Release/XEngine_InfoReport.lib")
 #endif
 #endif
 #endif

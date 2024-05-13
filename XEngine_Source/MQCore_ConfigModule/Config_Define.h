@@ -56,6 +56,12 @@ typedef struct
         XCHAR tszPassLogout[MAX_PATH];
         int nTimeout;
     }st_XPass;
+	struct
+	{
+		bool bEnable;
+		XCHAR tszAPIUrl[MAX_PATH];
+		XCHAR tszServiceName[128];
+	}st_XReport;
     struct
     {
         list<tstring> *pStl_ListStorage;
