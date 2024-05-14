@@ -21,6 +21,7 @@ typedef struct
     int nTCPPort;
     int nHttpPort;
     int nWSPort;
+    int nMQTTPort;
     struct
     {
         int nMaxClient;
@@ -29,6 +30,7 @@ typedef struct
         int nTCPThread;
         int nHttpThread;
         int nWSThread;
+        int nMQTTThread;
     }st_XMax;
     struct
     {

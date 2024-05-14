@@ -69,8 +69,9 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
     pSt_ServerConfig->nWSPort = st_JsonRoot["nWSPort"].asInt();
+	pSt_ServerConfig->nMQTTPort = st_JsonRoot["nMQTTPort"].asInt();
 
-    if (st_JsonRoot["XMax"].empty() || (6 != st_JsonRoot["XMax"].size()))
+    if (st_JsonRoot["XMax"].empty() || (7 != st_JsonRoot["XMax"].size()))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMAX;
@@ -83,6 +84,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nTCPThread = st_JsonXMax["nTCPThread"].asInt();
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
+	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
 
     if (st_JsonRoot["XTime"].empty() || (1 != st_JsonRoot["XTime"].size()))
     {

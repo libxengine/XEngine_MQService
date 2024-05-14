@@ -4,6 +4,10 @@ bool CALLBACK MessageQueue_Callback_TCPLogin(LPCXSTR lpszClientAddr, XSOCKET hSo
 void CALLBACK MessageQueue_Callback_TCPRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg,int nMsgLen,XPVOID lParam); //接受到数据
 void CALLBACK MessageQueue_Callback_TCPLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);          //用户离开
 
+bool CALLBACK MessageQueue_Callback_MQTTLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);   
+void CALLBACK MessageQueue_Callback_MQTTRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam);
+void CALLBACK MessageQueue_Callback_MQTTLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);
+
 bool CALLBACK MessageQueue_Callback_HttpLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);  
 void CALLBACK MessageQueue_Callback_HttpRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam); 
 void CALLBACK MessageQueue_Callback_HttpLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam);     

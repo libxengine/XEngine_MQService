@@ -11,7 +11,7 @@ LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool 
       -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_DBModule \
 	  -ljsoncpp -lXEngine_InfoReport
 LIBEX = 
-OBJECTS = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_Task.o XEngine_MQServiceApp.o
+OBJECTS = MQService_Net.o MQService_Config.o MQService_TCPTask.o MQService_HttpTask.o MQService_WSTask.o MQService_Task.o MQService_MQTTTask.o XEngine_MQServiceApp.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c 
@@ -60,6 +60,8 @@ MQService_WSTask.o:./MQService_WSTask.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_WSTask.cpp
 MQService_Task.o:./MQService_Task.cpp
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Task.cpp
+MQService_MQTTTask.o:./MQService_MQTTTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_MQTTTask.cpp
 
 XEngine_MQServiceApp.o:./XEngine_MQServiceApp.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./XEngine_MQServiceApp.cpp   

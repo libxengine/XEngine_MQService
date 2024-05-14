@@ -39,6 +39,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/HttpProtocol_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
+#include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Define.h>
+#include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Error.h>
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Define.h"
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Error.h"
 
@@ -62,6 +64,7 @@ extern XHANDLE xhLog;
 extern XHANDLE xhTCPSocket;
 extern XHANDLE xhHTTPSocket;
 extern XHANDLE xhWSSocket;
+extern XHANDLE xhMQTTSocket;
 
 extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
@@ -70,6 +73,7 @@ extern XHANDLE xhWSPacket;
 extern XHANDLE xhTCPPool;
 extern XHANDLE xhHttpPool;
 extern XHANDLE xhWSPool;
+extern XHANDLE xhMQTTPool;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
@@ -80,6 +84,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #include "MQService_HttpTask.h"
 #include "MQService_WSTask.h"
 #include "MQService_Task.h"
+#include "MQService_MQTTTask.h"
 
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
@@ -90,6 +95,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_Packets.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpProtocol.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_MQTTProtocol.lib")
 #pragma comment(lib,"Ws2_32.lib")
 #ifdef _DEBUG
 #ifdef _WIN64
