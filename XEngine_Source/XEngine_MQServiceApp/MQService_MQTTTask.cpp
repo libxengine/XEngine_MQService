@@ -79,7 +79,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_INFORMATION* pSt
 		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 		nSDLen += nRVLen;
 
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == pSt_MQTTProtcol->st_FixedHdr.byMsgType)
 	{
@@ -88,7 +88,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_INFORMATION* pSt
 		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 		nSDLen += nRVLen;
 
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE == pSt_MQTTProtcol->st_FixedHdr.byMsgType)
 	{
@@ -97,7 +97,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_INFORMATION* pSt
 		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 		nSDLen += nRVLen;
 
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH == pSt_MQTTProtcol->st_FixedHdr.byMsgType)
 	{
@@ -109,13 +109,13 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_INFORMATION* pSt
 			memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 			nSDLen += nRVLen;
 
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
 		}
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ == pSt_MQTTProtcol->st_FixedHdr.byMsgType)
 	{
 		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREP, 0);
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_TCP);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
 	}
 	return true;
 }
