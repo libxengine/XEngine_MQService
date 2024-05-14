@@ -93,7 +93,6 @@ int main(int argc, char** argv)
 	bIsRun = true;
 	LPCXSTR lpszHTTPMime = _X("./XEngine_Config/HttpMime.types");
 	LPCXSTR lpszHTTPCode = _X("./XEngine_Config/HttpCode.types");
-	LPCXSTR lpszLogFile = _X("./XEngine_Log/XEngine_MQServiceApp.Log");
 	LPCXSTR lpszDBConfig = _X("./XEngine_Config/XEngine_DBConfig.json");
 
 	XCHAR tszStringMsg[2048];
@@ -106,10 +105,6 @@ int main(int argc, char** argv)
 	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
 	memset(&st_ServiceCfg, '\0', sizeof(XENGINE_SERVERCONFIG));
-
-	signal(SIGINT, ServiceApp_Stop);
-	signal(SIGTERM, ServiceApp_Stop);
-	signal(SIGABRT, ServiceApp_Stop);
 
 	if (!MQ_Service_Parament(argc, argv, &st_ServiceCfg))
 	{
@@ -140,6 +135,11 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("初始化守护进程..."));
 		ServiceApp_Deamon(1);
 	}
+
+	signal(SIGINT, ServiceApp_Stop);
+	signal(SIGTERM, ServiceApp_Stop);
+	signal(SIGABRT, ServiceApp_Stop);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化服务器信号管理成功"));
 
 	if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql))
 	{
