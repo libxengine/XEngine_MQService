@@ -38,6 +38,7 @@ typedef struct
     }st_XTime;
     struct
     {
+        XCHAR tszLOGFile[MAX_PATH];
         int nMaxSize;
         int nMaxCount;
         int nLogLeave;

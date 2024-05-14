@@ -107,10 +107,6 @@ int main(int argc, char** argv)
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
 	memset(&st_ServiceCfg, '\0', sizeof(XENGINE_SERVERCONFIG));
 
-	st_XLogConfig.XLog_MaxBackupFile = 10;
-	st_XLogConfig.XLog_MaxSize = 1024000;
-	_tcsxcpy(st_XLogConfig.tszFileName, lpszLogFile);
-
 	signal(SIGINT, ServiceApp_Stop);
 	signal(SIGTERM, ServiceApp_Stop);
 	signal(SIGABRT, ServiceApp_Stop);
@@ -119,6 +115,10 @@ int main(int argc, char** argv)
 	{
 		return -1;
 	}
+	st_XLogConfig.XLog_MaxBackupFile = st_ServiceCfg.st_XLog.nMaxCount;
+	st_XLogConfig.XLog_MaxSize = st_ServiceCfg.st_XLog.nMaxSize;
+	_tcsxcpy(st_XLogConfig.tszFileName, st_ServiceCfg.st_XLog.tszLOGFile);
+
 	xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_STD | HELPCOMPONENTS_XLOG_OUTTYPE_FILE, &st_XLogConfig);
 	if (NULL == xhLog)
 	{
