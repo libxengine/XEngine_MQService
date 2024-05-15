@@ -77,7 +77,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 		MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 		MQTTPROTOCOL_HDRCONNNECT st_HDRConnect = {};
 		MQTTPROTOCOL_USERINFO st_USerInfo = {};
-		
+
 		if (!MQTTProtocol_Parse_Connect(lpszMSGBuffer, nMSGLen, &st_HDRConnect, &st_USerInfo, &ppSt_HDRProperty, &nListCount))
 		{
 			//错误断开连接
@@ -89,14 +89,21 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
 
-		nListCount = 6;
-		Packet_Property(&ppSt_HDRProperty, nListCount);
-		MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS, &ppSt_HDRProperty, nListCount);
-		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
+		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
+		XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth = {};
+		st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+		st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
+		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERLOG;
+		st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERAUTH);
+		st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求链接成功,客户端ID:%s,用户名:%s"), lpszClientAddr, st_USerInfo.tszClientID, st_USerInfo.tszClientUser);
+		st_ProtocolAuth.enClientType = ENUM_PROTOCOL_FOR_SERVICE_TYPE_USER;
+		st_ProtocolAuth.enDeviceType = ENUM_PROTOCOL_FOR_DEVICE_TYPE_MOBILE_EMBEDDED;
+		_tcsxcpy(st_ProtocolAuth.tszUserName, st_USerInfo.tszClientUser);
+		_tcsxcpy(st_ProtocolAuth.tszUserPass, st_USerInfo.tszClientPass);
+
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH), XENGINE_MQAPP_NETTYPE_MQTT);
+		//XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求链接成功,客户端ID:%s,用户名:%s"), lpszClientAddr, st_USerInfo.tszClientID, st_USerInfo.tszClientUser);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == pSt_MQTTHdr->byMsgType)
 	{

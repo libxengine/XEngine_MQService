@@ -97,26 +97,38 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 {
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
     {
-        HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
+		HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
+        if (bHeart)
+        {
+			NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
+		}
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
         RfcComponents_WSPacket_DeleteEx(xhWSPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
 	{
 		HttpProtocol_Server_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
 	else
 	{
 		MQTTProtocol_Parse_Delete(lpszClientAddr);
-		NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhMQTTSocket, lpszClientAddr);
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端离开，MQTT客户端地址：%s"), lpszClientAddr);
 	}
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;

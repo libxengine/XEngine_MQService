@@ -45,9 +45,13 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	{
 		lpszClientType = _X("TCP");
 	}
-	else
+	else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nNetType)
 	{
 		lpszClientType = _X("WEBSOCKET");
+	}
+	else
+	{
+		lpszClientType = _X("MQTT");
 	}
 
 	if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_HEARTBEAT == pSt_ProtocolHdr->unOperatorType)

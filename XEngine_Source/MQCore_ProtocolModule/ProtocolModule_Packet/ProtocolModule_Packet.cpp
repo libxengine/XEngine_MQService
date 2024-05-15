@@ -71,9 +71,13 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
 	{
 		ProtocolModule_Packet_TCPCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 	}
-	else
+	else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nNetType)
 	{
 		ProtocolModule_Packet_WSCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
+	}
+	else
+	{
+		ProtocolModule_Packet_MQTTCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 	}
 	return true;
 }
@@ -840,6 +844,60 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 
 	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
 	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+
+	return true;
+}
+bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
+{
+	int nRVLen = 0;
+	int nListCount = 6;
+	XCHAR tszRVBuffer[1024];
+
+	if (pSt_ProtocolHdr->unOperatorCode)
+	{
+		if (0 == pSt_ProtocolHdr->wReserve)
+		{
+			int nRVLen = 0;
+			int nListCount = 6;
+			XCHAR tszRVBuffer[1024];
+			MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
+
+			BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
+
+			ppSt_HDRProperty[0]->nProLen = 4;
+			ppSt_HDRProperty[0]->st_unValue.nValue = 1024000;
+			ppSt_HDRProperty[0]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_PACKMAX;
+
+			ppSt_HDRProperty[1]->nProLen = 1;
+			ppSt_HDRProperty[1]->st_unValue.byValue = 1;
+			ppSt_HDRProperty[1]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_REVERAVAI;
+
+			ppSt_HDRProperty[2]->nProLen = 1;
+			ppSt_HDRProperty[2]->st_unValue.byValue = 1;
+			ppSt_HDRProperty[2]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_SHAREDSUBAVAI;
+
+			ppSt_HDRProperty[3]->nProLen = 1;
+			ppSt_HDRProperty[3]->st_unValue.byValue = 1;
+			ppSt_HDRProperty[3]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_SUBIDAVAI;
+
+			ppSt_HDRProperty[4]->nProLen = 2;
+			ppSt_HDRProperty[4]->st_unValue.wValue = 65535;
+			ppSt_HDRProperty[4]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_ALIASMAX;
+
+			ppSt_HDRProperty[5]->nProLen = 1;
+			ppSt_HDRProperty[5]->st_unValue.byValue = 1;
+			ppSt_HDRProperty[5]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_WILDCARDSUBAVAI;
+
+			MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS, &ppSt_HDRProperty, nListCount);
+			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
+			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
+		}
+		else
+		{
+			MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_USERPASS);
+			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
+		}
+	}
 
 	return true;
 }
