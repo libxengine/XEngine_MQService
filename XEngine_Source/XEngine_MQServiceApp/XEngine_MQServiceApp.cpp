@@ -296,14 +296,14 @@ int main(int argc, char** argv)
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化MQTT组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nMQTTThread);
 
-		xhWSSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nMQTTThread);
-		if (NULL == xhWSSocket)
+		xhMQTTSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nMQTTThread);
+		if (NULL == xhMQTTSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动MQTT网络服务器失败，错误：%lX"), NetCore_GetLastError());
 			goto NETSERVICEEXIT;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT网络服务器成功,MQTT端口:%d,IO:%d"), st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMQTTThread);
-		NetCore_TCPXCore_RegisterCallBackEx(xhWSSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
+		NetCore_TCPXCore_RegisterCallBackEx(xhMQTTSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册MQTT网络事件成功"));
 
 		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread, sizeof(THREADPOOL_PARAMENT));
@@ -313,7 +313,7 @@ int main(int argc, char** argv)
 
 			*pInt_Pos = i;
 			ppSt_ListMQTTParam[i]->lParam = pInt_Pos;
-			ppSt_ListMQTTParam[i]->fpCall_ThreadsTask = MessageQueue_WebsocketThread;
+			ppSt_ListMQTTParam[i]->fpCall_ThreadsTask = MessageQueue_MQTTThread;
 		}
 		xhWSPool = ManagePool_Thread_NQCreate(&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread);
 		if (NULL == xhWSPool)
