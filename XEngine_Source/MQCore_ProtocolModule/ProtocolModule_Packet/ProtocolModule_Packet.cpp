@@ -853,7 +853,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 	int nListCount = 6;
 	XCHAR tszRVBuffer[1024];
 
-	if (pSt_ProtocolHdr->unOperatorCode)
+	if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG == pSt_ProtocolHdr->unOperatorCode)
 	{
 		if (0 == pSt_ProtocolHdr->wReserve)
 		{
@@ -898,6 +898,18 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
 		}
 	}
+	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST == pSt_ProtocolHdr->unOperatorCode)
+	{
+		if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS1 == pSt_ProtocolHdr->byIsReply)
+		{
+			//需要回复
+			MQTTProtocol_Packet_REPPublish(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
+			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBACK, tszRVBuffer, nRVLen);
+		}
+		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS2 == pSt_ProtocolHdr->byIsReply)
+		{
 
+		}
+	}
 	return true;
 }

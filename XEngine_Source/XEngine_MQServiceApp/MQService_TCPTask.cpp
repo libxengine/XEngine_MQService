@@ -84,6 +84,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			memset(&st_ProtocolAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 			memcpy(&st_ProtocolAuth, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_USERAUTH));
+			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG;
+
 			if (SessionModule_Client_GetAddr(st_ProtocolAuth.tszUserName))
 			{
 				pSt_ProtocolHdr->wReserve = 700;
@@ -95,7 +97,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			_tcsxcpy(st_UserInfo.tszUserName, st_ProtocolAuth.tszUserName);
 			_tcsxcpy(st_UserInfo.tszUserPass, st_ProtocolAuth.tszUserPass);
 
-			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG;
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassLogin) > 0)
 			{
 				int nRVLen = 0;

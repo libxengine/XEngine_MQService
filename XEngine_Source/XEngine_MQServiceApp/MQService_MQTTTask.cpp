@@ -165,22 +165,18 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求取消订阅失败,错误码:%lX"), lpszClientAddr, MQTTProtocol_GetLastError());
 			return false;
 		}
-		if ((XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS1 == pSt_MQTTHdr->byMsgFlag) || (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS2 == pSt_MQTTHdr->byMsgFlag))
-		{
-			//需要回复
-			MQTTProtocol_Packet_REPPublish(tszRVBuffer, &nRVLen, wMsgID, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-			MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBACK, tszRVBuffer, nRVLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
-		}
-		//ProtocolModule_Parse_Websocket(tszRVBuffer, nRVLen, &st_ProtocolHdr, tszSDBuffer, &nSDLen);
-		//MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_WEBSOCKET);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,发布消息,主题名称:%s,推送大小:%d"), lpszClientAddr, tszTopicName, nRVLen);
+		ProtocolModule_Parse_Websocket(tszRVBuffer, nRVLen, &st_ProtocolHdr, tszSDBuffer, &nSDLen);
+
+		st_ProtocolHdr.byIsReply = pSt_MQTTHdr->byMsgFlag;
+		st_ProtocolHdr.wPacketSerial = wMsgID;
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
+		//XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,发布消息,主题名称:%s,推送大小:%d"), lpszClientAddr, tszTopicName, nRVLen);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ == pSt_MQTTHdr->byMsgType)
 	{
 		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREP);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求了心跳PING协议成功"));
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求了心跳PING协议成功"), lpszClientAddr);
 	}
 	return true;
 }
