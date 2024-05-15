@@ -86,15 +86,6 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
 
-    if (st_JsonRoot["XTime"].empty() || (1 != st_JsonRoot["XTime"].size()))
-    {
-        Config_IsErrorOccur = true;
-        Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
-        return false;
-    }
-    Json::Value st_JsonXTime = st_JsonRoot["XTime"];
-    pSt_ServerConfig->st_XTime.nDBMonth = st_JsonXTime["nDBMonth"].asInt();
-    
     if (st_JsonRoot["XLog"].empty() || (4 != st_JsonRoot["XLog"].size()))
     {
         Config_IsErrorOccur = true;
@@ -250,7 +241,6 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 		return false;
 	}
 	Json::Value st_JsonUser = st_JsonRoot["MQUser"];
-
 	if (st_JsonUser["UserTime"].empty())
 	{
 		Config_IsErrorOccur = true;
@@ -258,8 +248,15 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 		return false;
 	}
 	Json::Value st_JsonUserTime = st_JsonUser["UserTime"];
-	
 	pSt_DBConfig->st_MQUser.st_UserTime.bPubClear = st_JsonUserTime["bPubClear"].asBool();
 
+	if (st_JsonRoot["MQData"].empty() || (1 != st_JsonRoot["MQData"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
+		return false;
+	}
+	Json::Value st_JsonMQData = st_JsonRoot["MQData"];
+	pSt_DBConfig->st_MQData.nDBMonth = st_JsonMQData["nDBMonth"].asInt();
 	return true;
 }

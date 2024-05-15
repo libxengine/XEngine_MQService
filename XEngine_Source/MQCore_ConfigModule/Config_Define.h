@@ -34,10 +34,6 @@ typedef struct
     }st_XMax;
     struct
     {
-        int nDBMonth;
-    }st_XTime;
-    struct
-    {
         XCHAR tszLOGFile[MAX_PATH];
         int nMaxSize;
         int nMaxCount;
@@ -79,6 +75,10 @@ typedef struct
             bool bPubClear;
         }st_UserTime;
     }st_MQUser;
+    struct  
+    {
+        int nDBMonth;
+    }st_MQData;
 }MESSAGEQUEUE_DBCONFIG;
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数定义
