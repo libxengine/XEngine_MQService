@@ -144,7 +144,6 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH == pSt_MQTTHdr->byMsgType)
 	{
-		int nPLen = 0;
 		int nListCount = 0;
 		XSHOT wMsgID = 0;
 		XCHAR tszTopicName[MAX_PATH] = {};

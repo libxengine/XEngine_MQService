@@ -22,7 +22,7 @@ MakeAll:$(XENGINE_MODULES)
 
 libjsoncpp.so:
 	make -C $(BASE_THIRDPART_JSONCPP) PLATFORM=$(PLATFORM) $(FLAGS)
-libXEngine_InfoReport.so
+libXEngine_InfoReport.so:
 	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
 
 libMQCore_ConfigModule.so:
@@ -36,6 +36,3 @@ libMQCore_DBModule.so:
 
 XEngine_MQServiceApp.exe:
 	make -C $(APP_SERVICE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
-	
-	
-	
