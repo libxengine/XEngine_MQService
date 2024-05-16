@@ -850,7 +850,6 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer /* = NULL */, int nMsgLen /* = 0 */)
 {
 	int nRVLen = 0;
-	int nListCount = 6;
 	XCHAR tszRVBuffer[1024] = {};
 
 	if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG == pSt_ProtocolHdr->unOperatorCode)
