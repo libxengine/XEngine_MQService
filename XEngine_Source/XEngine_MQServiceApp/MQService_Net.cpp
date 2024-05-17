@@ -8,16 +8,35 @@ bool CALLBACK MessageQueue_Callback_TCPLogin(LPCXSTR lpszClientAddr, XSOCKET hSo
 }
 void CALLBACK MessageQueue_Callback_TCPRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg,int nMsgLen,XPVOID lParam)
 {
-    if (!HelpComponents_Datas_PostEx(xhTCPPacket,lpszClientAddr,lpszRecvMsg,nMsgLen))
-    {
-        XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR,_X("投递TCP数据包到消息队列失败，错误：%lX"),Packets_GetLastError());
-        return;
-    }
-    XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _X("投递TCP数据包到消息队列成功,%d"), nMsgLen);
+	if (!HelpComponents_Datas_PostEx(xhTCPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("投递TCP数据包到消息队列失败，错误：%lX"), Packets_GetLastError());
+		return;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _X("投递TCP数据包到消息队列成功,%d"), nMsgLen);
 }
 void CALLBACK MessageQueue_Callback_TCPLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, false);
+}
+//////////////////////////////////////////////////////////////////////////
+bool CALLBACK MessageQueue_Callback_MQTTLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+{
+	MQTTProtocol_Parse_Insert(lpszClientAddr);
+	return true;
+}
+void CALLBACK MessageQueue_Callback_MQTTRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+{
+	if (!MQTTProtocol_Parse_Send(lpszClientAddr, lpszRecvMsg, nMsgLen))
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("投递MQTT数据包到消息队列失败，错误：%lX"), MQTTProtocol_GetLastError());
+		return;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG, _X("投递MQTT数据包到消息队列成功,%d"), nMsgLen);
+}
+void CALLBACK MessageQueue_Callback_MQTTLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+{
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_MQTT, false);
 }
 //////////////////////////////////////////////////////////////////////////
 bool CALLBACK MessageQueue_Callback_HttpLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
@@ -78,22 +97,40 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 {
     if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
     {
-        HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
+		HelpComponents_Datas_DeleteEx(xhTCPPacket, lpszClientAddr);
+        if (bHeart)
+        {
+			NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
+		}
         XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
         RfcComponents_WSPacket_DeleteEx(xhWSPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
     }
-    else
+    else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
 	{
 		HttpProtocol_Server_CloseClinetEx(xhHTTPPacket, lpszClientAddr);
-        NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
     }
+	else
+	{
+		MQTTProtocol_Parse_Delete(lpszClientAddr);
+		if (bHeart)
+		{
+			NetCore_TCPXCore_CloseForClientEx(xhMQTTSocket, lpszClientAddr);
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端离开，MQTT客户端地址：%s"), lpszClientAddr);
+	}
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;
 	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
     if (SessionModule_Client_GetUser(lpszClientAddr, st_UserInfo.tszUserName))
@@ -170,5 +207,13 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			return false;
 		}
     }
+	else if (XENGINE_MQAPP_NETTYPE_MQTT == nIPProto)
+	{
+		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给MQTT客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
+			return false;
+		}
+	}
     return true;
 }

@@ -3,10 +3,16 @@
 bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_StartlParam)
 {
     LPCXSTR lpszConfigFile = _X("./XEngine_Config/XEngine_Config.json");
+    LPCXSTR lpszVersionFile = _X("./XEngine_Config/XEngine_VerConfig.json");
 
 	if (!Config_Json_File(lpszConfigFile, pSt_StartlParam))
 	{
 		printf("解析配置文件失败,Config_Json_File:%lX\n", Config_GetLastError());
+		return false;
+	}
+	if (!Config_Json_VersionFile(lpszVersionFile, pSt_StartlParam))
+	{
+		printf("解析配置文件失败,Config_Json_VerFile:%lX\n", Config_GetLastError());
 		return false;
 	}
 

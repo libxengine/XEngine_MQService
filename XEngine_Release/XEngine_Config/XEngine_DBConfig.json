@@ -3,5 +3,8 @@
         "UserTime":{
             "bPubClear":false
         }
+    },
+    "MQData":{
+        "nDBMonth":3
     }
 }

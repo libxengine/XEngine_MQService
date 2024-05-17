@@ -1,3 +1,27 @@
+XEngine_MQService V3.11.0.1001
+
+增加:MQTT协议服务支持
+增加:信息报告支持
+修改:jsoncpp模块使用git的子模块替换
+修改:分离了版本列表从主配置中
+修改:增加了日志的路径配置
+修改:信号量有提示了
+修改:保存时间配置移动到db配置
+修正:日志配置没有效果的问题
+修正:关闭客户端处理不正确
+修正:绑定消息日志提示不正确
+
+added:mqtt protocol service supported
+added:info report supported
+modify:jsoncpp module use git submodule instead
+modify:detach version list from main configure
+modify:added file path of log configure
+modify:signal have tips
+modify:save time configure move to db configure
+fixed:log configure is not work
+fixed:close client is incorrect
+fixed:bind log print is incorrect
+======================================================================================
 XEngine_MQService V3.10.0.1001
 
 增加:消息属性增加无限制消息获取
