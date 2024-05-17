@@ -5,6 +5,7 @@ XHANDLE xhLog = NULL;
 XHANDLE xhTCPSocket = NULL;
 XHANDLE xhHTTPSocket = NULL;
 XHANDLE xhWSSocket = NULL;
+XHANDLE xhMQTTSocket = NULL;
 
 XHANDLE xhTCPPacket = NULL;
 XHANDLE xhHTTPPacket = NULL;
@@ -13,6 +14,7 @@ XHANDLE xhWSPacket = NULL;
 XHANDLE xhTCPPool = NULL;
 XHANDLE xhHttpPool = NULL;
 XHANDLE xhWSPool = NULL;
+XHANDLE xhMQTTPool = NULL;
 
 XENGINE_SERVERCONFIG st_ServiceCfg;
 MESSAGEQUEUE_DBCONFIG st_DBConfig;
@@ -27,14 +29,17 @@ void ServiceApp_Stop(int signo)
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		HttpProtocol_Server_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+		MQTTProtocol_Parse_Destory();
 
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+		NetCore_TCPXCore_DestroyEx(xhMQTTSocket);
 
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
+		ManagePool_Thread_NQDestroy(xhMQTTPool);
 
 		DBModule_MQData_Destory();
 		DBModule_MQUser_Destory();
@@ -88,7 +93,6 @@ int main(int argc, char** argv)
 	bIsRun = true;
 	LPCXSTR lpszHTTPMime = _X("./XEngine_Config/HttpMime.types");
 	LPCXSTR lpszHTTPCode = _X("./XEngine_Config/HttpCode.types");
-	LPCXSTR lpszLogFile = _X("./XEngine_Log/XEngine_MQServiceApp.Log");
 	LPCXSTR lpszDBConfig = _X("./XEngine_Config/XEngine_DBConfig.json");
 
 	XCHAR tszStringMsg[2048];
@@ -96,23 +100,20 @@ int main(int argc, char** argv)
 	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
 	THREADPOOL_PARAMENT** ppSt_ListHTTPParam;
 	THREADPOOL_PARAMENT** ppSt_ListWSParam;
+	THREADPOOL_PARAMENT** ppSt_ListMQTTParam;
 
 	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
 	memset(&st_ServiceCfg, '\0', sizeof(XENGINE_SERVERCONFIG));
 
-	st_XLogConfig.XLog_MaxBackupFile = 10;
-	st_XLogConfig.XLog_MaxSize = 1024000;
-	_tcsxcpy(st_XLogConfig.tszFileName, lpszLogFile);
-
-	signal(SIGINT, ServiceApp_Stop);
-	signal(SIGTERM, ServiceApp_Stop);
-	signal(SIGABRT, ServiceApp_Stop);
-
 	if (!MQ_Service_Parament(argc, argv, &st_ServiceCfg))
 	{
 		return -1;
 	}
+	st_XLogConfig.XLog_MaxBackupFile = st_ServiceCfg.st_XLog.nMaxCount;
+	st_XLogConfig.XLog_MaxSize = st_ServiceCfg.st_XLog.nMaxSize;
+	_tcsxcpy(st_XLogConfig.tszFileName, st_ServiceCfg.st_XLog.tszLOGFile);
+
 	xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_STD | HELPCOMPONENTS_XLOG_OUTTYPE_FILE, &st_XLogConfig);
 	if (NULL == xhLog)
 	{
@@ -135,6 +136,11 @@ int main(int argc, char** argv)
 		ServiceApp_Deamon(1);
 	}
 
+	signal(SIGINT, ServiceApp_Stop);
+	signal(SIGTERM, ServiceApp_Stop);
+	signal(SIGABRT, ServiceApp_Stop);
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化服务器信号管理成功"));
+
 	if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
@@ -153,7 +159,7 @@ int main(int argc, char** argv)
 		goto NETSERVICEEXIT;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化客户端会话管理器成功"));
-
+	//TCP消息服务
 	if (st_ServiceCfg.nTCPPort > 0)
 	{
 		//组包器
@@ -196,7 +202,7 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，TCP消息服务没有被启用"));
 	}
-
+	//HTTP查询服务
 	if (st_ServiceCfg.nHttpPort > 0)
 	{
 		xhHTTPPacket = HttpProtocol_Server_InitEx(lpszHTTPCode, lpszHTTPMime, st_ServiceCfg.st_XMax.nHttpThread);
@@ -238,7 +244,7 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，HTTP消息服务没有被启用"));
 	}
-
+	//WEBSOCKET消息服务
 	if (st_ServiceCfg.nWSPort > 0)
 	{
 		xhWSPacket = RfcComponents_WSPacket_InitEx(st_ServiceCfg.st_XMax.nMaxClient, 0, st_ServiceCfg.st_XMax.nWSThread);
@@ -280,7 +286,72 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，Websocket消息服务没有被启用"));
 	}
-	
+	//MQTT服务
+	if (st_ServiceCfg.nMQTTPort > 0)
+	{
+		if (!MQTTProtocol_Parse_Init(st_ServiceCfg.st_XMax.nMQTTThread))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务器中，初始化MQTT组包失败，错误：%lX"), MQTTProtocol_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化MQTT组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nMQTTThread);
+
+		xhMQTTSocket = NetCore_TCPXCore_StartEx(st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMaxClient, st_ServiceCfg.st_XMax.nMQTTThread);
+		if (NULL == xhMQTTSocket)
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动MQTT网络服务器失败，错误：%lX"), NetCore_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT网络服务器成功,MQTT端口:%d,IO:%d"), st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMQTTThread);
+		NetCore_TCPXCore_RegisterCallBackEx(xhMQTTSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册MQTT网络事件成功"));
+
+		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread, sizeof(THREADPOOL_PARAMENT));
+		for (int i = 0; i < st_ServiceCfg.st_XMax.nMQTTThread; i++)
+		{
+			int* pInt_Pos = new int;
+
+			*pInt_Pos = i;
+			ppSt_ListMQTTParam[i]->lParam = pInt_Pos;
+			ppSt_ListMQTTParam[i]->fpCall_ThreadsTask = MessageQueue_MQTTThread;
+		}
+		xhWSPool = ManagePool_Thread_NQCreate(&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread);
+		if (NULL == xhWSPool)
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动MQTT线程池服务失败，错误：%lX"), ManagePool_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nMQTTThread);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，MQTT消息服务没有被启用"));
+	}
+	//发送信息报告
+	if (st_ServiceCfg.st_XReport.bEnable)
+	{
+		if (InfoReport_APIMachine_Send(st_ServiceCfg.st_XReport.tszAPIUrl, st_ServiceCfg.st_XReport.tszServiceName))
+		{
+			__int64x nTimeCount = 0;
+			if (InfoReport_APIMachine_GetTime(st_ServiceCfg.st_XReport.tszAPIUrl, st_ServiceCfg.st_XReport.tszServiceName, &nTimeCount))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动信息报告给API服务器:%s 成功,报告次数:%lld"), st_ServiceCfg.st_XReport.tszAPIUrl, nTimeCount);
+			}
+			else
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，启动信息报告给API服务器:%s 成功,获取报告次数失败,错误:%lX"), st_ServiceCfg.st_XReport.tszAPIUrl, InfoReport_GetLastError());
+			}
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，启动信息报告给API服务器:%s 失败，错误：%lX"), st_ServiceCfg.st_XReport.tszAPIUrl, InfoReport_GetLastError());
+		}
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，信息报告给API服务器没有启用"));
+	}
+
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_OperatorVer_XNumberStr(), BaseLib_OperatorVer_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
 
 	while (true)
@@ -297,15 +368,18 @@ NETSERVICEEXIT:
 		HelpComponents_Datas_Destory(xhTCPPacket);
 		HttpProtocol_Server_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+		MQTTProtocol_Parse_Destory();
 
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
+		NetCore_TCPXCore_DestroyEx(xhMQTTSocket);
 		
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
-		
+		ManagePool_Thread_NQDestroy(xhMQTTPool);
+
 		DBModule_MQData_Destory();
 		DBModule_MQUser_Destory();
 

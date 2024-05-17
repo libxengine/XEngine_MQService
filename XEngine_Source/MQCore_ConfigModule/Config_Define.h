@@ -21,6 +21,7 @@ typedef struct
     int nTCPPort;
     int nHttpPort;
     int nWSPort;
+    int nMQTTPort;
     struct
     {
         int nMaxClient;
@@ -29,13 +30,11 @@ typedef struct
         int nTCPThread;
         int nHttpThread;
         int nWSThread;
+        int nMQTTThread;
     }st_XMax;
     struct
     {
-        int nDBMonth;
-    }st_XTime;
-    struct
-    {
+        XCHAR tszLOGFile[MAX_PATH];
         int nMaxSize;
         int nMaxCount;
         int nLogLeave;
@@ -56,6 +55,12 @@ typedef struct
         XCHAR tszPassLogout[MAX_PATH];
         int nTimeout;
     }st_XPass;
+	struct
+	{
+		bool bEnable;
+		XCHAR tszAPIUrl[MAX_PATH];
+		XCHAR tszServiceName[128];
+	}st_XReport;
     struct
     {
         list<tstring> *pStl_ListStorage;
@@ -70,6 +75,10 @@ typedef struct
             bool bPubClear;
         }st_UserTime;
     }st_MQUser;
+    struct  
+    {
+        int nDBMonth;
+    }st_MQData;
 }MESSAGEQUEUE_DBCONFIG;
 //////////////////////////////////////////////////////////////////////////
 //                        导出函数定义
@@ -79,4 +88,5 @@ extern "C" XLONG Config_GetLastError(int *pInt_ErrorCode = NULL);
 /*                        文件配置读取                                  */
 /************************************************************************/
 extern "C" bool Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig);
+extern "C" bool Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG* pSt_ServerConfig);
 extern "C" bool Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig);

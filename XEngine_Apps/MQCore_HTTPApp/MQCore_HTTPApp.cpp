@@ -1,7 +1,6 @@
 ﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
-#include <json/json.h>
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
 #pragma comment(lib,"x86/XEngine_Client/XClient_APIHelp")
@@ -10,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <json/json.h>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
@@ -20,7 +18,8 @@
 #include <XEngine_Include/XEngine_Client/APIClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
-//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -I ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -L ../../XEngine_Source/XEngine_ThirdPart/jsoncpp -lXEngine_BaseLib -lXClient_APIHelp -ljsoncpp
+//VS2022 Debug x86 Compile
+//g++ -std=c++17 -Wall -g MQCore_HTTPApp.cpp -o MQCore_HTTPApp.exe -lXEngine_BaseLib -lXClient_APIHelp
 
 void MQ_GetUserList()
 {

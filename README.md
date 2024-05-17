@@ -10,7 +10,7 @@ c c++Message Service
 ## 软件架构
 此软件基于XEngine开发.采用C/C++作为开发语言  
 此软件是一款简易的高性能服务,统一的API接口,让用户几乎不需要二次开发就可以直接使用  
-此软件主要是提供了消息队列与消息分发引擎,可用于用户消息操作的一个API服务器.支持HTTP,WEBSOCKET和私有协议.  
+此软件主要是提供了消息队列与消息分发引擎,可用于用户消息操作的一个API服务器.支持HTTP,WEBSOCKET,MQTT和私有协议.  
 ## 软件特性
 此软件支持以下特性  
 1. 消息序列  
@@ -23,7 +23,7 @@ c c++Message Service
 8. 消息次数  
 9. 消息订阅  
 10. 支持权限验证  
-11. 支持多种协议(TCP,WEBSOCKET)  
+11. 支持多种协议(TCP,WEBSOCKET,MQTT)  
 12. 主动投递获取模式或者被动订阅通知模块  
 13. 获取顺序与开始序列号设置  
 14. 不限制负载的消息类型  
@@ -36,7 +36,7 @@ c c++Message Service
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V8.15或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V8.31或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -49,6 +49,11 @@ macos执行:./XEngine_LINEnv.sh -i 3
 ##### 依赖环境
 需要MYSQL服务的支持,执行XEngine_SQLFile/CreateDatabase.sql  创建数据库  
 分别执行:执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建表  
+
+#### sub module
+由于依赖的子模块,在你checkout仓库后,在仓库目录下执行下面的命令拉取子模块  
+git submodule init  
+git submodule update
 
 #### Windows
 使用VS打开并且编译,支持WINDOWS 7SP1以上系统  
@@ -77,7 +82,6 @@ make FLAGS=CleanAll 清理编译
 ## 安装指导
 #### 安装
 修改配置文件为你需要的,然后直接运行服务即可
-需要MYSQL服务,使用CreateDatabase.sql创建数据库,然后导入执行XEngine_SQLFile/XEngine_MQData.sql 和 执行XEngine_SQLFile/XEngine_MQUser.sql 创建表  
 
 #### 升级
 如果是升级安装,下载新版本后修改配置文件就可以直接运行了

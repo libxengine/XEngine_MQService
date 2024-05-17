@@ -5,24 +5,24 @@
     "nTCPPort":5200,
     "nWSPort":5201,
     "nHttpPort":5202,
+    "nMQTTPort":5203,
     "XMax":{
         "nMaxClient":10000,
         "nMaxQueue":10000,
         "nIOThread":2,
         "nTCPThread":2,
         "nHttpThread":2,
-        "nWSThread":2
-    },
-    "XTime":{
-        "nDBMonth":3
+        "nWSThread":2,
+        "nMQTTThread":2
     },
     "XLog":{
+        "tszLOGFile":"./XEngine_Log/XEngine_MQServiceApp.Log",
         "MaxSize":1024000,
         "MaxCount":10,
-        "LogLeave":32
+        "LogLeave":17
     },
     "XSql":{
-        "SQLAddr":"10.0.3.155",
+        "SQLAddr":"10.0.3.154",
         "SQLPort":3306,
         "SQLUser":"root",
         "SQLPass":"123123"
@@ -34,23 +34,9 @@
         "tszPassLogin":"",
         "tszPassLogout":""
     },
-    "XVer":[
-        "3.10.0.1001 Build20240305",
-        "3.9.0.1001 Build20231227",
-        "3.8.0.1001 Build20230816",
-        "3.7.0.1001 Build20230426",
-        "3.6.0.1001 Build20230222",
-        "3.5.0.1001 Build20230106",
-        "3.4.0.1001 Build20221110",
-        "3.3.0.1001 Build20220805",
-        "3.2.0.1001 Build20220715",
-        "3.1.0.1001 Build20220408",
-        "3.0.0.1001 Build20220318",
-        "2.1.0.1001 Build20211119",
-        "2.0.0.1001 Build20210930",
-        "1.4.0.1001 Build20210806",
-        "1.3.0.1001 Build20210723",
-        "1.2.0.1001 Build20210716",
-        "1.1.0.1001 Build20210702"
-    ]
+    "XReport":{
+        "bEnable":true,
+        "tszServiceName":"XEngine_MQService",
+        "tszAPIUrl":"http://app.xyry.org:5501/api?function=machine"
+    }
 }

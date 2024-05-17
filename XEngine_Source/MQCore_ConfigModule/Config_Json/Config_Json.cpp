@@ -69,8 +69,9 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->nTCPPort = st_JsonRoot["nTCPPort"].asInt();
     pSt_ServerConfig->nHttpPort = st_JsonRoot["nHttpPort"].asInt();
     pSt_ServerConfig->nWSPort = st_JsonRoot["nWSPort"].asInt();
+	pSt_ServerConfig->nMQTTPort = st_JsonRoot["nMQTTPort"].asInt();
 
-    if (st_JsonRoot["XMax"].empty() || (6 != st_JsonRoot["XMax"].size()))
+    if (st_JsonRoot["XMax"].empty() || (7 != st_JsonRoot["XMax"].size()))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMAX;
@@ -83,17 +84,9 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nTCPThread = st_JsonXMax["nTCPThread"].asInt();
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
+	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
 
-    if (st_JsonRoot["XTime"].empty() || (1 != st_JsonRoot["XTime"].size()))
-    {
-        Config_IsErrorOccur = true;
-        Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
-        return false;
-    }
-    Json::Value st_JsonXTime = st_JsonRoot["XTime"];
-    pSt_ServerConfig->st_XTime.nDBMonth = st_JsonXTime["nDBMonth"].asInt();
-    
-    if (st_JsonRoot["XLog"].empty() || (3 != st_JsonRoot["XLog"].size()))
+    if (st_JsonRoot["XLog"].empty() || (4 != st_JsonRoot["XLog"].size()))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XLOG;
@@ -103,6 +96,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XLog.nMaxSize = st_JsonXLog["MaxSize"].asInt();
     pSt_ServerConfig->st_XLog.nMaxCount = st_JsonXLog["MaxCount"].asInt();
     pSt_ServerConfig->st_XLog.nLogLeave = st_JsonXLog["LogLeave"].asInt();
+	_tcsxcpy(pSt_ServerConfig->st_XLog.tszLOGFile, st_JsonXLog["tszLOGFile"].asCString());
 
     if (st_JsonRoot["XSql"].empty() || (4 != st_JsonRoot["XSql"].size()))
     {
@@ -129,6 +123,60 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassRegister, st_JsonXPass["tszPassRegister"].asCString());
 	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassUNReg, st_JsonXPass["tszPassUNReg"].asCString());
 
+	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XREPORT;
+		return false;
+	}
+	Json::Value st_JsonXReport = st_JsonRoot["XReport"];
+	pSt_ServerConfig->st_XReport.bEnable = st_JsonXReport["bEnable"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XReport.tszAPIUrl, st_JsonXReport["tszAPIUrl"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XReport.tszServiceName, st_JsonXReport["tszServiceName"].asCString());
+    return true;
+}
+bool CConfig_Json::Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG* pSt_ServerConfig)
+{
+	Config_IsErrorOccur = false;
+
+	if ((NULL == lpszConfigFile) || (NULL == pSt_ServerConfig))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	JSONCPP_STRING st_JsonError;
+	Json::Value st_JsonRoot;
+	Json::CharReaderBuilder st_JsonBuilder;
+
+	FILE* pSt_File = _xtfopen(lpszConfigFile, _X("rb"));
+	if (NULL == pSt_File)
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
+		return false;
+	}
+	int nCount = 0;
+	XCHAR tszMsgBuffer[4096];
+	while (1)
+	{
+		int nRet = fread(tszMsgBuffer + nCount, 1, 2048, pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		nCount += nRet;
+	}
+	fclose(pSt_File);
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_JsonBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nCount, &st_JsonRoot, &st_JsonError))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
+		return false;
+	}
+
 	if (st_JsonRoot["XVer"].empty())
 	{
 		Config_IsErrorOccur = true;
@@ -136,13 +184,13 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 		return false;
 	}
 	Json::Value st_JsonXVer = st_JsonRoot["XVer"];
-    pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
+	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
 
-    for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
-    {
-        pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer[i].asCString());
-    }
-    return true;
+	for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
+	{
+		pSt_ServerConfig->st_XVer.pStl_ListStorage->push_back(st_JsonXVer[i].asCString());
+	}
+	return true;
 }
 bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCONFIG* pSt_DBConfig)
 {
@@ -193,7 +241,6 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 		return false;
 	}
 	Json::Value st_JsonUser = st_JsonRoot["MQUser"];
-
 	if (st_JsonUser["UserTime"].empty())
 	{
 		Config_IsErrorOccur = true;
@@ -201,8 +248,15 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 		return false;
 	}
 	Json::Value st_JsonUserTime = st_JsonUser["UserTime"];
-	
 	pSt_DBConfig->st_MQUser.st_UserTime.bPubClear = st_JsonUserTime["bPubClear"].asBool();
 
+	if (st_JsonRoot["MQData"].empty() || (1 != st_JsonRoot["MQData"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
+		return false;
+	}
+	Json::Value st_JsonMQData = st_JsonRoot["MQData"];
+	pSt_DBConfig->st_MQData.nDBMonth = st_JsonMQData["nDBMonth"].asInt();
 	return true;
 }

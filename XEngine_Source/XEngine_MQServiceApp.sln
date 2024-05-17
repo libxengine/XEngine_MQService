@@ -4,10 +4,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_MQServiceApp", "XEngine_MQServiceApp\XEngine_MQServiceApp.vcxproj", "{34C9695F-7097-412F-ACC2-A3979A91D776}"
+	ProjectSection(ProjectDependencies) = postProject
+		{32D3FC68-6252-4D20-BB07-6C98BD753D11} = {32D3FC68-6252-4D20-BB07-6C98BD753D11}
+		{5475F316-F9E9-4FF5-95ED-F7C9474709A3} = {5475F316-F9E9-4FF5-95ED-F7C9474709A3}
+		{77321E0D-15DB-4C6E-8872-115CBBE41F27} = {77321E0D-15DB-4C6E-8872-115CBBE41F27}
+		{B0EB2A7A-53C1-4E9F-A851-19539099671C} = {B0EB2A7A-53C1-4E9F-A851-19539099671C}
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89} = {F6520D2C-BB8E-45BB-964B-F5D6A4318A89}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ConfigModule", "MQCore_ConfigModule\MQCore_ConfigModule.vcxproj", "{32D3FC68-6252-4D20-BB07-6C98BD753D11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_ProtocolModule", "MQCore_ProtocolModule\MQCore_ProtocolModule.vcxproj", "{B0EB2A7A-53C1-4E9F-A851-19539099671C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_SessionModule", "MQCore_SessionModule\MQCore_SessionModule.vcxproj", "{77321E0D-15DB-4C6E-8872-115CBBE41F27}"
 EndProject
@@ -16,11 +30,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MQCore_Hdr", "MQCore_Hdr", 
 		XQueue_ProtocolHdr.h = XQueue_ProtocolHdr.h
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XEngine_ThirdPart", "XEngine_ThirdPart", "{3A071C4D-036B-47DF-AC77-4DD1521F51FD}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "XEngine_ThirdPart\jsoncpp\jsoncpp.vcxproj", "{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MQCore_DBModule", "MQCore_DBModule\MQCore_DBModule.vcxproj", "{5475F316-F9E9-4FF5-95ED-F7C9474709A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XEngine_Depend", "XEngine_Depend", "{BAC91AAE-D438-4999-9541-EB8804B12F0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsoncpp", "XEngine_Depend\XEngine_Module\jsoncpp\jsoncpp.vcxproj", "{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEngine_InfoReport", "XEngine_Depend\XEngine_Module\XEngine_InfoReport\XEngine_InfoReport.vcxproj", "{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {F1736B3F-03A2-4FC7-B045-A12BA8D724FB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,14 +81,6 @@ Global
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x64.Build.0 = Release|x64
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x86.ActiveCfg = Release|Win32
 		{77321E0D-15DB-4C6E-8872-115CBBE41F27}.Release|x86.Build.0 = Release|Win32
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.ActiveCfg = Debug|x64
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.Build.0 = Debug|x64
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.ActiveCfg = Debug|Win32
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.Build.0 = Debug|Win32
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.ActiveCfg = Release|x64
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.Build.0 = Release|x64
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.ActiveCfg = Release|Win32
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.Build.0 = Release|Win32
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Debug|x64.ActiveCfg = Debug|x64
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Debug|x64.Build.0 = Debug|x64
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Debug|x86.ActiveCfg = Debug|Win32
@@ -78,12 +89,29 @@ Global
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Release|x64.Build.0 = Release|x64
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Release|x86.ActiveCfg = Release|Win32
 		{5475F316-F9E9-4FF5-95ED-F7C9474709A3}.Release|x86.Build.0 = Release|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.ActiveCfg = Debug|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x64.Build.0 = Debug|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.ActiveCfg = Debug|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Debug|x86.Build.0 = Debug|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.ActiveCfg = Release|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x64.Build.0 = Release|x64
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.ActiveCfg = Release|Win32
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB}.Release|x86.Build.0 = Release|Win32
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Debug|x64.ActiveCfg = Debug|x64
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Debug|x64.Build.0 = Debug|x64
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Debug|x86.ActiveCfg = Debug|Win32
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Debug|x86.Build.0 = Debug|Win32
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Release|x64.ActiveCfg = Release|x64
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Release|x64.Build.0 = Release|x64
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Release|x86.ActiveCfg = Release|Win32
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {3A071C4D-036B-47DF-AC77-4DD1521F51FD}
+		{F1736B3F-03A2-4FC7-B045-A12BA8D724FB} = {BAC91AAE-D438-4999-9541-EB8804B12F0C}
+		{F6520D2C-BB8E-45BB-964B-F5D6A4318A89} = {BAC91AAE-D438-4999-9541-EB8804B12F0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFADBBBD-43B1-4B9B-9DD8-04415EBEFDA7}

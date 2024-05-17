@@ -10,7 +10,7 @@ c c++Message Queue Service
 #### Software Architecture
 the software developed based on xengine,using c/c++ development  
 the software is a simple and high performance server,Allow users to use it directly without secondary development  
-the software mainly provides a message queue and dds engine,support http,WEBSOCKET and private protocol api server  
+the software mainly provides a message queue and dds engine,support http,WEBSOCKET,MQTT and private protocol api server  
 
 ## Software features
 this software support following features  
@@ -24,7 +24,7 @@ this software support following features
 8. message get time  
 9. message subcribe  
 10. support Permission Validation  
-11. support multi protocol(TCP,WEBSOCKET)  
+11. support multi protocol(TCP,WEBSOCKET,MQTT)  
 12. Active delivery acquisition mode or passive subscription notification module  
 13. get order and start serial pos setting  
 14. Unlimited load message types  
@@ -37,7 +37,7 @@ this software support following features
 ## install
 
 #### XEngine Evn
-you must install XEngine,need V8.15 or above,install XEngine can be refer to xengine Readme docment  
+you must install XEngine,need V8.31 or above,install XEngine can be refer to xengine Readme docment  
 GITEE:https://gitee.com/xyry/libxengine  
 GITHUB:https://github.com/libxengine/xengine
 
@@ -46,6 +46,15 @@ git clone https://gitee.com/xyry/libxengine.git or git clone https://github.com/
 window Exection XEngine_WINEnv.bat   
 Linux Exection:sudo ./XEngine_LINEnv.sh -i 3  
 Macos Exection:./XEngine_LINEnv.sh -i 3
+
+##### Depends on environment
+Requires MYSQL service support, execute XEngine_SQLFile/CreateDatabase.sql to create database  
+Execute XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create the table  
+
+#### sub module
+Due to the dependent sub-modules, after you checkout the warehouse, execute the following command in the warehouse directory to pull the sub-modules  
+git submodule init  
+git submodule update  
 
 #### Windows
 use vs open and complie,support windows 7sp1 and above   
@@ -71,7 +80,6 @@ same linux
 ## Installation Instructions
 #### Install
 Modify the configuration file to what you need, and then run the service directly
-need to mysql service support,create database through CreateDatabase.sql,import XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create table.
 
 #### upgrade
 If it is an upgrade installation, after downloading the new version and modifying the configuration file, it can be run directly
