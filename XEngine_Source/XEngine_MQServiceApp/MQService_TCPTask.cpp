@@ -444,7 +444,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							//如果发送指定用户被指定.
 							if ((_tcsxlen(st_MQProtocol.tszMQUsr) > 0) && (0 != _tcsxnicmp(st_MQProtocol.tszMQUsr, tszUserName, _tcsxlen(st_MQProtocol.tszMQUsr))))
 							{
-								break;
+								continue;
 							}
 							SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 							SessionModule_Client_GetType(tszUserAddr, &nClientType);
