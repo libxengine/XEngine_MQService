@@ -33,8 +33,10 @@ jobs:
       # 设置依赖库的环境变量
       - name: Set up Dependency Environment Variables
         run: |
-            sudo chmod 777 ./libxengine/*
-            sudo ./libxengine/XEngine_LINEnv.sh -i 3
+            cd libxengine
+            chmod 777 *
+            sudo ./XEngine_LINEnv.sh -i 3
+            cd ..
       #编译
       - name: make
         run: | 
