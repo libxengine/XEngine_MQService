@@ -21,7 +21,7 @@ jobs:
     steps:
        # 检出您的主仓库代码
       - name: Checkout main repository code
-        uses: actions/checkout@V4
+        uses: actions/checkout@v4
         
        # 检出依赖的xengine仓库到指定的xengine目录
       - name: Checkout dependency repository (xengine)
