@@ -927,5 +927,10 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 		MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
 		MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBACK, tszRVBuffer, nRVLen);
 	}
+	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY == pSt_ProtocolHdr->unOperatorCode)
+	{
+		MQTTProtocol_Packet_REQPublish(tszRVBuffer, &nRVLen, pSt_MQProtocol->tszMQKey, lpszMsgBuffer, nMsgLen);
+		MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH, tszRVBuffer, nRVLen);
+	}
 	return true;
 }
