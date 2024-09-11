@@ -42,5 +42,5 @@ jobs:
         run: | 
             cd XEngine_Source
             make
-            make FLAGS=Install
+            make FLAGS=InstallAll
             make FLAGS=CleanAll
