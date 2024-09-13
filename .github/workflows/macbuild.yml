@@ -49,6 +49,10 @@ jobs:
             make PLATFORM=mac 
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
+
+            make PLATFORM=mac RELEASE=1
+            make PLATFORM=mac FLAGS=InstallAll
+            make PLATFORM=mac FLAGS=CleanAll
             cd ..
       #测试
       - name: test
@@ -58,4 +62,5 @@ jobs:
             otool -L ./libMQCore_DBModule.dylib
             otool -L /usr/local/lib/libHelpComponents_DataBase.dylib
             find /usr/local -name libmysqlclient.23.dylib
+            brew info mysql-client
             ./XEngine_MQServiceApp -t

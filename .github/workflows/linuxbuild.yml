@@ -53,4 +53,8 @@ jobs:
             make
             make FLAGS=InstallAll
             make FLAGS=CleanAll
+
+            make RELEASE=1
+            make FLAGS=InstallAll
+            make FLAGS=CleanAll
             cd ..
