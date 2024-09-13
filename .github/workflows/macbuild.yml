@@ -31,9 +31,7 @@ jobs:
             git submodule update
 
       - name: brew install
-        run: |
-            xcode-select --install
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             
 
       # 设置依赖库的环境变量
