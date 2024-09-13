@@ -1,4 +1,4 @@
-name: ubuntu make workflows
+name: ubuntu build workflows
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04.4
 
     steps:
        # 检出您的主仓库代码

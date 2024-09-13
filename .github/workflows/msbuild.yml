@@ -1,4 +1,4 @@
-name: C++ Build with Dependencies
+name: windows build workflows
 
 on:
   push:
