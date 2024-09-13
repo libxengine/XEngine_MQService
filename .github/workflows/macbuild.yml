@@ -17,6 +17,7 @@ jobs:
        # 检出您的主仓库代码
       - name: Checkout main repository code
         uses: actions/checkout@v4
+        ref: 'develop'
         
        # 检出依赖的xengine仓库到指定的xengine目录
       - name: Checkout dependency repository (xengine)
@@ -33,7 +34,6 @@ jobs:
       - name: brew install
         run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             
-
       # 设置依赖库的环境变量
       - name: Set up Dependency Environment Variables
         run: |
@@ -46,5 +46,5 @@ jobs:
         run: | 
             cd XEngine_Source
             make
-            make FLAGS=InstallAll
-            make FLAGS=CleanAll
+            make PLATFORM=mac FLAGS=InstallAll
+            make PLATFORM=mac FLAGS=CleanAll
