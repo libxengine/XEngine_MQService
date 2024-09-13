@@ -46,6 +46,6 @@ jobs:
       - name: make
         run: | 
             cd XEngine_Source
-            make
+            make PLATFORM=mac 
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
