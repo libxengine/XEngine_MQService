@@ -7,7 +7,7 @@ LIBFLAG =
 RELEASE = 0
 LOADHDR = -I ./ 
 LOADSO = 
-LIB = 
+LIB = -lXEngine_BaseLib
 LIBEX = 
 OBJECTS = SessionModule_Client.o pch.o
 
