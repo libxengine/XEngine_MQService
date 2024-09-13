@@ -49,3 +49,8 @@ jobs:
             make PLATFORM=mac 
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
+      #测试
+      - name: test
+        run: |
+            cd XEngine_Release
+            ./XEngine_MQServiceApp -t

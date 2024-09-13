@@ -12,9 +12,11 @@ permissions:
 jobs:
   build:
     strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
       matrix:
-        configuration: [Debug]
-        platform: [x86]
+        configuration: [Debug ,Release]
+        platform: [x86 ,x64]
 
     runs-on: windows-latest # 最新的 Windows 环境
 
@@ -22,6 +24,8 @@ jobs:
        # 检出您的主仓库代码
       - name: Checkout main repository code
         uses: actions/checkout@v4
+        with:
+          ref: 'develop'
         
        # 检出依赖的xengine仓库到指定的xengine目录
       - name: Checkout dependency repository (xengine)
