@@ -49,8 +49,13 @@ jobs:
             make PLATFORM=mac 
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
+            cd ..
       #测试
       - name: test
         run: |
             cd XEngine_Release
+            otool -L ./XEngine_MQServiceApp
+            otool -L ./libMQCore_DBModule.dylib
+            otool -L /usr/local/lib/libHelpComponents_DataBase.dylib
+            find /usr/local -name libmysqlclient.23.dylib
             ./XEngine_MQServiceApp -t
