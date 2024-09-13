@@ -7,7 +7,7 @@ LIBFLAG =
 RELEASE = 0
 LOADHDR = -I ./
 LOADSO = 
-LIB = -lHelpComponents_DataBase
+LIB = -lXEngine_BaseLib -lHelpComponents_DataBase
 LIBEX = 
 OBJECTS = DBModule_MQData.o DBModule_MQUser.o pch.o
 
