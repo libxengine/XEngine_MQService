@@ -1,6 +1,7 @@
 ﻿#include "MQService_Hdr.h"
 
-bool bIsRun = false;
+bool bIsRun = true;
+bool bIsTest = false;
 XHANDLE xhLog = NULL;
 XHANDLE xhTCPSocket = NULL;
 XHANDLE xhHTTPSocket = NULL;
@@ -90,7 +91,6 @@ int main(int argc, char** argv)
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	bIsRun = true;
 	LPCXSTR lpszHTTPMime = _X("./XEngine_Config/HttpMime.types");
 	LPCXSTR lpszHTTPCode = _X("./XEngine_Config/HttpCode.types");
 	LPCXSTR lpszDBConfig = _X("./XEngine_Config/XEngine_DBConfig.json");
@@ -354,40 +354,53 @@ int main(int argc, char** argv)
 
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_OperatorVer_XNumberStr(), BaseLib_OperatorVer_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
 
-	while (true)
+	bIsTest = true;
+	while (bIsRun)
 	{
+		if (bIsTest)
+		{
+			goto NETSERVICEEXIT;
+		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 NETSERVICEEXIT:
 
-	if (bIsRun)
+	bIsRun = false;
+	if (bIsTest)
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("有服务启动失败，服务器退出..."));
-		bIsRun = false;
-
-		HelpComponents_Datas_Destory(xhTCPPacket);
-		HttpProtocol_Server_DestroyEx(xhHTTPPacket);
-		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
-		MQTTProtocol_Parse_Destory();
-
-		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
-		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
-		NetCore_TCPXCore_DestroyEx(xhWSSocket);
-		NetCore_TCPXCore_DestroyEx(xhMQTTSocket);
-		
-		ManagePool_Thread_NQDestroy(xhTCPPool);
-		ManagePool_Thread_NQDestroy(xhHttpPool);
-		ManagePool_Thread_NQDestroy(xhWSPool);
-		ManagePool_Thread_NQDestroy(xhMQTTPool);
-
-		DBModule_MQData_Destory();
-		DBModule_MQUser_Destory();
-
-		SessionModule_Client_Destory();
-		HelpComponents_XLog_Destroy(xhLog);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("服务启动完毕，测试程序退出..."));
 	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("服务启动失败，服务器退出..."));
+	}
+	HelpComponents_Datas_Destory(xhTCPPacket);
+	HttpProtocol_Server_DestroyEx(xhHTTPPacket);
+	RfcComponents_WSPacket_DestoryEx(xhWSPacket);
+	MQTTProtocol_Parse_Destory();
+
+	NetCore_TCPXCore_DestroyEx(xhTCPSocket);
+	NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
+	NetCore_TCPXCore_DestroyEx(xhWSSocket);
+	NetCore_TCPXCore_DestroyEx(xhMQTTSocket);
+
+	ManagePool_Thread_NQDestroy(xhTCPPool);
+	ManagePool_Thread_NQDestroy(xhHttpPool);
+	ManagePool_Thread_NQDestroy(xhWSPool);
+	ManagePool_Thread_NQDestroy(xhMQTTPool);
+
+	DBModule_MQData_Destory();
+	DBModule_MQUser_Destory();
+
+	SessionModule_Client_Destory();
+	HelpComponents_XLog_Destroy(xhLog);
 #ifdef _WINDOWS
 	WSACleanup();
 #endif
+	
+	if (bIsTest)
+	{
+		return -1;
+	}
 	return 0;
 }

@@ -61,7 +61,7 @@ pch.o:./pch.cpp
 
 InstallAll:InstallSo 
 InstallSo:./libMQCore_DBModule.$(FILEEXT)
-	cp ./libMQCore_DBModule.so ../../XEngine_Release/libMQCore_DBModule.$(FILEEXT)
+	cp ./libMQCore_DBModule.$(FILEEXT) ../../XEngine_Release/libMQCore_DBModule.$(FILEEXT)
 
 
 CleanAll:CleanObj CleanMk

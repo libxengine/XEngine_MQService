@@ -23,7 +23,7 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
             MQ_Service_ParamentHelp();
             return false;
         }
-        if ((0 == _tcsxcmp("-v",argv[i])) || (0 == _tcsxcmp("-V",argv[i])))
+        else if ((0 == _tcsxcmp("-v",argv[i])) || (0 == _tcsxcmp("-V",argv[i])))
         {
             printf("Version：V1.1.0\n");
             return false;
@@ -40,6 +40,10 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         {
             pSt_StartlParam->bDeamon = _ttxoi(argv[i + 1]);
         }
+		else if (0 == _tcsxcmp("-t", argv[i]))
+		{
+            bIsTest = true;
+		}
     }
 
     return true;

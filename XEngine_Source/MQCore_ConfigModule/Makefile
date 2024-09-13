@@ -59,7 +59,7 @@ pch.o:./pch.cpp
 
 InstallAll:InstallSo 
 InstallSo:./libMQCore_ConfigModule.$(FILEEXT)
-	cp ./libMQCore_ConfigModule.so ../../XEngine_Release/libMQCore_ConfigModule.$(FILEEXT)
+	cp ./libMQCore_ConfigModule.$(FILEEXT) ../../XEngine_Release/libMQCore_ConfigModule.$(FILEEXT)
 
 
 CleanAll:CleanObj CleanMk
