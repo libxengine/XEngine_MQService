@@ -5,7 +5,6 @@ PLATDIR =
 FILEEXT = 
 LIBFLAG = 
 RELEASE = 0
-UNICODE = 0
 LOADHDR = -I ./
 LOADSO = 
 LIB = -lHelpComponents_DataBase
@@ -16,14 +15,13 @@ ifeq ($(RELEASE),1)
 FLAGS = -c 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
-endif
-
-ifeq ($(UNICODE),1)
-UNICODE = -D _UNICODE
-else
-UNICODE = 
+	ifeq ($(PLATFORM),mac)
+		FLAGS = -c
+		DEBUG = -g 
+	else
+		FLAGS = -c -lc_p
+		DEBUG = -g -pg 
+	endif
 endif
 
 ifeq ($(PLATFORM),linux)
@@ -53,12 +51,12 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_DBModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 DBModule_MQData.o:./DBModule_MQData/DBModule_MQData.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./DBModule_MQData/DBModule_MQData.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./DBModule_MQData/DBModule_MQData.cpp 
 DBModule_MQUser.o:./DBModule_MQUser/DBModule_MQUser.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./DBModule_MQUser/DBModule_MQUser.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./DBModule_MQUser/DBModule_MQUser.cpp 
 
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
