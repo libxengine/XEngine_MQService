@@ -11,8 +11,13 @@ permissions:
   
 jobs:
   build:
-    runs-on: macos-13
-
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+          - os: macos-14
+    runs-on: ${{ matrix.os }}
+    
     steps:
        # 检出您的主仓库代码
       - name: Checkout main repository code
@@ -54,3 +59,8 @@ jobs:
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
             cd ..
+      #测试
+      -name: test
+       run: |
+            cd XEngine_Release
+            ./XEngine_MQServiceApp -t

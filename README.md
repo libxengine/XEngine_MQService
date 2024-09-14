@@ -41,7 +41,7 @@ GITEE:https://gitee.com/xyry/libxengine
 GITHUB:https://github.com/libxengine/xengine
 
 ##### 快速部署
-git clone https://gitee.com/xyry/libxengine.git 或者 git clone https://github.com/libxengine/xengine.git  
+git clone https://gitee.com/xyry/libxengine.git 或者 git clone https://github.com/libxengine/libxengine.git  
 window执行XEngine_WINEnv.bat 脚本.  
 Linux执行:sudo ./XEngine_LINEnv.sh -i 3  
 macos执行:./XEngine_LINEnv.sh -i 3  
@@ -122,24 +122,6 @@ make FLAGS=CleanAll 清理编译
 
 ## 关注我们
 如果你觉得这个软件对你有帮助,请你给我们一个START吧
-
-## 开发计划
-扩展获取消息的内容  
-数据库缓存功能  
-用户消息  
-完善消息属性生效  
-公众号和小程序  
-QOS(支持强回复确认)  
-功能开关  
-MQTT支持  
-支持时区设置  
-完善消息订阅(永存)  
-完善HTTP_CALL  
-高性能内存队列  
-扩充HTTP管理接口  
-消息变量,支持消息变量设置  
-序列号重置与优化  
-完善公用KEY的使用
 
 ## 提交问题
 
