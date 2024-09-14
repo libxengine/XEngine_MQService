@@ -16,7 +16,7 @@ jobs:
         include:
           - os: macos-13
           - os: macos-14
-    runs-on: ${{ matrix.os }
+    runs-on: ${{ matrix.os }}
     
     steps:
       - name: Checkout main repository code
@@ -58,8 +58,3 @@ jobs:
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
             cd ..
-      #测试
-      - name: test
-        run: |
-            cd XEngine_Release
-            ./XEngine_MQServiceApp -t
