@@ -46,14 +46,17 @@ jobs:
             ./XEngine_LINEnv.sh -i 3
             cd ..
       #编译
-      - name: make
+      - name: make debug
         run: | 
             cd XEngine_Source
             make PLATFORM=mac 
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
-
+      - name: make release
+            cd XEngine_Source
             make PLATFORM=mac RELEASE=1
             make PLATFORM=mac FLAGS=InstallAll
             make PLATFORM=mac FLAGS=CleanAll
-            cd ..
+      - name: test
+            cd XEngine_Release
+            ./XEngine_MQServiceApp
