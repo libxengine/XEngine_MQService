@@ -91,18 +91,17 @@ int main(int argc, char** argv)
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+	int nRet = -1;
 	LPCXSTR lpszHTTPMime = _X("./XEngine_Config/HttpMime.types");
 	LPCXSTR lpszHTTPCode = _X("./XEngine_Config/HttpCode.types");
 	LPCXSTR lpszDBConfig = _X("./XEngine_Config/XEngine_DBConfig.json");
 
-	XCHAR tszStringMsg[2048];
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 	THREADPOOL_PARAMENT** ppSt_ListTCPParam;
 	THREADPOOL_PARAMENT** ppSt_ListHTTPParam;
 	THREADPOOL_PARAMENT** ppSt_ListWSParam;
 	THREADPOOL_PARAMENT** ppSt_ListMQTTParam;
 
-	memset(tszStringMsg, '\0', sizeof(tszStringMsg));
 	memset(&st_XLogConfig, '\0', sizeof(HELPCOMPONENTS_XLOG_CONFIGURE));
 	memset(&st_ServiceCfg, '\0', sizeof(XENGINE_SERVERCONFIG));
 
@@ -141,17 +140,20 @@ int main(int argc, char** argv)
 	signal(SIGABRT, ServiceApp_Stop);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化服务器信号管理成功"));
 
-	if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql))
+	if (!bIsTest)
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
-		goto NETSERVICEEXIT;
+		if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		if (!DBModule_MQUser_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, MessageQueue_CBTask_TimePublish))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库服务成功"));
 	}
-	if (!DBModule_MQUser_Init((DATABASE_MYSQL_CONNECTINFO *)&st_ServiceCfg.st_XSql, MessageQueue_CBTask_TimePublish))
-	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
-		goto NETSERVICEEXIT;
-	}
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库服务成功"));
 
 	if (!SessionModule_Client_Init())
 	{
@@ -354,19 +356,19 @@ int main(int argc, char** argv)
 
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_OperatorVer_XNumberStr(), BaseLib_OperatorVer_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
 
-	bIsTest = true;
 	while (bIsRun)
 	{
 		if (bIsTest)
 		{
-			goto NETSERVICEEXIT;
+			nRet = 0;
+			break;
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 NETSERVICEEXIT:
 
 	bIsRun = false;
-	if (bIsTest)
+	if (bIsTest && 0 == nRet)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("服务启动完毕，测试程序退出..."));
 	}
@@ -374,6 +376,7 @@ NETSERVICEEXIT:
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("服务启动失败，服务器退出..."));
 	}
+	
 	HelpComponents_Datas_Destory(xhTCPPacket);
 	HttpProtocol_Server_DestroyEx(xhHTTPPacket);
 	RfcComponents_WSPacket_DestoryEx(xhWSPacket);
@@ -398,9 +401,5 @@ NETSERVICEEXIT:
 	WSACleanup();
 #endif
 	
-	if (bIsTest)
-	{
-		return -1;
-	}
-	return 0;
+	return nRet;
 }
