@@ -12,6 +12,8 @@ permissions:
 jobs:
   build:
     strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
       matrix:
         include:
           - os: macos-13
@@ -29,7 +31,7 @@ jobs:
       - name: Checkout dependency repository (xengine)
         uses: actions/checkout@v4
         with:
-          repository: libxengine/xengine
+          repository: libxengine/libxengine
           path: libxengine
 
       - name: sub module checkout (opensource)
