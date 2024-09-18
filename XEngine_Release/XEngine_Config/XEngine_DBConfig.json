@@ -1,10 +1,11 @@
 {
-    "MQUser":{
-        "UserTime":{
-            "bPubClear":false
+    "MQUser": {
+        "UserTime": {
+            "bPubClear": false
         }
     },
-    "MQData":{
-        "nDBMonth":3
+    "MQData": {
+        "bCommSub": true,
+        "nDBMonth": 3
     }
 }
