@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，MQTT消息服务没有被启用"));
 	}
 	//发送信息报告
-	if (st_ServiceCfg.st_XReport.bEnable)
+	if (st_ServiceCfg.st_XReport.bEnable && !bIsTest)
 	{
 		if (InfoReport_APIMachine_Send(st_ServiceCfg.st_XReport.tszAPIUrl, st_ServiceCfg.st_XReport.tszServiceName))
 		{
