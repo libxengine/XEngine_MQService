@@ -62,5 +62,6 @@ jobs:
           cp -r XEngine_Source/Release/*.exe XEngine_Release/
           cp -r XEngine_Source/VSCopy-x86.bat XEngine_Release/
           cd XEngine_Release
-          ./XEngine_MQServiceApp -t
+          ./VSCopy-x86.bat
+          ./XEngine_MQServiceApp.exe -t
         shell: pwsh
