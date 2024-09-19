@@ -37,11 +37,11 @@ c c++Message Service
 
 #### XEngine环境
 必须安装XEngine,版本需要V8.31或者以上版本,安装XEngine可以参考其Readme文档  
-GITEE:https://gitee.com/xyry/libxengine  
-GITHUB:https://github.com/libxengine/xengine
+GITEE:https://gitee.com/libxengine/libxengine  
+GITHUB:https://github.com/libxengine/libxengine
 
 ##### 快速部署
-git clone https://gitee.com/xyry/libxengine.git 或者 git clone https://github.com/libxengine/xengine.git  
+git clone https://gitee.com/libxengine/libxengine.git 或者 git clone https://github.com/libxengine/libxengine.git  
 window执行XEngine_WINEnv.bat 脚本.  
 Linux执行:sudo ./XEngine_LINEnv.sh -i 3  
 macos执行:./XEngine_LINEnv.sh -i 3  
@@ -53,7 +53,8 @@ macos执行:./XEngine_LINEnv.sh -i 3
 #### sub module
 由于依赖的子模块,在你checkout仓库后,在仓库目录下执行下面的命令拉取子模块  
 git submodule init  
-git submodule update
+git submodule update  
+如果github访问失败,你也可以clone该项目,在主目录下使用命令:git clone https://gitee.com/xengine/XEngine_OPenSource.git XEngine_Source/XEngine_Depend
 
 #### Windows
 使用VS打开并且编译,支持WINDOWS 7SP1以上系统  
@@ -121,24 +122,6 @@ make FLAGS=CleanAll 清理编译
 
 ## 关注我们
 如果你觉得这个软件对你有帮助,请你给我们一个START吧
-
-## 开发计划
-扩展获取消息的内容  
-数据库缓存功能  
-用户消息  
-完善消息属性生效  
-公众号和小程序  
-QOS(支持强回复确认)  
-功能开关  
-MQTT支持  
-支持时区设置  
-完善消息订阅(永存)  
-完善HTTP_CALL  
-高性能内存队列  
-扩充HTTP管理接口  
-消息变量,支持消息变量设置  
-序列号重置与优化  
-完善公用KEY的使用
 
 ## 提交问题
 

@@ -5,7 +5,6 @@ PLATDIR =
 FILEEXT = 
 LIBFLAG = 
 RELEASE = 0
-UNICODE = 0
 LOADHDR = -I ./ -I ../XEngine_Depend/XEngine_Module/jsoncpp
 LOADSO = -L ../XEngine_Depend/XEngine_Module/jsoncpp
 LIB = -ljsoncpp
@@ -16,14 +15,13 @@ ifeq ($(RELEASE),1)
 FLAGS = -c 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
-endif
-
-ifeq ($(UNICODE),1)
-UNICODE = -D _UNICODE
-else
-UNICODE = 
+	ifeq ($(PLATFORM),mac)
+		FLAGS = -c
+		DEBUG = -g 
+	else
+		FLAGS = -c -lc_p
+		DEBUG = -g -pg 
+	endif
 endif
 
 ifeq ($(PLATFORM),linux)
@@ -53,15 +51,15 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_ConfigModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 Config_Json.o:./Config_Json/Config_Json.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./Config_Json/Config_Json.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./Config_Json/Config_Json.cpp 
 						              
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
 InstallSo:./libMQCore_ConfigModule.$(FILEEXT)
-	cp ./libMQCore_ConfigModule.so ../../XEngine_Release/libMQCore_ConfigModule.$(FILEEXT)
+	cp ./libMQCore_ConfigModule.$(FILEEXT) ../../XEngine_Release/libMQCore_ConfigModule.$(FILEEXT)
 
 
 CleanAll:CleanObj CleanMk

@@ -3,7 +3,6 @@ PLATFORM = linux
 PLATVER = 
 PLATDIR = 
 RELEASE = 0
-UNICODE = 0
 LOADHDR = -I ./ 
 LOADSO = -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_DBModule \
 		 -L ../XEngine_Depend/XEngine_Module/jsoncpp -L ../XEngine_Depend/XEngine_Module/XEngine_InfoReport
@@ -17,14 +16,13 @@ ifeq ($(RELEASE),1)
 FLAGS = -c 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
-endif
-
-ifeq ($(UNICODE),1)
-UNICODE = -D _UNICODE
-else
-UNICODE = 
+	ifeq ($(PLATFORM),mac)
+		FLAGS = -c
+		DEBUG = -g 
+	else
+		FLAGS = -c -lc_p
+		DEBUG = -g -pg 
+	endif
 endif
 
 ifeq ($(PLATFORM),linux)
@@ -49,22 +47,22 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o XEngine_MQServiceApp $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
   
 MQService_Net.o:./MQService_Net.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Net.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_Net.cpp
 MQService_Config.o:./MQService_Config.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Config.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_Config.cpp 
 MQService_TCPTask.o:./MQService_TCPTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_TCPTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_TCPTask.cpp
 MQService_HttpTask.o:./MQService_HttpTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_HttpTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_HttpTask.cpp
 MQService_WSTask.o:./MQService_WSTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_WSTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_WSTask.cpp
 MQService_Task.o:./MQService_Task.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_Task.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_Task.cpp
 MQService_MQTTTask.o:./MQService_MQTTTask.cpp
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./MQService_MQTTTask.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MQService_MQTTTask.cpp
 
 XEngine_MQServiceApp.o:./XEngine_MQServiceApp.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./XEngine_MQServiceApp.cpp   
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./XEngine_MQServiceApp.cpp   
 
 
 InstallAll:InstallApp

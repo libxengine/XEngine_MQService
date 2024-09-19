@@ -78,6 +78,7 @@ typedef struct
     struct  
     {
         int nDBMonth;
+        bool bCommSub;
     }st_MQData;
 }MESSAGEQUEUE_DBCONFIG;
 //////////////////////////////////////////////////////////////////////////
