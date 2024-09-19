@@ -75,23 +75,3 @@ jobs:
           ./VSCopy-x86.bat
           ./XEngine_MQServiceApp.exe -t
         shell: pwsh
-      - name: Conditional Step for x64 Release
-        if: matrix.configuration == 'Release' && matrix.platform == 'x64'
-        run: |
-          cp -r XEngine_Source/x64/Release/*.dll XEngine_Release/
-          cp -r XEngine_Source/x64/Release/*.exe XEngine_Release/
-          cp -r XEngine_Source/VSCopy-x64.bat XEngine_Release/
-          cd XEngine_Release
-          ./VSCopy-x64.bat
-          ./XEngine_MQServiceApp.exe -t
-        shell: pwsh
-      - name: Conditional Step for x64 Debug
-        if: matrix.configuration == 'Debug' && matrix.platform == 'x64'
-        run: |
-          cp -r XEngine_Source/x64/Debug/*.dll XEngine_Release/
-          cp -r XEngine_Source/x64/Debug/*.exe XEngine_Release/
-          cp -r XEngine_Source/VSCopy-x64.bat XEngine_Release/
-          cd XEngine_Release
-          ./VSCopy-x64.bat
-          ./XEngine_MQServiceApp.exe -t
-        shell: pwsh

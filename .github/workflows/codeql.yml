@@ -13,12 +13,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - language: cpp
+        language: [ 'cpp' ]
         
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Checkout dependency repository (xengine)
+      uses: actions/checkout@v4
+      with:
+        repository: libxengine/libxengine
+        path: libxengine
+
+    - name: sub module checkout (opensource)
+      run: |
+        git submodule init
+        git submodule update
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -26,22 +36,11 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: sub module checkout (opensource)
-      run: |
-        git submodule init
-        git submodule update
-
-    - name: Checkout dependency repository (xengine)
-      uses: actions/checkout@v4
-      with:
-        repository: libxengine/libxengine
-        path: libxengine
     - name: Set up Dependency Environment Variables
       run: |
         cd libxengine
         chmod 777 *
         sudo ./XEngine_LINEnv.sh -i 3
-
     - name: make
       run: | 
         cd XEngine_Source
@@ -49,5 +48,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
