@@ -1,3 +1,23 @@
+XEngine_MQService V3.12.0.1001
+
+增加:编译CI工作流支持
+增加:注册绑定公用消息
+增加:服务启动测试参数
+增加:MQTT消息发布的支持
+修正:MQTT没有日志输出
+修正:WEBSOCKET不支持关闭和PING协议的问题
+修正:DBModule_MQUser_KeyList用户参数为NULL的问题
+修正:指定用户发送数据的问题
+
+added:build ci workflows supported
+added:register bind comm topic
+added:start test parameter
+added:mqtt message publish support
+fixed:log not print for mqtt
+fixed:close and ping protocol support for websocket protocol
+fixed:DBModule_MQUser_KeyList user parameter is null incorrect
+fixed:The problem of specifying invalid sending user
+======================================================================================
 XEngine_MQService V3.11.0.1001
 
 增加:MQTT协议服务支持
