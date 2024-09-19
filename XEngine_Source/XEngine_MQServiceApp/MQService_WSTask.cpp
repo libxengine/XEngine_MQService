@@ -34,6 +34,20 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 }
 bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode)
 {
+	if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_CLOSE == enOPCode)
+	{
+		int nSDLen = 0;
+		XCHAR tszMSGBuffer[MAX_PATH] = {};
+		RfcComponents_WSCodec_EncodeMsg(NULL, tszMSGBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_CLOSE);
+		NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszMSGBuffer, nSDLen);
+	}
+	else if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_PING == enOPCode)
+	{
+		int nSDLen = 0;
+		XCHAR tszMSGBuffer[MAX_PATH] = {};
+		RfcComponents_WSCodec_EncodeMsg(NULL, tszMSGBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_PONG);
+		NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszMSGBuffer, nSDLen);
+	}
 	if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT == enOPCode)
 	{
 		int nPLen = 0;
@@ -48,7 +62,7 @@ bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("Websocket客户端:%s,协议错误"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("Websocket客户端:%s,协议:%d 错误"), lpszClientAddr, enOPCode);
 	}
 	return true;
 }

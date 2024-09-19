@@ -5,10 +5,9 @@ PLATDIR =
 FILEEXT = 
 LIBFLAG = 
 RELEASE = 0
-UNICODE = 0
 LOADHDR = -I ./ 
 LOADSO = 
-LIB = 
+LIB = -lXEngine_BaseLib
 LIBEX = 
 OBJECTS = SessionModule_Client.o pch.o
 
@@ -16,15 +15,15 @@ ifeq ($(RELEASE),1)
 FLAGS = -c 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
+	ifeq ($(PLATFORM),mac)
+		FLAGS = -c
+		DEBUG = -g 
+	else
+		FLAGS = -c -lc_p
+		DEBUG = -g -pg 
+	endif
 endif
 
-ifeq ($(UNICODE),1)
-UNICODE = -D _UNICODE
-else
-UNICODE = 
-endif
 
 ifeq ($(PLATFORM),linux)
 	ifeq (/etc/redhat-release,$(wildcard /etc/redhat-release))
@@ -53,10 +52,10 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_SessionModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 SessionModule_Client.o:./SessionModule_Client/SessionModule_Client.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./SessionModule_Client/SessionModule_Client.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./SessionModule_Client/SessionModule_Client.cpp 
 
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 

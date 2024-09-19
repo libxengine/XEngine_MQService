@@ -24,7 +24,9 @@ using namespace std;
 
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;
-LPCXSTR lpszKey = _X("XEngine_NotifyKey");  //主题
+LPCXSTR lpszKey = _X("XEngine_CommKey");  //主题
+LPCXSTR lpszUser = _X("aaadddzxc");
+LPCXSTR lpszPass = _X("123123");
 
 void MQ_Register()
 {
@@ -48,8 +50,8 @@ void MQ_Register()
 	st_ProtocolInfo.nUserState = 0;
 	st_ProtocolInfo.nPhoneNumber = 13699999999;
 	st_ProtocolInfo.nIDNumber = 511000000000101010;
-	strcpy(st_ProtocolInfo.tszUserName, "123123aa");
-	strcpy(st_ProtocolInfo.tszUserPass, "123123");
+	strcpy(st_ProtocolInfo.tszUserName, lpszUser);
+	strcpy(st_ProtocolInfo.tszUserPass, lpszPass);
 	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERINFO);
@@ -95,8 +97,8 @@ void MQ_Authorize()
 	st_ProtocolHdr.byIsReply = true;           //获得处理返回结果
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	strcpy(st_ProtocolAuth.tszUserName, "123123aa");
-	strcpy(st_ProtocolAuth.tszUserPass, "123123");
+	strcpy(st_ProtocolAuth.tszUserName, lpszUser);
+	strcpy(st_ProtocolAuth.tszUserPass, lpszPass);
 
 	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERAUTH);
 
@@ -199,8 +201,8 @@ void MQ_DeleteUser()
 	st_ProtocolInfo.nUserState = 0;
 	st_ProtocolInfo.nPhoneNumber = 13699999999;
 	st_ProtocolInfo.nIDNumber = 511000000000101010;
-	strcpy(st_ProtocolInfo.tszUserName, "123123aa");
-	strcpy(st_ProtocolInfo.tszUserPass, "123123");
+	strcpy(st_ProtocolInfo.tszUserName, lpszUser);
+	strcpy(st_ProtocolInfo.tszUserPass, lpszPass);
 	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
 
 	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;

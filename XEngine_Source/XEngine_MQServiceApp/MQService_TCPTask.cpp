@@ -227,6 +227,20 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					return false;
 				}
 			}
+			//是否需要订阅公用消息队列
+			if (st_DBConfig.st_MQData.bCommSub)
+			{
+				XENGINE_DBUSERKEY st_Userkey;
+				memset(&st_Userkey, '\0', sizeof(XENGINE_DBUSERKEY));
+
+				_tcsxcpy(st_Userkey.tszUserName, st_UserInfo.tszUserName);
+				_tcsxcpy(st_Userkey.tszKeyName, st_ServiceCfg.tszTopic);
+				//创建
+				if (!DBModule_MQUser_KeyInsert(&st_Userkey))
+				{
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("%s消息端:%s,绑定消息队列主题失败,主题名称:%s,错误：%lX"), lpszClientType, lpszClientAddr, st_Userkey.tszKeyName, DBModule_GetLastError());
+				}
+			}
 			pSt_ProtocolHdr->wReserve = 0;
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
@@ -444,7 +458,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							//如果发送指定用户被指定.
 							if ((_tcsxlen(st_MQProtocol.tszMQUsr) > 0) && (0 != _tcsxnicmp(st_MQProtocol.tszMQUsr, tszUserName, _tcsxlen(st_MQProtocol.tszMQUsr))))
 							{
-								break;
+								continue;
 							}
 							SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 							SessionModule_Client_GetType(tszUserAddr, &nClientType);

@@ -250,7 +250,7 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 	Json::Value st_JsonUserTime = st_JsonUser["UserTime"];
 	pSt_DBConfig->st_MQUser.st_UserTime.bPubClear = st_JsonUserTime["bPubClear"].asBool();
 
-	if (st_JsonRoot["MQData"].empty() || (1 != st_JsonRoot["MQData"].size()))
+	if (st_JsonRoot["MQData"].empty() || (2 != st_JsonRoot["MQData"].size()))
 	{
 		Config_IsErrorOccur = true;
 		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
@@ -258,5 +258,6 @@ bool CConfig_Json::Config_Json_DBFile(LPCXSTR lpszConfigFile, MESSAGEQUEUE_DBCON
 	}
 	Json::Value st_JsonMQData = st_JsonRoot["MQData"];
 	pSt_DBConfig->st_MQData.nDBMonth = st_JsonMQData["nDBMonth"].asInt();
+	pSt_DBConfig->st_MQData.bCommSub = st_JsonMQData["bCommSub"].asBool();
 	return true;
 }

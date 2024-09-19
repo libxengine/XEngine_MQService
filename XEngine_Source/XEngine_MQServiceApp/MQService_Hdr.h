@@ -60,6 +60,7 @@ typedef std::string tstring;
 #include "../MQCore_ProtocolModule/Protocol_Error.h"
 
 extern bool bIsRun;
+extern bool bIsTest;
 extern XHANDLE xhLog;
 extern XHANDLE xhTCPSocket;
 extern XHANDLE xhHTTPSocket;

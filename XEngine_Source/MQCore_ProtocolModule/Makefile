@@ -5,10 +5,9 @@ PLATDIR =
 FILEEXT = 
 LIBFLAG = 
 RELEASE = 0
-UNICODE = 0
 LOADHDR = -I ./ -I ../XEngine_Depend/XEngine_Module/jsoncpp
 LOADSO = -L ../XEngine_Depend/XEngine_Module/jsoncpp
-LIB = -ljsoncpp
+LIB = -ljsoncpp -lXEngine_BaseLib -lXEngine_OPenSsl -lRfcComponents_MQTTProtocol
 LIBEX = 
 OBJECTS = ProtocolModule_Packet.o ProtocolModule_Parse.o pch.o
 
@@ -16,14 +15,13 @@ ifeq ($(RELEASE),1)
 FLAGS = -c 
 DEBUG = 
 else
-FLAGS = -c -lc_p
-DEBUG = -g -pg 
-endif
-
-ifeq ($(UNICODE),1)
-UNICODE = -D _UNICODE
-else
-UNICODE = 
+	ifeq ($(PLATFORM),mac)
+		FLAGS = -c
+		DEBUG = -g 
+	else
+		FLAGS = -c -lc_p
+		DEBUG = -g -pg 
+	endif
 endif
 
 ifeq ($(PLATFORM),linux)
@@ -53,12 +51,12 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_ProtocolModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 ProtocolModule_Packet.o:./ProtocolModule_Packet/ProtocolModule_Packet.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./ProtocolModule_Packet/ProtocolModule_Packet.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./ProtocolModule_Packet/ProtocolModule_Packet.cpp 
 ProtocolModule_Parse.o:./ProtocolModule_Parse/ProtocolModule_Parse.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./ProtocolModule_Parse/ProtocolModule_Parse.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./ProtocolModule_Parse/ProtocolModule_Parse.cpp 
 							              
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
