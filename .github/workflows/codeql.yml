@@ -41,7 +41,6 @@ jobs:
         cd libxengine
         chmod 777 *
         sudo ./XEngine_LINEnv.sh -i 3
-        cd ..
 
     - name: make
       run: | 
@@ -49,11 +48,6 @@ jobs:
         make
         make FLAGS=InstallAll
         make FLAGS=CleanAll
-
-        make RELEASE=1
-        make FLAGS=InstallAll
-        make FLAGS=CleanAll
-        cd ..
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
