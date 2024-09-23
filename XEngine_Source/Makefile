@@ -20,10 +20,23 @@ XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
 .PHONY:MakeAll 
 MakeAll:$(XENGINE_MODULES)
 
+ifeq ($(PLATFORM),linux)
+	FILEEXT = so
+else ifeq ($(PLATFORM),mac)
+	FILEEXT = dylib
+endif
 libjsoncpp.so:
+ifeq ($(FLAGS), InstallAll)
+	cp $(BASE_THIRDPART_JSONCPP)/libjsoncpp.$(FILEEXT) ../XEngine_Release/
+else
 	make -C $(BASE_THIRDPART_JSONCPP) PLATFORM=$(PLATFORM) $(FLAGS)
+endif
 libXEngine_InfoReport.so:
+ifeq ($(FLAGS), InstallAll)
+	cp $(BASE_THIRDPART_REPORT)/libXEngine_InfoReport.$(FILEEXT) ../XEngine_Release/
+else
 	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
+endif
 
 libMQCore_ConfigModule.so:
 	make -C $(BASE_CONFIG_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
