@@ -13,6 +13,12 @@ BASE_SESSION_PATH = ./MQCore_SessionModule
 
 APP_SERVICE_PATH = ./XEngine_MQServiceApp
 
+ifeq ($(PLATFORM),linux)
+	FILEEXT = so
+else ifeq ($(PLATFORM),mac)
+	FILEEXT = dylib
+endif
+
 XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
                 libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_DBModule.so     \
 		        XEngine_MQServiceApp.exe 
@@ -20,11 +26,7 @@ XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
 .PHONY:MakeAll 
 MakeAll:$(XENGINE_MODULES)
 
-ifeq ($(PLATFORM),linux)
-	FILEEXT = so
-else ifeq ($(PLATFORM),mac)
-	FILEEXT = dylib
-endif
+
 libjsoncpp.so:
 ifeq ($(FLAGS), InstallAll)
 	cp $(BASE_THIRDPART_JSONCPP)/libjsoncpp.$(FILEEXT) ../XEngine_Release/
