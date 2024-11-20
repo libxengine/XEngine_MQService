@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <io.h>
+#include <minidumpapiset.h>
 #else
 #include <unistd.h>
 #include <sys/wait.h>
@@ -98,6 +99,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_MQTTProtocol.lib")
 #pragma comment(lib,"Ws2_32.lib")
+#pragma comment(lib,"Dbghelp.lib")
 #ifdef _DEBUG
 #ifdef _WIN64
 #pragma comment(lib,"../x64/Debug/MQCore_ConfigModule.lib")
