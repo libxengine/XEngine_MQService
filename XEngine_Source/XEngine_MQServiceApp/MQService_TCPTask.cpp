@@ -453,7 +453,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
 						//只有在线用户才需要即时通知
-						if (SessionModule_Client_GetExist(NULL, tszUserName))
+						if (SessionModule_Client_GetExist(NULL, ppSt_ListUser[i]->tszUserName))
 						{
 							//如果发送指定用户被指定.
 							if ((_tcsxlen(st_MQProtocol.tszMQUsr) > 0) && (0 != _tcsxnicmp(st_MQProtocol.tszMQUsr, tszUserName, _tcsxlen(st_MQProtocol.tszMQUsr))))
