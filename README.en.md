@@ -33,6 +33,7 @@ this software support following features
 17. binary message
 18. http interface management
 19. message attritube
+20. point to point message
 
 ## install
 
@@ -113,6 +114,7 @@ Address:app.xyry.org Port:TCP 5200,WEBSOCKET 5201,HTTP Management Interface 5202
 2. Create new Feat_xxx branch
 3. Submit the code
 4. New Pull Request
+5. Submit develop branch
 
 ## Follow us
 If you think this software is helpful to you, please give us a START
