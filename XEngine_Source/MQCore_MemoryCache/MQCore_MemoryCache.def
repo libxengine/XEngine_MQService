@@ -1,0 +1,10 @@
+LIBRARY
+
+EXPORTS
+	MemoryCache_GetLastError
+
+	MemoryCache_DBData_Init
+	MemoryCache_DBData_Destory
+	MemoryCache_DBData_DataInsert
+	MemoryCache_DBData_DataQuery
+	MemoryCache_DBData_DataDelete
