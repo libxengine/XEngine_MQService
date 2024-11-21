@@ -25,7 +25,7 @@
         "SQLAddr":"10.0.3.154",
         "SQLPort":3306,
         "SQLUser":"root",
-        "SQLPass":"123123"
+        "SQLPass":"123123aa"
     },
     "XPass":{
         "nTimeout":2,
@@ -33,6 +33,11 @@
         "tszPassUNReg":"",
         "tszPassLogin":"",
         "tszPassLogout":""
+    },
+    "XMemory":{
+        "bEnable":true,
+        "nTimeLast":3600,
+        "nTimeStart":0
     },
     "XReport":{
         "bEnable":true,
