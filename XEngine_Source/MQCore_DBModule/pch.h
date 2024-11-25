@@ -30,6 +30,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_HelpComponents/DataBase_Error.h>
 #include "DBModule_Define.h"
 #include "DBModule_Error.h"
+#include "../MQCore_MemoryCache/MemoryCache_Define.h"
+#include "../MQCore_MemoryCache/MemoryCache_Error.h"
 /********************************************************************
 //    Created:     2022/02/23  16:14:35
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule\pch.h
@@ -47,4 +49,17 @@ extern XLONG DBModule_dwErrorCode;
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_DataBase.lib")
+#ifdef _DEBUG
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Debug/MQCore_MemoryCache.lib")
+#else
+#pragma comment(lib,"../Debug/MQCore_MemoryCache.lib")
+#endif
+#else
+#ifdef _WIN64
+#pragma comment(lib,"../x64/Release/MQCore_MemoryCache.lib")
+#else
+#pragma comment(lib,"../Release/MQCore_MemoryCache.lib")
+#endif
+#endif
 #endif

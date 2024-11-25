@@ -108,7 +108,15 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataInsert(XENGINE_DBMESSAGEQUEUE* 
 	std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
 
 	st_LockerQuery.lock();
-	stl_MapQuery[stl_Key] = st_DBInfo;
+	auto stl_MapIterator = stl_MapQuery.find(stl_Key);
+	if (stl_MapIterator == stl_MapQuery.end())
+	{
+		stl_MapQuery[stl_Key] = st_DBInfo;
+	}
+	else
+	{
+		stl_MapIterator->second.st_DBMessageInfo = *pSt_DBMessageInfo;
+	}
 	st_LockerQuery.unlock();
     return true;
 }

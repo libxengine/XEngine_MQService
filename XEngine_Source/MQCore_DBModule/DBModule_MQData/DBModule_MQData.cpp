@@ -30,12 +30,17 @@ CDBModule_MQData::~CDBModule_MQData()
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
+ 参数.二：bMemoryCache
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否启用缓存支持
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector)
+bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryCache)
 {
     DBModule_IsErrorOccur = false;
 
@@ -45,6 +50,7 @@ bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return false;
     }
+	m_bMemoryCache = bMemoryCache;
     //连接数据库
     _tcsxcpy(pSt_DBConnector->tszDBName, _X("XEngine_MQData"));
     if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector))
@@ -115,6 +121,10 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
         DBModule_dwErrorCode = DataBase_GetLastError();
         return false;
     }
+	if (m_bMemoryCache)
+	{
+		MemoryCache_DBData_DataInsert(pSt_DBInfo);
+	}
     return true;
 }
 /********************************************************************
@@ -139,6 +149,14 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
 		return false;
+	}
+
+	if (m_bMemoryCache)
+	{
+		if (MemoryCache_DBData_DataQuery(pSt_DBInfo))
+		{
+			return true;
+		}
 	}
 	//查询
 	XNETHANDLE xhTable = 0;
@@ -216,6 +234,11 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		_tcsxcpy(pSt_DBInfo->tszQueueCreateTime, pptszResult[nPos]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+
+	if (m_bMemoryCache)
+	{
+		MemoryCache_DBData_DataInsert(pSt_DBInfo);
+	}
 	return true;
 }
 /********************************************************************
@@ -269,6 +292,10 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
 		return false;
+	}
+	if (m_bMemoryCache)
+	{
+		MemoryCache_DBData_DataInsert(pSt_DBInfo);
 	}
 	return true;
 }

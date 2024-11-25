@@ -6,8 +6,8 @@ FILEEXT =
 LIBFLAG = 
 RELEASE = 0
 LOADHDR = -I ./
-LOADSO = 
-LIB = -lXEngine_BaseLib -lHelpComponents_DataBase
+LOADSO = -L ../MQCore_MemoryCache
+LIB = -lXEngine_BaseLib -lHelpComponents_DataBase -lMQCore_MemoryCache
 LIBEX = 
 OBJECTS = DBModule_MQData.o DBModule_MQUser.o pch.o
 
