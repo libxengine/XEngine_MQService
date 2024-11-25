@@ -184,18 +184,35 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* 
 		return false;
 	}
 
-	std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
-
 	st_LockerQuery.lock();
-	auto stl_MapIterator = stl_MapQuery.find(stl_Key);
-	if (stl_MapIterator == stl_MapQuery.end())
+	if (-1 == pSt_DBMessageInfo->nQueueSerial)
 	{
-		MemoryCache_IsErrorOccur = true;
-		MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_NOTFOUND;
-		st_LockerQuery.unlock();
-		return false;
+		for (auto stl_MapIterator = stl_MapQuery.begin(); stl_MapIterator != stl_MapQuery.end(); )
+		{
+			if (std::get<1>((stl_MapIterator->first)) == pSt_DBMessageInfo->tszQueueName)
+			{
+				stl_MapIterator = stl_MapQuery.erase(stl_MapIterator);
+			}
+			else
+			{
+				stl_MapIterator++;
+			}
+		}
 	}
-	stl_MapQuery.erase(stl_Key);
+	else
+	{
+		std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
+
+		auto stl_MapIterator = stl_MapQuery.find(stl_Key);
+		if (stl_MapIterator == stl_MapQuery.end())
+		{
+			MemoryCache_IsErrorOccur = true;
+			MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_NOTFOUND;
+			st_LockerQuery.unlock();
+			return false;
+		}
+		stl_MapQuery.erase(stl_Key);
+	}
 	st_LockerQuery.unlock();
 	return true;
 }

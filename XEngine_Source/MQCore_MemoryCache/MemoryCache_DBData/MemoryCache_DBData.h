@@ -24,7 +24,6 @@ struct TupleHash
 	{
 		return std::apply([](auto&&... args)
 			{
-			// 使用std::hash对每个元素分别哈希并组合结果
 			std::size_t seed = 0;
 			((seed ^= std::hash<std::decay_t<decltype(args)>>()(args) + 0x9e3779b9 + (seed << 6) + (seed >> 2)), ...);
 			return seed;

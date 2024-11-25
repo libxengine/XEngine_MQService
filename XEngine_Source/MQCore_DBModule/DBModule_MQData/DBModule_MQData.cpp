@@ -602,6 +602,15 @@ bool CDBModule_MQData::DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName)
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return false;
 	}
+
+	if (m_bMemoryCache)
+	{
+		XENGINE_DBMESSAGEQUEUE st_MessageQueue = {};
+
+		st_MessageQueue.nQueueSerial = -1;
+		_tcsxcpy(st_MessageQueue.tszQueueName, lpszQueueName);
+		MemoryCache_DBData_DataDelete(&st_MessageQueue);
+	}
 	return true;
 }
 /********************************************************************
