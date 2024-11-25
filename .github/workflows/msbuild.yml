@@ -63,18 +63,17 @@ jobs:
           cp -r XEngine_Source/Release/*.exe XEngine_Release/
           cp -r XEngine_Source/VSCopy-x86.bat XEngine_Release/
           cd XEngine_Release
-          ./VSCopy-x86.bat
+          ./VSCopy_x86.bat
           ./XEngine_MQServiceApp.exe -t
         shell: pwsh
       - name: Conditional Step for x86 Debug
-        if: matrix.configuration == 'Debug' && matrix.platform == 'x86'
+        if: matrix.configuration == 'Release' && matrix.platform == 'x64'
         run: |
-          cp -r XEngine_Source/Debug/*.dll XEngine_Release/
-          cp -r XEngine_Source/Debug/*.exe XEngine_Release/
+          cp -r XEngine_Source/x64/Release/*.dll XEngine_Release/
+          cp -r XEngine_Source/x64/Release/*.exe XEngine_Release/
           cp -r XEngine_Source/VSCopy-x86.bat XEngine_Release/
           cd XEngine_Release
-          ./VSCopy-x86.bat
-          ./XEngine_MQServiceApp.exe -t
+          ./VSCopy_x64.bat
         shell: pwsh
 
       - name: Upload folder as artifact with x86
