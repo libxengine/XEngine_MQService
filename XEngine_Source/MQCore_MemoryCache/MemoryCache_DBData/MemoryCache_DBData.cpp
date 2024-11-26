@@ -202,16 +202,11 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* 
 	else
 	{
 		std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
-
 		auto stl_MapIterator = stl_MapQuery.find(stl_Key);
-		if (stl_MapIterator == stl_MapQuery.end())
+		if (stl_MapIterator != stl_MapQuery.end())
 		{
-			MemoryCache_IsErrorOccur = true;
-			MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_NOTFOUND;
-			st_LockerQuery.unlock();
-			return false;
+			stl_MapQuery.erase(stl_Key);
 		}
-		stl_MapQuery.erase(stl_Key);
 	}
 	st_LockerQuery.unlock();
 	return true;
