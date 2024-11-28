@@ -39,23 +39,52 @@ CMemoryCache_DBData::~CMemoryCache_DBData()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast, int nTimeStart)
+bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast /* = 3600 */, int nTimeStart /* = 0 */)
 {
     MemoryCache_IsErrorOccur = false;
 
 	bIsRun = true;
 
+	
 	m_nTimeLast = nTimeLast;
 	m_nTimeStart = nTimeStart;
 
-	pSTDThread = std::make_unique<std::thread>(DBModule_MQUser_TimeThread, this);
-	if (NULL == pSTDThread)
+	pSTDThread_Query = std::make_unique<std::thread>(DBModule_MQUser_TimeThread, this);
+	if (NULL == pSTDThread_Query)
+	{
+		MemoryCache_IsErrorOccur = true;
+		MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_THREAD;
+		return false;
+	}
+	pSTDThread_Insert = std::make_unique<std::thread>(DBModule_MQUser_InsertThread, this);
+	if (NULL == pSTDThread_Insert)
 	{
 		MemoryCache_IsErrorOccur = true;
 		MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_THREAD;
 		return false;
 	}
     return true;
+}
+/********************************************************************
+函数名称：MemoryCache_DBData_SetHandle
+函数功能：设置句柄
+ 参数.一：xhDBSQL
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：数据库句柄
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CMemoryCache_DBData::MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL)
+{
+	MemoryCache_IsErrorOccur = false;
+
+	m_xhDBSQL = xhDBSQL;
+
+	return true;
 }
 /********************************************************************
 函数名称：MemoryCache_DBData_Destory
@@ -70,9 +99,13 @@ bool CMemoryCache_DBData::MemoryCache_DBData_Destory()
     MemoryCache_IsErrorOccur = false;
 
 	bIsRun = false;
-	if (NULL != pSTDThread)
+	if (NULL != pSTDThread_Query)
 	{
-		pSTDThread->join();
+		pSTDThread_Query->join();
+	}
+	if (NULL != pSTDThread_Insert)
+	{
+		pSTDThread_Insert->join();
 	}
     return true;
 }
@@ -211,6 +244,35 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* 
 	st_LockerQuery.unlock();
 	return true;
 }
+/********************************************************************
+函数名称：MemoryCache_DBData_QueueInsert
+函数功能：队列插入工具
+ 参数.一：lpszSQLStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要插入的语句
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CMemoryCache_DBData::MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr)
+{
+	MemoryCache_IsErrorOccur = false;
+
+	if (NULL == lpszSQLStr)
+	{
+		MemoryCache_IsErrorOccur = true;
+		MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_PARAMENT;
+		return false;
+	}
+
+	st_LockerList.lock();
+	stl_ListInsert.push_back(lpszSQLStr);
+	st_LockerList.unlock();
+	return true;
+}
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
@@ -240,6 +302,28 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 		{
 			XENGINE_DBMESSAGEQUEUE st_DBMessage = *stl_ListIterator;
 			pClass_This->MemoryCache_DBData_DataDelete(&st_DBMessage);
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	return 0;
+}
+XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_InsertThread(XPVOID lParam)
+{
+	CMemoryCache_DBData* pClass_This = (CMemoryCache_DBData*)lParam;
+
+	while (pClass_This->bIsRun)
+	{
+		if (!pClass_This->stl_ListInsert.empty())
+		{
+			pClass_This->st_LockerList.lock();
+			std::string m_StrSQLInsert = pClass_This->stl_ListInsert.front();
+			pClass_This->stl_ListInsert.pop_front();
+			pClass_This->st_LockerList.unlock();
+
+			if (!DataBase_MySQL_Execute(pClass_This->m_xhDBSQL, m_StrSQLInsert.c_str()))
+			{
+
+			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}

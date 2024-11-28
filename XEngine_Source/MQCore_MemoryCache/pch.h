@@ -44,3 +44,7 @@
 *********************************************************************/
 extern bool MemoryCache_IsErrorOccur;
 extern XLONG MemoryCache_dwErrorCode;
+
+#ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_DataBase.lib")
+#endif

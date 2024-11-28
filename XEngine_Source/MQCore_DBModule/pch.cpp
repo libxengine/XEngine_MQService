@@ -31,9 +31,9 @@ extern "C" XLONG DBModule_GetLastError(int* pInt_SysError)
 /*************************************************************************
 						消息队列导出函数
 **************************************************************************/
-extern "C" bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, bool bMemoryCache)
+extern "C" bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, bool bMemoryQuery, bool bMemoryInsert)
 {
-	return m_DBData.DBModule_MQData_Init(pSt_DBConnector, bMemoryCache);
+	return m_DBData.DBModule_MQData_Init(pSt_DBConnector, bMemoryQuery, bMemoryInsert);
 }
 extern "C" bool DBModule_MQData_Destory()
 {

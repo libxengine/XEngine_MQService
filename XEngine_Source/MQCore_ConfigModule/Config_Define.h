@@ -57,7 +57,8 @@ typedef struct
     }st_XPass;
     struct  
     {
-        bool bEnable;
+        bool bDataQueryEnable;
+        bool bDataInsertEnable;
         int nTimeLast;
         int nTimeStart;
     }st_XMemory;

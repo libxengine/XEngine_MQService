@@ -35,7 +35,8 @@
         "tszPassLogout":""
     },
     "XMemory":{
-        "bEnable":true,
+        "bDataQueryEnable":true,
+        "bDataInsertEnable":true,
         "nTimeLast":3600,
         "nTimeStart":0
     },

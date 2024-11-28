@@ -17,7 +17,7 @@ public:
 	CDBModule_MQData();
 	~CDBModule_MQData();
 public:
-	bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryCache = true);
+	bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery = true, bool bMemoryInsert = true);
 	bool DBModule_MQData_Destory();
 	bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
@@ -29,6 +29,7 @@ public:
 	bool DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_ListCount);
 	bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count);
 private:
-	bool m_bMemoryCache = false;
+	bool m_bMemoryQuery = false;
+	bool m_bMemoryInsert = false;
 	XNETHANDLE xhDBSQL = 0;
 };

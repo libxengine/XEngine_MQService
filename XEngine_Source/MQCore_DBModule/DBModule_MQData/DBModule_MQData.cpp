@@ -30,17 +30,22 @@ CDBModule_MQData::~CDBModule_MQData()
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
- 参数.二：bMemoryCache
+ 参数.二：bMemoryQuery
   In/Out：In
   类型：逻辑型
   可空：Y
-  意思：是否启用缓存支持
+  意思：是否启用查询缓存支持
+ 参数.三：bMemoryInsert
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否启用插入缓存支持
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryCache)
+bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery /* = true */, bool bMemoryInsert /* = true */)
 {
     DBModule_IsErrorOccur = false;
 
@@ -50,7 +55,8 @@ bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return false;
     }
-	m_bMemoryCache = bMemoryCache;
+	m_bMemoryQuery = bMemoryQuery;
+	m_bMemoryInsert = bMemoryInsert;
     //连接数据库
     _tcsxcpy(pSt_DBConnector->tszDBName, _X("XEngine_MQData"));
     if (!DataBase_MySQL_Connect(&xhDBSQL, pSt_DBConnector))
@@ -59,6 +65,10 @@ bool CDBModule_MQData::DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         DBModule_dwErrorCode = DataBase_GetLastError();
         return false;
     }
+	if (m_bMemoryInsert)
+	{
+		MemoryCache_DBData_SetHandle(xhDBSQL);
+	}
     return true;
 }
 /********************************************************************
@@ -115,13 +125,20 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	memcpy(tszSQLStatement + nRet, tszSQLCoder, nLen);
 	nRet += nLen;
 
-	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRet))
-    {
-        DBModule_IsErrorOccur = true;
-        DBModule_dwErrorCode = DataBase_GetLastError();
-        return false;
-    }
-	if (m_bMemoryCache)
+	if (m_bMemoryInsert)
+	{
+		MemoryCache_DBData_QueueInsert(tszSQLStatement);
+	}
+	else
+	{
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nRet))
+		{
+			DBModule_IsErrorOccur = true;
+			DBModule_dwErrorCode = DataBase_GetLastError();
+			return false;
+		}
+	}
+	if (m_bMemoryQuery)
 	{
 		MemoryCache_DBData_DataInsert(pSt_DBInfo);
 	}
@@ -151,7 +168,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		return false;
 	}
 
-	if (m_bMemoryCache)
+	if (m_bMemoryQuery)
 	{
 		if (MemoryCache_DBData_DataQuery(pSt_DBInfo))
 		{
@@ -235,7 +252,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
 
-	if (m_bMemoryCache)
+	if (m_bMemoryQuery)
 	{
 		MemoryCache_DBData_DataInsert(pSt_DBInfo);
 	}
@@ -293,7 +310,7 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
 		return false;
 	}
-	if (m_bMemoryCache)
+	if (m_bMemoryQuery)
 	{
 		MemoryCache_DBData_DataInsert(pSt_DBInfo);
 	}
@@ -603,7 +620,7 @@ bool CDBModule_MQData::DBModule_MQData_DeleteTable(LPCXSTR lpszQueueName)
 		return false;
 	}
 
-	if (m_bMemoryCache)
+	if (m_bMemoryQuery)
 	{
 		XENGINE_DBMESSAGEQUEUE st_MessageQueue = {};
 

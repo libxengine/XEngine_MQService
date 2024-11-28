@@ -33,6 +33,10 @@ extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart)
 {
     return m_MemoryDBData.MemoryCache_DBData_Init(nTimeLast, nTimeStart);
 }
+extern "C" bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL)
+{
+    return m_MemoryDBData.MemoryCache_DBData_SetHandle(xhDBSQL);
+}
 extern "C" bool MemoryCache_DBData_Destory()
 {
     return m_MemoryDBData.MemoryCache_DBData_Destory();
@@ -48,4 +52,8 @@ extern "C" bool MemoryCache_DBData_DataQuery(XENGINE_DBMESSAGEQUEUE* pSt_DBMessa
 extern "C" bool MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo)
 {
     return m_MemoryDBData.MemoryCache_DBData_DataDelete(pSt_DBMessageInfo);
+}
+extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr)
+{
+    return m_MemoryDBData.MemoryCache_DBData_QueueInsert(lpszSQLStr);
 }

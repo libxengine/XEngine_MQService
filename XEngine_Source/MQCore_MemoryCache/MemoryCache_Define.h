@@ -37,6 +37,20 @@ extern "C" XLONG MemoryCache_GetLastError(int *pInt_SysError = NULL);
 *********************************************************************/
 extern "C" bool MemoryCache_DBData_Init(int nTimeLast = 3600, int nTimeStart = 0);
 /********************************************************************
+函数名称：MemoryCache_DBData_SetHandle
+函数功能：设置句柄
+ 参数.一：xhDBSQL
+  In/Out：In
+  类型：句柄
+  可空：N
+  意思：数据库句柄
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL);
+/********************************************************************
 函数名称：MemoryCache_DBData_Destory
 函数功能：销毁高速缓存管理器
 返回值
@@ -87,3 +101,17 @@ extern "C" bool MemoryCache_DBData_DataQuery(XENGINE_DBMESSAGEQUEUE* pSt_DBMessa
 备注：
 *********************************************************************/
 extern "C" bool MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);
+/********************************************************************
+函数名称：MemoryCache_DBData_QueueInsert
+函数功能：队列插入工具
+ 参数.一：lpszSQLStr
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要插入的语句
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr);

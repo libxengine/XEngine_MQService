@@ -166,7 +166,7 @@ int main(int argc, char** argv)
 	signal(SIGABRT, ServiceApp_Stop);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化服务器信号管理成功"));
 
-	if (st_ServiceCfg.st_XMemory.bEnable)
+	if (st_ServiceCfg.st_XMemory.bDataQueryEnable || st_ServiceCfg.st_XMemory.bDataInsertEnable)
 	{
 		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart))
 		{
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 
 	if (!bIsTest)
 	{
-		if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, st_ServiceCfg.st_XMemory.bEnable))
+		if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, st_ServiceCfg.st_XMemory.bDataQueryEnable, st_ServiceCfg.st_XMemory.bDataInsertEnable))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
 			goto NETSERVICEEXIT;

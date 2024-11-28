@@ -71,17 +71,22 @@ extern "C" XLONG DBModule_GetLastError(int *pInt_SysError = NULL);
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
- 参数.二：bMemoryCache
+ 参数.二：bMemoryQuery
   In/Out：In
   类型：逻辑型
   可空：Y
-  意思：是否启用缓存支持
+  意思：是否启用查询缓存支持
+ 参数.三：bMemoryInsert
+  In/Out：In
+  类型：逻辑型
+  可空：Y
+  意思：是否启用插入缓存支持
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryCache = true);
+extern "C" bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery = true, bool bMemoryInsert = true);
 /********************************************************************
 函数名称：DBModule_MQData_Destory
 函数功能：销毁数据库管理器
