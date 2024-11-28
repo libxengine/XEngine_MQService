@@ -7,7 +7,7 @@ LIBFLAG =
 RELEASE = 0
 LOADHDR = -I ./
 LOADSO = 
-LIB = 
+LIB = -lHelpComponents_DataBase
 LIBEX = 
 OBJECTS = MemoryCache_DBData.o pch.o
 
