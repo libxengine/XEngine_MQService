@@ -10,6 +10,15 @@
 //    Purpose:     导出的函数
 //    History:
 *********************************************************************/
+typedef enum
+{
+    ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY = 0,
+    ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT = 1
+}ENUM_MEMORYCACHE_CALLBACK_TYPE;
+//////////////////////////////////////////////////////////////////////////
+//                       导出的回调
+//////////////////////////////////////////////////////////////////////////
+typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE)(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XENGINE_DBMESSAGEQUEUE* pSt_DBInfo, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////
@@ -35,7 +44,7 @@ extern "C" XLONG MemoryCache_GetLastError(int *pInt_SysError = NULL);
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool MemoryCache_DBData_Init(int nTimeLast = 3600, int nTimeStart = 0);
+extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 /********************************************************************
 函数名称：MemoryCache_DBData_SetHandle
 函数功能：设置句柄
@@ -109,9 +118,14 @@ extern "C" bool MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* pSt_DBMess
   类型：常量字符指针
   可空：N
   意思：输入要插入的语句
+ 参数.二：pSt_DBMessageInfo
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要插入的数据
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr);
+extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);

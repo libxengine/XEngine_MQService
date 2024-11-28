@@ -29,9 +29,9 @@ extern "C" XLONG MemoryCache_GetLastError(int* pInt_SysError)
 /*************************************************************************
                         高速缓存导出函数
 **************************************************************************/
-extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart)
+extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam)
 {
-    return m_MemoryDBData.MemoryCache_DBData_Init(nTimeLast, nTimeStart);
+    return m_MemoryDBData.MemoryCache_DBData_Init(nTimeLast, nTimeStart, fpCall_MemoryCache, lParam);
 }
 extern "C" bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL)
 {
@@ -53,7 +53,7 @@ extern "C" bool MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* pSt_DBMess
 {
     return m_MemoryDBData.MemoryCache_DBData_DataDelete(pSt_DBMessageInfo);
 }
-extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr)
+extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo)
 {
-    return m_MemoryDBData.MemoryCache_DBData_QueueInsert(lpszSQLStr);
+    return m_MemoryDBData.MemoryCache_DBData_QueueInsert(lpszSQLStr, pSt_DBMessageInfo);
 }

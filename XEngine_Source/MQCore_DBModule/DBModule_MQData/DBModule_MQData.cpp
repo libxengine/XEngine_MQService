@@ -127,7 +127,7 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 
 	if (m_bMemoryInsert)
 	{
-		MemoryCache_DBData_QueueInsert(tszSQLStatement);
+		MemoryCache_DBData_QueueInsert(tszSQLStatement, pSt_DBInfo);
 	}
 	else
 	{

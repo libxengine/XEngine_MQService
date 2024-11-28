@@ -16,6 +16,11 @@ typedef struct
 	time_t nTimeStart;
 	time_t nTimeLast;
 }MEMORYCACHE_DBINFO;
+typedef struct
+{
+	XENGINE_DBMESSAGEQUEUE st_DBMessageInfo;
+	std::string m_StrSQL;
+}MEMORYCACHE_DBINSERT;
 
 struct TupleHash 
 {
@@ -37,7 +42,7 @@ public:
 	CMemoryCache_DBData();
 	~CMemoryCache_DBData();
 public:
-	bool MemoryCache_DBData_Init(int nTimeLast = 3600, int nTimeStart = 0);
+	bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 	bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL);
 	bool MemoryCache_DBData_Destory();
 public:
@@ -45,7 +50,7 @@ public:
 	bool MemoryCache_DBData_DataQuery(XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);
 	bool MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);
 public:
-	bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr);
+	bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);
 protected:
 	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
 	static XHTHREAD CALLBACK DBModule_MQUser_InsertThread(XPVOID lParam);
@@ -54,12 +59,15 @@ private:
 	int m_nTimeLast = 0;
 	int m_nTimeStart = 0;
 	XNETHANDLE m_xhDBSQL = 0;
+
+	XPVOID m_lParam;
+	CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE lpCall_MemoryCache;
 private:
 	std::shared_mutex st_LockerList;
 	std::shared_mutex st_LockerQuery;
 	std::unique_ptr<std::thread> pSTDThread_Query;
 	std::unique_ptr<std::thread> pSTDThread_Insert;
 private:
-	std::list<std::string> stl_ListInsert;
+	std::list<MEMORYCACHE_DBINSERT> stl_ListInsert;
 	std::unordered_map<std::tuple<__int64x, std::string>, MEMORYCACHE_DBINFO, TupleHash> stl_MapQuery;
 };

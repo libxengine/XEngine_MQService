@@ -39,15 +39,16 @@ CMemoryCache_DBData::~CMemoryCache_DBData()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast /* = 3600 */, int nTimeStart /* = 0 */)
+bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam /* = NULL */)
 {
     MemoryCache_IsErrorOccur = false;
 
 	bIsRun = true;
 
-	
 	m_nTimeLast = nTimeLast;
 	m_nTimeStart = nTimeStart;
+	m_lParam = lParam;
+	lpCall_MemoryCache = fpCall_MemoryCache;
 
 	pSTDThread_Query = std::make_unique<std::thread>(DBModule_MQUser_TimeThread, this);
 	if (NULL == pSTDThread_Query)
@@ -252,12 +253,17 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataDelete(XENGINE_DBMESSAGEQUEUE* 
   类型：常量字符指针
   可空：N
   意思：输入要插入的语句
+ 参数.二：pSt_DBMessageInfo
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要插入的数据
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CMemoryCache_DBData::MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr)
+bool CMemoryCache_DBData::MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo)
 {
 	MemoryCache_IsErrorOccur = false;
 
@@ -267,9 +273,13 @@ bool CMemoryCache_DBData::MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr)
 		MemoryCache_dwErrorCode = ERROR_XENGINE_MQCORE_MEMORYCACHE_DBDATA_PARAMENT;
 		return false;
 	}
+	MEMORYCACHE_DBINSERT st_DBInsert = {};
+
+	st_DBInsert.m_StrSQL = lpszSQLStr;
+	st_DBInsert.st_DBMessageInfo = *pSt_DBMessageInfo;
 
 	st_LockerList.lock();
-	stl_ListInsert.push_back(lpszSQLStr);
+	stl_ListInsert.push_back(st_DBInsert);
 	st_LockerList.unlock();
 	return true;
 }
@@ -301,7 +311,14 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 		for (auto stl_ListIterator = stl_ListDelete.begin(); stl_ListIterator != stl_ListDelete.end(); stl_ListIterator++)
 		{
 			XENGINE_DBMESSAGEQUEUE st_DBMessage = *stl_ListIterator;
-			pClass_This->MemoryCache_DBData_DataDelete(&st_DBMessage);
+			if (pClass_This->MemoryCache_DBData_DataDelete(&st_DBMessage))
+			{
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, true, pClass_This->stl_ListInsert.size(), &st_DBMessage, pClass_This->m_lParam);
+			}
+			else
+			{
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_ListInsert.size(), &st_DBMessage, pClass_This->m_lParam);
+			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
@@ -316,16 +333,20 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_InsertThread(XPVOID lPara
 		if (!pClass_This->stl_ListInsert.empty())
 		{
 			pClass_This->st_LockerList.lock();
-			std::string m_StrSQLInsert = pClass_This->stl_ListInsert.front();
+			MEMORYCACHE_DBINSERT st_DBInsert = pClass_This->stl_ListInsert.front();
 			pClass_This->stl_ListInsert.pop_front();
 			pClass_This->st_LockerList.unlock();
 
-			if (!DataBase_MySQL_Execute(pClass_This->m_xhDBSQL, m_StrSQLInsert.c_str()))
+			if (DataBase_MySQL_Execute(pClass_This->m_xhDBSQL, st_DBInsert.m_StrSQL.c_str()))
 			{
-
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, true, pClass_This->stl_ListInsert.size(), &st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
+			}
+			else
+			{
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, false, pClass_This->stl_ListInsert.size(), &st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	return 0;
 }

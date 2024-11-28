@@ -168,7 +168,7 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.st_XMemory.bDataQueryEnable || st_ServiceCfg.st_XMemory.bDataInsertEnable)
 	{
-		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart))
+		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart, MessageQueue_CBTask_MemoryCache))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
 			goto NETSERVICEEXIT;
