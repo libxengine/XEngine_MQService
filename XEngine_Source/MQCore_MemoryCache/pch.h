@@ -10,56 +10,41 @@
 #ifdef _MSC_BUILD
 // 添加要在此处预编译的标头
 #include "framework.h"
-#include <tchar.h>
 #endif
 #endif //PCH_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <time.h>
-#include <thread>
 #include <memory>
-using namespace std;
+#include <thread>
+#include <list>
+#include <string>
+#include <tuple>
+#include <shared_mutex>
+#include <unordered_map>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_HelpComponents/DataBase_Define.h>
 #include <XEngine_Include/XEngine_HelpComponents/DataBase_Error.h>
-#include "DBModule_Define.h"
-#include "DBModule_Error.h"
-#include "../MQCore_MemoryCache/MemoryCache_Define.h"
-#include "../MQCore_MemoryCache/MemoryCache_Error.h"
+#include "../MQCore_DBModule/DBModule_Define.h"
+#include "../MQCore_DBModule/DBModule_Error.h"
+#include "MemoryCache_Define.h"
+#include "MemoryCache_Error.h"
 /********************************************************************
-//    Created:     2022/02/23  16:14:35
-//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule\pch.h
-//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_DBModule
+//    Created:     2024/11/21  14:44:49
+//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_MemoryCache\pch.h
+//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_MemoryCache
 //    File Base:   pch
 //    File Ext:    h
 //    Project:     XEngine(网络通信引擎)
 //    Author:      qyt
-//    Purpose:     通用公共头文件
+//    Purpose:     公用头
 //    History:
 *********************************************************************/
-extern bool DBModule_IsErrorOccur;
-extern XLONG DBModule_dwErrorCode;
+extern bool MemoryCache_IsErrorOccur;
+extern XLONG MemoryCache_dwErrorCode;
 
 #ifdef _MSC_BUILD
-#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_DataBase.lib")
-#ifdef _DEBUG
-#ifdef _WIN64
-#pragma comment(lib,"../x64/Debug/MQCore_MemoryCache.lib")
-#else
-#pragma comment(lib,"../Debug/MQCore_MemoryCache.lib")
-#endif
-#else
-#ifdef _WIN64
-#pragma comment(lib,"../x64/Release/MQCore_MemoryCache.lib")
-#else
-#pragma comment(lib,"../Release/MQCore_MemoryCache.lib")
-#endif
-#endif
 #endif

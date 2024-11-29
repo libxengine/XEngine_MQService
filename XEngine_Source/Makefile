@@ -8,6 +8,7 @@ BASE_THIRDPART_REPORT = ./XEngine_Depend/XEngine_Module/XEngine_InfoReport
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
+BASE_MEMORYCACHE_PATH = ./MQCore_MemoryCache
 BASE_DATABASE_PATH = ./MQCore_DBModule
 BASE_SESSION_PATH = ./MQCore_SessionModule
 
@@ -20,7 +21,7 @@ else ifeq ($(PLATFORM),mac)
 endif
 
 XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
-                libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_DBModule.so     \
+                libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_MemoryCache.so libMQCore_DBModule.so     \
 		        XEngine_MQServiceApp.exe 
 
 .PHONY:MakeAll 
@@ -46,6 +47,8 @@ libMQCore_ProtocolModule.so:
 	make -C $(BASE_PROTOCOL_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
 libMQCore_SessionModule.so:
 	make -C $(BASE_SESSION_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+libMQCore_MemoryCache.so:
+	make -C $(BASE_MEMORYCACHE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
 libMQCore_DBModule.so:
 	make -C $(BASE_DATABASE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
 

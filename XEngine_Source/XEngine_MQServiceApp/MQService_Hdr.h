@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <io.h>
+#include <minidumpapiset.h>
 #else
 #include <unistd.h>
 #include <sys/wait.h>
@@ -58,6 +59,8 @@ typedef std::string tstring;
 #include "../MQCore_DBModule/DBModule_Error.h"
 #include "../MQCore_ProtocolModule/Protocol_Define.h"
 #include "../MQCore_ProtocolModule/Protocol_Error.h"
+#include "../MQCore_MemoryCache/MemoryCache_Define.h"
+#include "../MQCore_MemoryCache/MemoryCache_Error.h"
 
 extern bool bIsRun;
 extern bool bIsTest;
@@ -98,6 +101,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_MQTTProtocol.lib")
 #pragma comment(lib,"Ws2_32.lib")
+#pragma comment(lib,"Dbghelp.lib")
 #ifdef _DEBUG
 #ifdef _WIN64
 #pragma comment(lib,"../x64/Debug/MQCore_ConfigModule.lib")
@@ -105,12 +109,14 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_DBModule.lib")
 #pragma comment(lib,"../x64/Debug/XEngine_InfoReport.lib")
+#pragma comment(lib,"../x64/Debug/MQCore_MemoryCache.lib")
 #else
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Debug/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Debug/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Debug/MQCore_DBModule.lib")
 #pragma comment(lib,"../Debug/XEngine_InfoReport.lib")
+#pragma comment(lib,"../Debug/MQCore_MemoryCache.lib")
 #endif
 #else
 #ifdef _WIN64
@@ -119,12 +125,14 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_DBModule.lib")
 #pragma comment(lib,"../x64/Release/XEngine_InfoReport.lib")
+#pragma comment(lib,"../x64/Release/MQCore_MemoryCache.lib")
 #else
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
 #pragma comment(lib,"../Release/MQCore_ProtocolModule.lib")
 #pragma comment(lib,"../Release/MQCore_SessionModule.lib")
 #pragma comment(lib,"../Release/MQCore_DBModule.lib")
 #pragma comment(lib,"../Release/XEngine_InfoReport.lib")
+#pragma comment(lib,"../Release/MQCore_MemoryCache.lib")
 #endif
 #endif
 #endif

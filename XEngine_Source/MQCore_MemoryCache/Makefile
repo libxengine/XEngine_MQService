@@ -6,10 +6,10 @@ FILEEXT =
 LIBFLAG = 
 RELEASE = 0
 LOADHDR = -I ./
-LOADSO = -L ../MQCore_MemoryCache
-LIB = -lXEngine_BaseLib -lHelpComponents_DataBase -lMQCore_MemoryCache
+LOADSO = 
+LIB = -lHelpComponents_DataBase
 LIBEX = 
-OBJECTS = DBModule_MQData.o DBModule_MQUser.o pch.o
+OBJECTS = MemoryCache_DBData.o pch.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c 
@@ -48,20 +48,18 @@ endif
 
 
 all:$(OBJECTS)
-	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_DBModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
+	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_MemoryCache.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
-DBModule_MQData.o:./DBModule_MQData/DBModule_MQData.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./DBModule_MQData/DBModule_MQData.cpp 
-DBModule_MQUser.o:./DBModule_MQUser/DBModule_MQUser.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./DBModule_MQUser/DBModule_MQUser.cpp 
+MemoryCache_DBData.o:./MemoryCache_DBData/MemoryCache_DBData.cpp             
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MemoryCache_DBData/MemoryCache_DBData.cpp 
 
 pch.o:./pch.cpp                 		       	    
 	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
-InstallSo:./libMQCore_DBModule.$(FILEEXT)
-	cp ./libMQCore_DBModule.$(FILEEXT) ../../XEngine_Release/libMQCore_DBModule.$(FILEEXT)
+InstallSo:./libMQCore_MemoryCache.$(FILEEXT)
+	cp ./libMQCore_MemoryCache.$(FILEEXT) ../../XEngine_Release/libMQCore_MemoryCache.$(FILEEXT)
 
 
 CleanAll:CleanObj CleanMk

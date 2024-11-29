@@ -30,15 +30,15 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         }
         else if (0 == _tcsxcmp("-TP",argv[i]))
         {
-            pSt_StartlParam->nTCPPort = _ttxoi(argv[i + 1]);
+            pSt_StartlParam->nTCPPort = _ttxoi(argv[++i]);
         }
         else if (0 == _tcsxcmp("-HP",argv[i]))
         {
-            pSt_StartlParam->nHttpPort = _ttxoi(argv[i + 1]);
+            pSt_StartlParam->nHttpPort = _ttxoi(argv[++i]);
         }
         else if (0 == _tcsxcmp("-d",argv[i]))
         {
-            pSt_StartlParam->bDeamon = _ttxoi(argv[i + 1]);
+            pSt_StartlParam->bDeamon = _ttxoi(argv[++i]);
         }
 		else if (0 == _tcsxcmp("-t", argv[i]))
 		{
