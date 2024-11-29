@@ -434,39 +434,51 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				}
 				else
 				{
-					int nListCount = 0;
-					XENGINE_DBUSERKEY** ppSt_ListUser;
-					DBModule_MQUser_KeyList(NULL, st_MQProtocol.tszMQKey, &ppSt_ListUser, &nListCount);
+					pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
 
-					for (int i = 0; i < nListCount; i++)
+					if (_tcsxlen(st_MQProtocol.tszMQUsr) > 0)
 					{
-						//跳过自己
-						if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
+						//如果发送指定用户被指定.
+						if (SessionModule_Client_GetExist(NULL, st_MQProtocol.tszMQUsr))
 						{
-							continue;
-						}
-						nSDLen = 0;
-						int nClientType = 0;
-						XCHAR tszUserAddr[128];
-						memset(tszUserAddr, '\0', sizeof(tszUserAddr));
-						memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
+							int nClientType = 0;
+							XCHAR tszUserAddr[128] = {};
 
-						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-						//只有在线用户才需要即时通知
-						if (SessionModule_Client_GetExist(NULL, tszUserName))
-						{
-							//如果发送指定用户被指定.
-							if ((_tcsxlen(st_MQProtocol.tszMQUsr) > 0) && (0 != _tcsxnicmp(st_MQProtocol.tszMQUsr, tszUserName, _tcsxlen(st_MQProtocol.tszMQUsr))))
-							{
-								continue;
-							}
-							SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
+							SessionModule_Client_GetAddr(st_MQProtocol.tszMQUsr, tszUserAddr);
 							SessionModule_Client_GetType(tszUserAddr, &nClientType);
 							ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
 							XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
 						}
 					}
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+					else
+					{
+						int nListCount = 0;
+						XENGINE_DBUSERKEY** ppSt_ListUser;
+						DBModule_MQUser_KeyList(NULL, st_MQProtocol.tszMQKey, &ppSt_ListUser, &nListCount);
+
+						for (int i = 0; i < nListCount; i++)
+						{
+							//跳过自己
+							if (0 == _tcsxncmp(tszUserName, ppSt_ListUser[i]->tszUserName, _tcsxlen(tszUserName)) && (0 == st_MQProtocol.st_MSGAttr.byAttrSelf))
+							{
+								continue;
+							}
+							nSDLen = 0;
+							int nClientType = 0;
+							XCHAR tszUserAddr[128];
+							memset(tszUserAddr, '\0', sizeof(tszUserAddr));
+							memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
+							//只有在线用户才需要即时通知
+							if (SessionModule_Client_GetExist(NULL, ppSt_ListUser[i]->tszUserName))
+							{
+								SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
+								SessionModule_Client_GetType(tszUserAddr, &nClientType);
+								ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
+								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
+							}
+						}
+						BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+					}
 				}
 				_xstprintf(st_DBQueue.tszQueuePublishTime, _X("0"));
 			}

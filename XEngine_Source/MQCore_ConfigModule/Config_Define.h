@@ -55,6 +55,13 @@ typedef struct
         XCHAR tszPassLogout[MAX_PATH];
         int nTimeout;
     }st_XPass;
+    struct  
+    {
+        bool bDataQueryEnable;
+        bool bDataInsertEnable;
+        int nTimeLast;
+        int nTimeStart;
+    }st_XMemory;
 	struct
 	{
 		bool bEnable;

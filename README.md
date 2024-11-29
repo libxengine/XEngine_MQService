@@ -32,6 +32,8 @@ c c++Message Service
 17. 二进制消息
 18. http接口管理
 19. 消息属性
+20. 点对点消息
+21. 高速缓存
 
 ## 安装教程
 
@@ -119,6 +121,7 @@ make FLAGS=CleanAll 清理编译
 2.  新建 Feat_xxx 分支
 3.  提交代码
 4.  新建 Pull Request  
+5.  提交到develop分支
 
 ## 关注我们
 如果你觉得这个软件对你有帮助,请你给我们一个START吧
