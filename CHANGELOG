@@ -1,3 +1,23 @@
+XEngine_MQService V3.13.0.1001
+
+增加:为DATA消息数据库增加高速缓存支持
+增加:coredump的windows支持
+更新:工作流自动发布支持
+更新:依赖库
+优化:启动参数解析
+修正:某些时候退出崩溃问题
+修正:发布消息时候获取在线用户不正确的问题
+修正:通知用户处理问题
+
+added:memory cache module for Data DB
+added:coredump file support on windows
+update:release workflows supported
+update:depend library
+improved:start parameter parse
+fixed:sometime crashed when exist
+fixed:get online user is incorrect when publish message
+fixed:immediate notify user process is incorrect
+======================================================================================
 XEngine_MQService V3.12.0.1001
 
 增加:编译CI工作流支持

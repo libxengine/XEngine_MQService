@@ -34,6 +34,7 @@ this software support following features
 18. http interface management
 19. message attritube
 20. point to point message
+21. Memory Database
 
 ## install
 
