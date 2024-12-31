@@ -25,17 +25,17 @@ XHTHREAD CALLBACK MessageQueue_MQTTThread(XPVOID lParam)
 				if (MQTTProtocol_Parse_Recv(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, &ptszMSGBuffer, &nMSGLen))
 				{
 					MQService_MQTT_Handle(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, ptszMSGBuffer, nMSGLen);
-					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
 				}
 			}
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
 	}
 	return 0;
 }
 void Packet_Property(MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
 {
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
 
 	(*pppSt_HDRProperty)[0]->nProLen = 4;
 	(*pppSt_HDRProperty)[0]->st_unValue.nValue = 1024000;
@@ -87,7 +87,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求链接失败,错误码:%lX"), lpszClientAddr, MQTTProtocol_GetLastError());
 			return false;
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
 
 		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
 		XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth = {};

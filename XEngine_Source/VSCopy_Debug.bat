@@ -3,10 +3,12 @@ copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_BaseSafe.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_Algorithm.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_Core.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_ManagePool.dll" "./"
-copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_OPenSsl.dll" "./"
+copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_Cryption.dll" "./"
 
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\XEngine_SystemApi.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\XClient_APIHelp.dll" "./"
+
+copy /y "D:\XEngine\XEngine_SourceCode\Debug\NetHelp_APIHelp.dll" "./"
 
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\HelpComponents_Packets.dll" "./"
 copy /y "D:\XEngine\XEngine_SourceCode\Debug\HelpComponents_XLog.dll" "./"

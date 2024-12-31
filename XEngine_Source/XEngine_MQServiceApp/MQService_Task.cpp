@@ -47,7 +47,7 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 		ProtocolModule_Packet_Common(nNetType, &st_ProtocolHdr, &st_MQProtocol, tszMsgBuffer, &nMsgLen, st_DBInfo.tszMsgBuffer, st_DBInfo.nMsgLen);
 		XEngine_MQXService_Send(tszUserAddr, tszMsgBuffer, nMsgLen, nNetType);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
 	
 	if (st_DBConfig.st_MQUser.st_UserTime.bPubClear)
 	{

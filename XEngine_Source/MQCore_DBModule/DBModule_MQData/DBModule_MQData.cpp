@@ -579,7 +579,7 @@ bool CDBModule_MQData::DBModule_MQData_CreateTable(LPCXSTR lpszQueueName)
 
 #ifdef _MSC_BUILD
 	int nUTFLen = 0;
-	BaseLib_OperatorCharset_AnsiToUTF(tszSQLQuery, tszUTFQuery, &nUTFLen);
+	BaseLib_Charset_AnsiToUTF(tszSQLQuery, tszUTFQuery, &nUTFLen);
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszUTFQuery))
 #else
 	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLQuery))
@@ -725,7 +725,7 @@ bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* p
 		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppszTableName, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
+	BaseLib_Memory_Malloc((XPPPMEM)pppszTableName, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
 		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);

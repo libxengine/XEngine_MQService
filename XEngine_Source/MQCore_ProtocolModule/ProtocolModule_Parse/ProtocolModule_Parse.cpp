@@ -209,7 +209,7 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		if (ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN == pSt_ProtocolHdr->byVersion)
 		{
 			int nBLen = st_JsonPayLoad["nPayLen"].asInt();
-			OPenSsl_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
+			Cryption_Codec_Base64(st_JsonPayLoad["tszPayData"].asCString(), ptszMsgBuffer + nPos, &nBLen, false);
 			*pInt_MsgLen += nBLen;
 		}
 		else

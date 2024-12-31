@@ -26,11 +26,11 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
 				if (HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
 					MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, XENGINE_MQAPP_NETTYPE_TCP);
-					BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
 				}
 			}
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
 	}
 	return 0;
 }
@@ -118,7 +118,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					return false;
 				}
 				ProtocolModule_Parse_Websocket(ptszSDBuffer, nSDLen, NULL, (XCHAR*)&st_UserInfo, &nRVLen);
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszSDBuffer);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ptszSDBuffer);
 			}
 			else
 			{
@@ -352,8 +352,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 				time_t nTimeStart = time(NULL);
 				time_t nTimeEnd = nTimeStart + st_MQProtocol.nKeepTime;
-				BaseLib_OperatorTimeSpan_CalForTime(nTimeStart, nTimeEnd, &st_LibTime);
-				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueueLeftTime, NULL, true, &st_LibTime);
+				BaseLib_TimeSpan_CalForTime(nTimeStart, nTimeEnd, &st_LibTime);
+				BaseLib_Time_TimeToStr(st_DBQueue.tszQueueLeftTime, NULL, true, &st_LibTime);
 			}
 			//处理序列号
 			if (st_DBQueue.nQueueSerial > 0)
@@ -401,8 +401,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
 				_tcsxcpy(st_DBTime.tszQueueName, st_DBQueue.tszQueueName);
 
-				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
-				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, true, &st_LibTime);
+				BaseLib_Time_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
+				BaseLib_Time_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, true, &st_LibTime);
 				DBModule_MQUser_TimeInsert(&st_DBTime);
 			}
 			else if (0 == st_MQProtocol.nPubTime)
@@ -429,7 +429,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						SessionModule_Client_GetType(pptszListAddr[i], &nClientType);
 						ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
 						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType);
-						BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
+						BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
 					}
 				}
 				else
@@ -477,7 +477,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
 							}
 						}
-						BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
+						BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
 					}
 				}
 				_xstprintf(st_DBQueue.tszQueuePublishTime, _X("0"));
@@ -551,8 +551,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 					//有过期时间,判断是否过期
 					__int64x nTimeRet = 0;
 					XCHAR tszTimeStr[MAX_PATH] = {};
-					BaseLib_OperatorTime_TimeToStr(tszTimeStr);
-					BaseLib_OperatorTimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeStr, &nTimeRet, 3);
+					BaseLib_Time_TimeToStr(tszTimeStr);
+					BaseLib_TimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeStr, &nTimeRet, 3);
 					//如果超时并且不允许主动获取,返回错误
 					if ((nTimeRet < 0) && (1 != st_MSGAttr.byAttrActive))
 					{
@@ -615,8 +615,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						XCHAR tszTimeEnd[128];
 						memset(tszTimeEnd, '\0', sizeof(tszTimeEnd));
 
-						BaseLib_OperatorTime_TimeToStr(tszTimeEnd);
-						BaseLib_OperatorTimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeEnd, &nTimeDiff, 3);
+						BaseLib_Time_TimeToStr(tszTimeEnd);
+						BaseLib_TimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeEnd, &nTimeDiff, 3);
 						if (nTimeDiff > 0)
 						{
 							st_UserKey.nKeySerial++;
@@ -890,7 +890,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 				time_t nTimeStart = time(NULL);
 				time_t nTimeEnd = nTimeStart + st_MQProtocol.nKeepTime;
-				BaseLib_OperatorTimeSpan_CalForTime(nTimeStart, nTimeEnd, &st_LibTime);
+				BaseLib_TimeSpan_CalForTime(nTimeStart, nTimeEnd, &st_LibTime);
 				_xstprintf(st_DBQueue.tszQueueLeftTime, _X("%04d-%02d-%02d %02d:%02d:%02d"), st_LibTime.wYear, st_LibTime.wMonth, st_LibTime.wDay, st_LibTime.wHour, st_LibTime.wMinute, st_LibTime.wSecond);
 			}
 			if (st_MQProtocol.nPubTime > 0)
@@ -905,8 +905,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
 				_tcsxcpy(st_DBTime.tszQueueName, st_DBQueue.tszQueueName);
 
-				BaseLib_OperatorTime_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
-				BaseLib_OperatorTime_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, true, &st_LibTime);
+				BaseLib_Time_TTimeToStuTime(st_MQProtocol.nPubTime, &st_LibTime);
+				BaseLib_Time_TimeToStr(st_DBQueue.tszQueuePublishTime, NULL, true, &st_LibTime);
 				DBModule_MQUser_TimeInsert(&st_DBTime);
 			}
 			if (!DBModule_MQData_Modify(&st_DBQueue))
@@ -940,7 +940,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				ProtocolModule_Packet_UNReadInsert(xhUNRead, ppSt_UserKey[i]->tszKeyName, nDBCount);
 			}
 			ProtocolModule_Packet_UNReadDelete(xhUNRead, tszSDBuffer, &nSDLen);
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserKey, nListCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_UserKey, nListCount);
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,请求未读消息成功,用户名:%s,发送未读消息成功,发送的主题个数:%d"), lpszClientType, lpszClientAddr, tszUserName, nListCount);
 		}

@@ -29,12 +29,12 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 				if (HttpProtocol_Server_GetMemoryEx(xhHTTPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_HTTPReqparam, &ppszHdrList, &nHdrCount))
 				{
 					MessageQueue_Http_Handle(&st_HTTPReqparam, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, ppszHdrList, nHdrCount);
-					BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
+					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
 				}
 			}
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
 	}
 	return 0;
 }
@@ -71,11 +71,11 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 			return false;
 		}
 		//获取函数
-		BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
+		BaseLib_String_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
 		if (0 == _tcsxnicmp(lpszAPIGet, tszValue, _tcsxlen(lpszAPIGet)))
 		{
 			memset(tszValue, '\0', MAX_PATH);
-			BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
+			BaseLib_String_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
 			if (0 == _tcsxnicmp(lpszAPIUser, tszValue, _tcsxlen(lpszAPIUser)))
 			{
 				//用户 http://127.0.0.1:5202/api?function=get&method=user
@@ -83,7 +83,7 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				XENGINE_PROTOCOL_USERINFO** ppSt_UserInfo;
 				DBModule_MQUser_UserList(&ppSt_UserInfo, &nListCount);
 				ProtocolModule_Packet_UserList(tszPKTBuffer, &nPKTLen, &ppSt_UserInfo, nListCount);
-				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
+				BaseLib_Memory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
 
 				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
@@ -100,10 +100,10 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				int nListCount = 0;
 				XCHAR** pptszListAddr;
 				
-				BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
+				BaseLib_String_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
 				SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, _ttxoi(tszValue));
 				ProtocolModule_Packet_OnlineList(tszPKTBuffer, &nPKTLen, &pptszListAddr, nListCount);
-				BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListAddr, nListCount);
+				BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
 				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取在线用户列表请求成功,获取到的列表个数:%d"), lpszClientAddr, nListCount);
 			}
@@ -116,14 +116,14 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 					XCHAR** ppszTableName;
 					DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
 					ProtocolModule_Packet_TopicList(tszPKTBuffer, &nPKTLen, &ppszTableName, nListCount);
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppszTableName, nListCount);
+					BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
 					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
 				}
 				else
 				{
 					int nDBCount = 0;
-					BaseLib_OperatorString_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
+					BaseLib_String_GetKeyValue(ppSt_ListUrl[2], _X("="), tszKey, tszValue);
 					DBModule_MQData_GetLeftCount(tszValue, 0, &nDBCount);
 					ProtocolModule_Packet_TopicName(tszPKTBuffer, &nPKTLen, tszValue, nDBCount);
 					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);

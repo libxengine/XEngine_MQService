@@ -24,11 +24,11 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 				if (RfcComponents_WSPacket_GetMemoryEx(xhWSPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &enOPCode))
 				{
 					MessageQueue_Websocket_Handle(ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, enOPCode);
-					BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
 				}
 			}
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSst_ListAddr, nListCount);
 	}
 	return 0;
 }

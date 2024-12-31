@@ -432,7 +432,7 @@ bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClie
 	Session_IsErrorOccur = false;
 
 	*pInt_ListCount = stl_MapSession.size();
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)ppptszClientList, stl_MapSession.size(), 128);
+	BaseLib_Memory_Malloc((XPPPMEM)ppptszClientList, stl_MapSession.size(), 128);
 
 	st_Locker.lock_shared();
 	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();

@@ -91,7 +91,7 @@ LONG WINAPI Coredump_ExceptionFilter(EXCEPTION_POINTERS* pExceptionPointers)
 	static int i = 0;
 	XCHAR tszFileStr[MAX_PATH] = {};
 	XCHAR tszTimeStr[128] = {};
-	BaseLib_OperatorTime_TimeToStr(tszTimeStr);
+	BaseLib_Time_TimeToStr(tszTimeStr);
 	_xstprintf(tszFileStr, _X("./XEngine_Coredump/dumpfile_%s_%d.dmp"), tszTimeStr, i++);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_FATAL, _X("主程序:软件崩溃,写入dump:%s"), tszFileStr);
 	HANDLE hDumpFile = CreateFileA(tszFileStr, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -223,7 +223,7 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册TCP网络事件成功"));
 		//任务池
-		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
+		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nTCPThread; i++)
 		{
 			int* pInt_Pos = new int;
@@ -265,7 +265,7 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhHTTPSocket, MessageQueue_Callback_HttpLogin, MessageQueue_Callback_HttpRecv, MessageQueue_Callback_HttpLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册HTTP网络事件成功"));
 
-		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread, sizeof(THREADPOOL_PARAMENT));
+		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nHttpThread; i++)
 		{
 			int* pInt_Pos = new int;
@@ -307,7 +307,7 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhWSSocket, MessageQueue_Callback_WSLogin, MessageQueue_Callback_WSRecv, MessageQueue_Callback_WSLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册Websocket网络事件成功"));
 
-		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread, sizeof(THREADPOOL_PARAMENT));
+		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nWSThread; i++)
 		{
 			int* pInt_Pos = new int;
@@ -348,7 +348,7 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhMQTTSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册MQTT网络事件成功"));
 
-		BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread, sizeof(THREADPOOL_PARAMENT));
+		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nMQTTThread; i++)
 		{
 			int* pInt_Pos = new int;
@@ -394,7 +394,7 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，信息报告给API服务器没有启用"));
 	}
 
-	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_OperatorVer_XNumberStr(), BaseLib_OperatorVer_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_Version_XNumberStr(), BaseLib_Version_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
 
 	while (true)
 	{
