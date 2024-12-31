@@ -2,8 +2,8 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"x86/XEngine_Client/XClient_Socket.lib")
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_Client/XClient_Socket.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,7 +76,7 @@ void MQ_Register()
 	_xtprintf("%d\n", st_ProtocolHdr.wReserve);
 	if (nLen > 0)
 	{
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
 }
 void MQ_Authorize()
@@ -122,7 +122,7 @@ void MQ_Authorize()
 	_xtprintf("%d\n", st_ProtocolHdr.wReserve);
 	if (nLen > 0)
 	{
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
 }
 //获取未读消息
@@ -171,7 +171,7 @@ void MQ_GetUNRead(int nType = 0)
 			{
 				_xtprintf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
 			}
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 			break;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -345,7 +345,7 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 	}
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 void MQ_Get(int nType = 0)
 {
@@ -457,7 +457,7 @@ void MQ_TimePublish()
 		_xtprintf("接受数据失败！\n");
 		return;
 	}
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 
 	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr, 60))
 	{
@@ -470,7 +470,7 @@ void MQ_TimePublish()
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(st_XMQProtocol));
 
 	_xtprintf("接受到通知消息,主题:%s,序列:%lld,长度：%d，内容：%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_ProtocolHdr.unPacketSize - sizeof(XENGINE_PROTOCOL_XMQ), ptszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ));
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 
 void MQ_GetNumber()

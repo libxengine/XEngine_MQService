@@ -3,8 +3,8 @@
 #include <tchar.h>
 #include <json/json.h>
 #pragma comment(lib,"Ws2_32")
-#pragma comment(lib,"x86/XEngine_Client/XClient_Socket")
-#pragma comment(lib,"x86/XEngine_RfcComponents/RfcComponents_WSProtocol")
+#pragma comment(lib,"XEngine_Client/XClient_Socket")
+#pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol")
 #pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #endif
 #include <stdio.h>
