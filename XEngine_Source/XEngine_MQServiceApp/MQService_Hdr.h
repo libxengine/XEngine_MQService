@@ -45,11 +45,6 @@ using namespace std;
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Define.h"
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Error.h"
 
-#ifdef _UNICODE
-typedef std::wstring tstring;
-#else
-typedef std::string tstring;
-#endif
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"

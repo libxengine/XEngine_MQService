@@ -196,7 +196,7 @@ bool CConfig_Json::Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVE
 		return false;
 	}
 	Json::Value st_JsonXVer = st_JsonRoot["XVer"];
-	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
+	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<xstring>;
 
 	for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
 	{
