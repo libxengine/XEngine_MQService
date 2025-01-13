@@ -347,8 +347,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		
 			if (st_MQProtocol.nKeepTime > 0)
 			{
-				XENGINE_LIBTIMER st_LibTime;
-				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+				XENGINE_LIBTIME st_LibTime;
+				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIME));
 
 				time_t nTimeStart = time(NULL);
 				time_t nTimeEnd = nTimeStart + st_MQProtocol.nKeepTime;
@@ -392,10 +392,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			if (st_MQProtocol.nPubTime > 0)
 			{
 				XENGINE_DBTIMERELEASE st_DBTime;
-				XENGINE_LIBTIMER st_LibTime;
+				XENGINE_LIBTIME st_LibTime;
 
 				memset(&st_DBTime, '\0', sizeof(XENGINE_DBTIMERELEASE));
-				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIME));
 
 				st_DBTime.nIDMsg = st_DBQueue.nQueueSerial;
 				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
@@ -885,8 +885,8 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 
 			if (st_MQProtocol.nKeepTime > 0)
 			{
-				XENGINE_LIBTIMER st_LibTime;
-				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+				XENGINE_LIBTIME st_LibTime;
+				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIME));
 
 				time_t nTimeStart = time(NULL);
 				time_t nTimeEnd = nTimeStart + st_MQProtocol.nKeepTime;
@@ -896,10 +896,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			if (st_MQProtocol.nPubTime > 0)
 			{
 				XENGINE_DBTIMERELEASE st_DBTime;
-				XENGINE_LIBTIMER st_LibTime;
+				XENGINE_LIBTIME st_LibTime;
 
 				memset(&st_DBTime, '\0', sizeof(XENGINE_DBTIMERELEASE));
-				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+				memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIME));
 
 				st_DBTime.nIDMsg = st_DBQueue.nQueueSerial;
 				st_DBTime.nIDTime = st_MQProtocol.nPubTime;
