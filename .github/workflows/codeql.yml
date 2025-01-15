@@ -1,19 +1,20 @@
-name: "CodeQL Advanced"
+name: CodeQL Advanced
 
 on:
   push:
     branches: 
-      - 'develop1'
+      - 'develop'
+    paths:
+      - 'XEngine_Source/**'
+      - 'XEngine_Release/**'
+      - '.github/**'
 
 jobs:
   analyze:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
-      # required for all workflows
       security-events: write
-      # required to fetch internal or private CodeQL packs
       packages: read
-      # only required for workflows in private repositories
       actions: read
       contents: read
 
@@ -25,7 +26,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-        
+      with:
+          ref: 'develop'
+          
     - name: Checkout dependency repository (xengine)
       uses: actions/checkout@v4
       with:
@@ -40,7 +43,7 @@ jobs:
     - name: Set up Dependency Environment
       run: |
           cd libxengine
-          chmod 777 *
+          chmod +x ./XEngine_LINEnv.sh
           sudo ./XEngine_LINEnv.sh -i 3
 
     - name: Initialize CodeQL
@@ -56,4 +59,4 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
-        category: "/language:${{matrix.language}}"
+        category: "/language:${{ matrix.language }}"
