@@ -22,16 +22,9 @@ jobs:
       matrix:
         include:
         - language: c-cpp
-          build-mode: autobuild
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
         
     - name: Checkout dependency repository (xengine)
       uses: actions/checkout@v4
@@ -50,6 +43,11 @@ jobs:
           chmod 777 *
           sudo ./XEngine_LINEnv.sh -i 3
 
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        
     - name: make
       run: | 
           cd XEngine_Source
