@@ -1,0 +1,61 @@
+name: "CodeQL Advanced"
+
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+      # required to fetch internal or private CodeQL packs
+      packages: read
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: c-cpp
+          build-mode: autobuild
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+        
+    - name: Checkout dependency repository (xengine)
+      uses: actions/checkout@v4
+      with:
+        repository: libxengine/libxengine
+        path: libxengine
+
+    - name: sub module checkout (opensource)
+      run: |
+          git submodule init
+          git submodule update
+
+    - name: Set up Dependency Environment
+      run: |
+          cd libxengine
+          chmod 777 *
+          sudo ./XEngine_LINEnv.sh -i 3
+
+      - name: make
+        run: | 
+            cd XEngine_Source
+            make
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
