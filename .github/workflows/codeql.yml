@@ -2,11 +2,11 @@ name: "CodeQL Advanced"
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: 
+      - 'develop'
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
       # required for all workflows
@@ -50,10 +50,10 @@ jobs:
           chmod 777 *
           sudo ./XEngine_LINEnv.sh -i 3
 
-      - name: make
-        run: | 
-            cd XEngine_Source
-            make
+    - name: make
+      run: | 
+          cd XEngine_Source
+          make
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
