@@ -352,6 +352,7 @@ bool CDBModule_MQData::DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
 	}
 	if (m_bMemoryQuery)
 	{
+		MemoryCache_DBData_DataDelete(pSt_DBInfo);
 		MemoryCache_DBData_DataInsert(pSt_DBInfo);
 	}
 	return true;
