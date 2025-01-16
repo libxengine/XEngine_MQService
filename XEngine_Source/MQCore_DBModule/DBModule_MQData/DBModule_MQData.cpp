@@ -145,6 +145,46 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
     return true;
 }
 /********************************************************************
+函数名称：DBModule_MQData_Delete
+函数功能：删除消息
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的消息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CDBModule_MQData::DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+{
+	DBModule_IsErrorOccur = false;
+
+	if (NULL == pSt_DBInfo)
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
+		return false;
+	}
+	XCHAR tszSQLStatement[10240];
+	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+
+	_xstprintf(tszSQLStatement, _X("DELETE FROM `%s` WHERE tszQueueName = '%s' AND nQueueSerial = '%lld'"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial);
+
+	if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+	{
+		DBModule_IsErrorOccur = true;
+		DBModule_dwErrorCode = DataBase_GetLastError();
+		return false;
+	}
+	if (m_bMemoryQuery)
+	{
+		MemoryCache_DBData_DataDelete(pSt_DBInfo);
+	}
+	return true;
+}
+/********************************************************************
 函数名称：DBModule_MQData_Query
 函数功能：查询数据
  参数.一：pSt_DBInfo

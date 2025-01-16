@@ -111,6 +111,20 @@ extern "C" bool DBModule_MQData_Destory();
 *********************************************************************/
 extern "C" bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo);
 /********************************************************************
+函数名称：DBModule_MQData_Delete
+函数功能：删除消息
+ 参数.一：pSt_DBInfo
+  In/Out：In
+  类型：数据结构指针
+  可空：N
+  意思：输入要删除的消息
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+/********************************************************************
 函数名称：DBModule_MQData_Query
 函数功能：查询数据
  参数.一：pSt_DBInfo

@@ -20,6 +20,7 @@ public:
 	bool DBModule_MQData_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery = true, bool bMemoryInsert = true);
 	bool DBModule_MQData_Destory();
 	bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
+	bool DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	bool DBModule_MQData_Modify(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo);
 	bool DBModule_MQData_GetSerial(LPCXSTR lpszName, __int64x* pInt_DBCount, XENGINE_DBMESSAGEQUEUE* pSt_DBStart, XENGINE_DBMESSAGEQUEUE* pSt_DBEnd);

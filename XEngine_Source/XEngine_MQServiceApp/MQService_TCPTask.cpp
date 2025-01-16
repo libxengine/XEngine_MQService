@@ -654,6 +654,30 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,获取消息数据成功,消息大小:%d"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MessageQueue.nQueueSerial, st_MessageQueue.nMsgLen);
 		}
+		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE == pSt_ProtocolHdr->unOperatorCode)
+		{
+			XENGINE_DBMESSAGEQUEUE st_MessageQueue;
+			memset(&st_MessageQueue, '\0', sizeof(XENGINE_DBMESSAGEQUEUE));
+
+			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE;
+			if (st_MQProtocol.nSerial <= 0)
+			{
+				pSt_ProtocolHdr->wReserve = 722;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,主题:%s,获取消息数据失败,获取指定消息序列:%lld 失败,错误:%lX"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
+				return false;
+			}
+			st_MessageQueue.nQueueSerial = st_MQProtocol.nSerial;
+			_tcsxcpy(st_MessageQueue.tszQueueName, st_MQProtocol.tszMQKey);
+			DBModule_MQData_Delete(&st_MessageQueue);
+
+			pSt_ProtocolHdr->wReserve = 0;
+			pSt_ProtocolHdr->byVersion = st_MessageQueue.byMsgType;
+			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("%s消息端:%s,主题:%s,序列:%lld,删除消息数据成功"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, st_MessageQueue.nQueueSerial);
+		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICCREATE;

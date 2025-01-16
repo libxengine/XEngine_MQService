@@ -43,6 +43,10 @@ extern "C" bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBManage)
 {
 	return m_DBData.DBModule_MQData_Insert(pSt_DBManage);
 }
+extern "C" bool DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+{
+	return m_DBData.DBModule_MQData_Delete(pSt_DBInfo);
+}
 extern "C" bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
