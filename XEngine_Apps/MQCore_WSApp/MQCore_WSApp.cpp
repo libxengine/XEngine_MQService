@@ -5,7 +5,11 @@
 #pragma comment(lib,"Ws2_32")
 #pragma comment(lib,"XEngine_Client/XClient_Socket")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_WSProtocol")
+#ifdef _WIN64
+#pragma comment(lib,"../../XEngine_Source/x64/Debug/jsoncpp")
+#else
 #pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
+#endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>
