@@ -802,7 +802,7 @@ bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* p
   意思：是否成功
 备注：
 *********************************************************************/
-bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, __int64x nSerial, int* pInt_Count)
 {
 	DBModule_IsErrorOccur = false;
 
@@ -820,7 +820,7 @@ bool CDBModule_MQData::DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int n
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE nQueueSerial > %d"), lpszTableName, nSerial);
+	_xstprintf(tszSQLStatement, _X("SELECT COUNT(*) FROM %s WHERE nQueueSerial > %lld"), lpszTableName, nSerial);
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;

@@ -270,7 +270,7 @@ extern "C" bool DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* pInt_Lis
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count);
+extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, __int64x nSerial, int* pInt_Count);
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
