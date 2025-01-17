@@ -85,4 +85,15 @@ void CALLBACK MessageQueue_CBTask_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE enM
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,消息主题:%s,序列:%lld,插入缓存队列到数据库失败,缓存剩余队列:%ld"), ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->tszQueueName, ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->nQueueSerial, nListCount);
 		}
 	}
+	else if (ENUM_MEMORYCACHE_CALLBACK_TYPE_USER_QUERY == enMemoryType)
+	{
+		if (bSuccess)
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("高速缓存,用户:%s,删除过期缓存成功,缓存剩余队列:%ld"), ((XENGINE_PROTOCOL_USERINFO*)pSt_DBInfo)->tszUserName, nListCount);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,用户:%s,删除过期缓存失败,缓存剩余队列:%ld"), ((XENGINE_PROTOCOL_USERINFO*)pSt_DBInfo)->tszUserName, nListCount);
+		}
+	}
 }

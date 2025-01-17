@@ -9,7 +9,7 @@ LOADHDR = -I ./
 LOADSO = 
 LIB = -lHelpComponents_DataBase
 LIBEX = 
-OBJECTS = MemoryCache_DBData.o pch.o
+OBJECTS = MemoryCache_DBData.o MemoryCache_DBUser.o pch.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c 
@@ -52,6 +52,8 @@ all:$(OBJECTS)
 
 MemoryCache_DBData.o:./MemoryCache_DBData/MemoryCache_DBData.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MemoryCache_DBData/MemoryCache_DBData.cpp 
+MemoryCache_DBUser.o:./MemoryCache_DBUser/MemoryCache_DBUser.cpp             
+	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./MemoryCache_DBUser/MemoryCache_DBUser.cpp 
 
 pch.o:./pch.cpp                 		       	    
 	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp

@@ -74,7 +74,7 @@ jobs:
           ./VSCopy_x86.bat
           ./XEngine_MQServiceApp.exe -t
         shell: pwsh
-      - name: Conditional Step for x86 Debug
+      - name: Conditional Step for x64 Release
         if: matrix.configuration == 'Release' && matrix.platform == 'x64'
         run: |
           cp -r XEngine_Source/x64/Release/*.dll XEngine_Release/

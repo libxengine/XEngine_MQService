@@ -45,6 +45,7 @@ void ServiceApp_Stop(int signo)
 		DBModule_MQData_Destory();
 		DBModule_MQUser_Destory();
 		MemoryCache_DBData_Destory();
+		MemoryCache_DBUser_Destory();
 
 		SessionModule_Client_Destory();
 		HelpComponents_XLog_Destroy(xhLog);
@@ -177,14 +178,27 @@ int main(int argc, char** argv)
 	{
 		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart, MessageQueue_CBTask_MemoryCache))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息内容高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
 			goto NETSERVICEEXIT;
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化消息内容高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用消息内容高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+	}
+	if (st_ServiceCfg.st_XMemory.bUserQueryEnable)
+	{
+		if (!MemoryCache_DBUser_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart, MessageQueue_CBTask_MemoryCache))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化用户信息高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
+			goto NETSERVICEEXIT;
+		}
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化用户信息高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用用户信息高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
 	}
 
 	if (!bIsTest)
@@ -442,6 +456,7 @@ NETSERVICEEXIT:
 	DBModule_MQData_Destory();
 	DBModule_MQUser_Destory();
 	MemoryCache_DBData_Destory();
+	MemoryCache_DBUser_Destory();
 
 	SessionModule_Client_Destory();
 	HelpComponents_XLog_Destroy(xhLog);

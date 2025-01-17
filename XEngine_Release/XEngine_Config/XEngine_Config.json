@@ -22,7 +22,7 @@
         "LogLeave":17
     },
     "XSql":{
-        "SQLAddr":"10.0.3.154",
+        "SQLAddr":"10.0.2.6",
         "SQLPort":3306,
         "SQLUser":"root",
         "SQLPass":"123123aa"
@@ -37,6 +37,7 @@
     "XMemory":{
         "bDataQueryEnable":true,
         "bDataInsertEnable":true,
+        "bUserQueryEnable":true,
         "nTimeLast":3600,
         "nTimeStart":0
     },

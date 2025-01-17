@@ -59,6 +59,7 @@ typedef struct
     {
         bool bDataQueryEnable;
         bool bDataInsertEnable;
+        bool bUserQueryEnable;
         int nTimeLast;
         int nTimeStart;
     }st_XMemory;

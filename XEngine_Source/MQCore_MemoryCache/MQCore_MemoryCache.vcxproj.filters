@@ -19,6 +19,12 @@
     <Filter Include="源文件\MemoryCache_DBData">
       <UniqueIdentifier>{d3182e9a-8f45-4138-b4e2-a793c976d18d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\MemoryCache_DBUser">
+      <UniqueIdentifier>{b3468e30-1493-4bfe-88a0-7752163b8820}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MemoryCache_DBUser">
+      <UniqueIdentifier>{9e8d921c-e3ab-4610-a4e9-040dc71a57b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +42,9 @@
     <ClInclude Include="MemoryCache_DBData\MemoryCache_DBData.h">
       <Filter>头文件\MemoryCache_DBData</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryCache_DBUser\MemoryCache_DBUser.h">
+      <Filter>头文件\MemoryCache_DBUser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -46,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="MemoryCache_DBData\MemoryCache_DBData.cpp">
       <Filter>源文件\MemoryCache_DBData</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryCache_DBUser\MemoryCache_DBUser.cpp">
+      <Filter>源文件\MemoryCache_DBUser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

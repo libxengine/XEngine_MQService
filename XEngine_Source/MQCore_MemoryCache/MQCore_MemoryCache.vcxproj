@@ -172,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="MemoryCache_DBData\MemoryCache_DBData.h" />
+    <ClInclude Include="MemoryCache_DBUser\MemoryCache_DBUser.h" />
     <ClInclude Include="MemoryCache_Define.h" />
     <ClInclude Include="MemoryCache_Error.h" />
     <ClInclude Include="pch.h" />
@@ -179,6 +180,7 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MemoryCache_DBData\MemoryCache_DBData.cpp" />
+    <ClCompile Include="MemoryCache_DBUser\MemoryCache_DBUser.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
