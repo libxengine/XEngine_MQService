@@ -136,7 +136,7 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataInsert(XENGINE_DBMESSAGEQUEUE* 
 
 	MEMORYCACHE_DBINFO st_DBInfo = {};
 
-	st_DBInfo.nTimeStart = time(NULL);
+	st_DBInfo.nTimeLast = st_DBInfo.nTimeStart = time(NULL);
 	st_DBInfo.st_DBMessageInfo = *pSt_DBMessageInfo;
 
 	std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
@@ -297,7 +297,7 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 		pClass_This->st_LockerQuery.lock_shared();
 		for (auto stl_MapIterator = pClass_This->stl_MapQuery.begin(); stl_MapIterator != pClass_This->stl_MapQuery.end(); stl_MapIterator++)
 		{
-			if (stl_MapIterator->second.nTimeLast > (nTimeEnd - pClass_This->m_nTimeLast))
+			if ((nTimeEnd - stl_MapIterator->second.nTimeLast) > pClass_This->m_nTimeLast)
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBMessageInfo);
 			}
@@ -320,6 +320,7 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_MapQuery.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
 			}
 		}
+		stl_ListDelete.clear();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	return 0;
