@@ -282,12 +282,17 @@ extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, __int64x nSe
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
- 参数.二：fpCall_TimePublish
+ 参数.二：bMemoryQuery
+  In/Out：In
+  类型：逻辑型
+  可空：N
+  意思：是否启用高速缓存查询
+ 参数.三：fpCall_TimePublish
   In/Out：In
   类型：回调函数
   可空：N
   意思：定时消息发布回调函数
- 参数.三：lParam
+ 参数.四：lParam
   In/Out：In
   类型：无类型指针
   可空：Y
@@ -297,7 +302,7 @@ extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, __int64x nSe
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam = NULL);
+extern "C" bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam = NULL);
 /********************************************************************
 函数名称：DBModule_MQUser_Destory
 函数功能：销毁数据库管理器
