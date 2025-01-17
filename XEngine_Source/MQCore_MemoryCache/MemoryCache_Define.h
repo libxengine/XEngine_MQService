@@ -35,17 +35,17 @@ extern "C" XLONG MemoryCache_GetLastError(int *pInt_SysError = NULL);
   类型：整数型
   可空：N
   意思：允许的最后更新时间存在秒数
- 参数.二：nTimeStart
+ 参数.二：nTimeCount
   In/Out：In
   类型：整数型
   可空：N
-  意思：允许的最大保留时间
+  意思：允许的最大保留时间.将不关心是否使用,0不启用
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
+extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 /********************************************************************
 函数名称：MemoryCache_DBData_SetHandle
 函数功能：设置句柄
@@ -141,17 +141,17 @@ extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMES
   类型：整数型
   可空：N
   意思：允许的最后更新时间存在秒数
- 参数.二：nTimeStart
+ 参数.二：nTimeCount
   In/Out：In
   类型：整数型
   可空：N
-  意思：允许的最大保留时间
+  意思：允许的最大保留时间.将不关心是否使用,0不启用
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
+extern "C" bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 /********************************************************************
 函数名称：MemoryCache_DBUser_SetHandle
 函数功能：设置句柄

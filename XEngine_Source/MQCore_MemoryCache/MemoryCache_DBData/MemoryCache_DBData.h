@@ -42,7 +42,7 @@ public:
 	CMemoryCache_DBData();
 	~CMemoryCache_DBData();
 public:
-	bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
+	bool MemoryCache_DBData_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 	bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL);
 	bool MemoryCache_DBData_Destory();
 public:
@@ -57,7 +57,7 @@ protected:
 private:
 	bool bIsRun = false;
 	int m_nTimeLast = 0;
-	int m_nTimeStart = 0;
+	int m_nTimeCount = 0;
 	XNETHANDLE m_xhDBSQL = 0;
 
 	XPVOID m_lParam;

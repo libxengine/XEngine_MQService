@@ -39,7 +39,7 @@
         "bDataInsertEnable":true,
         "bUserQueryEnable":true,
         "nTimeLast":3600,
-        "nTimeStart":0
+        "nTimeCount":0
     },
     "XReport":{
         "bEnable":true,

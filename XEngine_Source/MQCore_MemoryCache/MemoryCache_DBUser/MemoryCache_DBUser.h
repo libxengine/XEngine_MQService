@@ -23,7 +23,7 @@ public:
 	CMemoryCache_DBUser();
 	~CMemoryCache_DBUser();
 public:
-	bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
+	bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam = NULL);
 	bool MemoryCache_DBUser_SetHandle(XNETHANDLE xhDBSQL);
 	bool MemoryCache_DBUser_Destory();
 public:
@@ -35,7 +35,7 @@ protected:
 private:
 	bool bIsRun = false;
 	int m_nTimeLast = 0;
-	int m_nTimeStart = 0;
+	int m_nTimeCount = 0;
 	XNETHANDLE m_xhDBSQL = 0;
 
 	XPVOID m_lParam;

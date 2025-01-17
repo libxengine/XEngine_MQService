@@ -29,24 +29,24 @@ CMemoryCache_DBUser::~CMemoryCache_DBUser()
   类型：整数型
   可空：N
   意思：允许的最后更新时间存在秒数
- 参数.二：nTimeStart
+ 参数.二：nTimeCount
   In/Out：In
   类型：整数型
   可空：N
-  意思：允许的最大保留时间
+  意思：允许的最大保留时间.将不关心是否使用,0不启用
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CMemoryCache_DBUser::MemoryCache_DBUser_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam /* = NULL */)
+bool CMemoryCache_DBUser::MemoryCache_DBUser_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam /* = NULL */)
 {
     MemoryCache_IsErrorOccur = false;
 
 	bIsRun = true;
 
 	m_nTimeLast = nTimeLast;
-	m_nTimeStart = nTimeStart;
+	m_nTimeCount = nTimeCount;
 	m_lParam = lParam;
 	lpCall_MemoryCache = fpCall_MemoryCache;
 
@@ -229,7 +229,7 @@ XHTHREAD CALLBACK CMemoryCache_DBUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBUserInfo);
 			}
-			else if (pClass_This->m_nTimeStart > 0 && (nTimeEnd - pClass_This->m_nTimeStart))
+			else if (pClass_This->m_nTimeCount > 0 && ((nTimeEnd - stl_MapIterator->second.nTimeLast) > pClass_This->m_nTimeCount))
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBUserInfo);
 			}

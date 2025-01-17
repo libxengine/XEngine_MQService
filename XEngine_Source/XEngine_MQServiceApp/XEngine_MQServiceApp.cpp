@@ -176,29 +176,29 @@ int main(int argc, char** argv)
 
 	if (st_ServiceCfg.st_XMemory.bDataQueryEnable || st_ServiceCfg.st_XMemory.bDataInsertEnable)
 	{
-		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart, MessageQueue_CBTask_MemoryCache))
+		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount, MessageQueue_CBTask_MemoryCache))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息内容高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
 			goto NETSERVICEEXIT;
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化消息内容高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化消息内容高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用消息内容高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用消息内容高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
 	if (st_ServiceCfg.st_XMemory.bUserQueryEnable)
 	{
-		if (!MemoryCache_DBUser_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart, MessageQueue_CBTask_MemoryCache))
+		if (!MemoryCache_DBUser_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount, MessageQueue_CBTask_MemoryCache))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化用户信息高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
 			goto NETSERVICEEXIT;
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化用户信息高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化用户信息高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用用户信息高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeStart);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到没有启用用户信息高速缓存服务"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
 
 	if (!bIsTest)

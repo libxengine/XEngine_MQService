@@ -134,7 +134,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XMemory.bDataInsertEnable = st_JsonXMemory["bDataInsertEnable"].asBool();
 	pSt_ServerConfig->st_XMemory.bUserQueryEnable = st_JsonXMemory["bUserQueryEnable"].asBool();
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
-	pSt_ServerConfig->st_XMemory.nTimeStart = st_JsonXMemory["nTimeStart"].asInt();
+	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
 
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{

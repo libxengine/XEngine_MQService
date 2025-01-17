@@ -31,9 +31,9 @@ extern "C" XLONG MemoryCache_GetLastError(int* pInt_SysError)
 /*************************************************************************
                         高速缓存导出函数
 **************************************************************************/
-extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam)
+extern "C" bool MemoryCache_DBData_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam)
 {
-    return m_MemoryDBData.MemoryCache_DBData_Init(nTimeLast, nTimeStart, fpCall_MemoryCache, lParam);
+    return m_MemoryDBData.MemoryCache_DBData_Init(nTimeLast, nTimeCount, fpCall_MemoryCache, lParam);
 }
 extern "C" bool MemoryCache_DBData_SetHandle(XNETHANDLE xhDBSQL)
 {
@@ -62,9 +62,9 @@ extern "C" bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMES
 /*************************************************************************
                         用户信息高速缓存导出函数
 **************************************************************************/
-extern "C" bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam)
+extern "C" bool MemoryCache_DBUser_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam)
 {
-    return m_MemoryDBUser.MemoryCache_DBUser_Init(nTimeLast, nTimeStart, fpCall_MemoryCache, lParam);
+    return m_MemoryDBUser.MemoryCache_DBUser_Init(nTimeLast, nTimeCount, fpCall_MemoryCache, lParam);
 }
 extern "C" bool MemoryCache_DBUser_SetHandle(XNETHANDLE xhDBSQL)
 {
