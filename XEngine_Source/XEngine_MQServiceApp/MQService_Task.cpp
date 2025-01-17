@@ -61,28 +61,28 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("定时任务,消息主题:%s,序列:%lld,定时任务分发成功,客户端个数:%d"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, nListCount);
 }
-void CALLBACK MessageQueue_CBTask_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XENGINE_DBMESSAGEQUEUE* pSt_DBInfo, XPVOID lParam)
+void CALLBACK MessageQueue_CBTask_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XPVOID pSt_DBInfo, XPVOID lParam)
 {
 	if (ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY == enMemoryType)
 	{
 		if (bSuccess)
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("高速缓存,消息主题:%s,序列:%lld,删除过期缓存成功,缓存剩余队列:%ld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, nListCount);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("高速缓存,消息主题:%s,序列:%lld,删除过期缓存成功,缓存剩余队列:%ld"), ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->tszQueueName, ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->nQueueSerial, nListCount);
 		}
 		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,消息主题:%s,序列:%lld,删除过期缓存成功,缓存剩余队列:%ld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, nListCount);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,消息主题:%s,序列:%lld,删除过期缓存成功,缓存剩余队列:%ld"), ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->tszQueueName, ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->nQueueSerial, nListCount);
 		}
 	}
 	else if (ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT == enMemoryType)
 	{
 		if (bSuccess)
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("高速缓存,消息主题:%s,序列:%lld,插入缓存队列到数据库成功,缓存剩余队列:%ld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, nListCount);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("高速缓存,消息主题:%s,序列:%lld,插入缓存队列到数据库成功,缓存剩余队列:%ld"), ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->tszQueueName, ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->nQueueSerial, nListCount);
 		}
 		else
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,消息主题:%s,序列:%lld,插入缓存队列到数据库失败,缓存剩余队列:%ld"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, nListCount);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("高速缓存,消息主题:%s,序列:%lld,插入缓存队列到数据库失败,缓存剩余队列:%ld"), ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->tszQueueName, ((XENGINE_DBMESSAGEQUEUE*)pSt_DBInfo)->nQueueSerial, nListCount);
 		}
 	}
 }
