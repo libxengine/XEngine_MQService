@@ -313,11 +313,11 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 			XENGINE_DBMESSAGEQUEUE st_DBMessage = *stl_ListIterator;
 			if (pClass_This->MemoryCache_DBData_DataDelete(&st_DBMessage))
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, true, pClass_This->stl_ListInsert.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, true, pClass_This->stl_MapQuery.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
 			}
 			else
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_ListInsert.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_MapQuery.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
