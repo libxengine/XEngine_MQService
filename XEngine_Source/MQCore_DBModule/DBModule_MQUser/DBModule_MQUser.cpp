@@ -30,12 +30,17 @@ CDBModule_MQUser::~CDBModule_MQUser()
   类型：数据结构指针
   可空：N
   意思：数据MYSQL数据库连接信息
- 参数.二：fpCall_TimePublish
+ 参数.二：bMemoryQuery
+  In/Out：In
+  类型：逻辑型
+  可空：N
+  意思：是否启用高速缓存查询
+ 参数.三：fpCall_TimePublish
   In/Out：In
   类型：回调函数
   可空：N
   意思：定时消息发布回调函数
- 参数.三：lParam
+ 参数.四：lParam
   In/Out：In
   类型：无类型指针
   可空：Y
@@ -45,7 +50,7 @@ CDBModule_MQUser::~CDBModule_MQUser()
   意思：是否成功
 备注：
 *********************************************************************/
-bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam /* = NULL */)
+bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam /* = NULL */)
 {
     DBModule_IsErrorOccur = false;
 
@@ -64,6 +69,7 @@ bool CDBModule_MQUser::DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBCo
         return false;
     }
 
+	m_bMemoryQuery = bMemoryQuery;
 	bIsRun = true;
 	m_lParam = lParam;
 	lpCall_TimePublish = fpCall_TimePublish;
@@ -155,6 +161,13 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
 		return false;
 	}
+	if (m_bMemoryQuery)
+	{
+		if (MemoryCache_DBUser_DataQuery(pSt_UserInfo))
+		{
+			return true;
+		}
+	}
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
@@ -206,6 +219,11 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 		_tcsxcpy(pSt_UserInfo->tszCreateTime, pptszResult[9]);
 	}
 	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+
+	if (m_bMemoryQuery)
+	{
+		MemoryCache_DBUser_DataInsert(pSt_UserInfo);
+	}
 	return true;
 }
 /********************************************************************
@@ -240,6 +258,10 @@ bool CDBModule_MQUser::DBModule_MQUser_UserDelete(XENGINE_PROTOCOL_USERINFO* pSt
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return false;
+	}
+	if (m_bMemoryQuery)
+	{
+		MemoryCache_DBUser_DataDelete(pSt_UserInfo);
 	}
 	return true;
 }
@@ -282,6 +304,12 @@ bool CDBModule_MQUser::DBModule_MQUser_UserUPDate(XENGINE_PROTOCOL_USERINFO* pSt
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return false;
+	}
+
+	if (m_bMemoryQuery)
+	{
+		MemoryCache_DBUser_DataDelete(pSt_UserInfo);
+		MemoryCache_DBUser_DataInsert(pSt_UserInfo);
 	}
 
 	return true;
@@ -330,7 +358,7 @@ bool CDBModule_MQUser::DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** ppp
 		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserInfo, (int)nllLine, sizeof(XENGINE_PROTOCOL_USERINFO));
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_UserInfo, (int)nllLine, sizeof(XENGINE_PROTOCOL_USERINFO));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
 		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
@@ -551,7 +579,7 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
 		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
@@ -782,7 +810,7 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 		return false;
 	}
 	*pInt_ListCount = (int)nllLine;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_DBInfo, *pInt_ListCount, sizeof(XENGINE_DBTIMERELEASE));
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_DBInfo, *pInt_ListCount, sizeof(XENGINE_DBTIMERELEASE));
 	for (__int64u i = 0; i < nllLine; i++)
 	{
 		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
@@ -1141,7 +1169,7 @@ XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 		{
 			pClass_This->lpCall_TimePublish(ppSt_DBInfo[i], pClass_This->m_lParam);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_DBInfo, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_DBInfo, nListCount);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	return 0;

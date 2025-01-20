@@ -115,7 +115,7 @@ bool CSessionModule_Client::SessionModule_Client_Delete(LPCXSTR lpszClientAddr)
 	Session_IsErrorOccur = false;
 
 	st_Locker.lock();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+	unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
 	if (stl_MapIterator != stl_MapSession.end())
 	{
         stl_MapSession.erase(stl_MapIterator);
@@ -183,7 +183,7 @@ bool CSessionModule_Client::SessionModule_Client_GetUser(LPCXSTR lpszSessionStr,
 		return false;
 	}
 	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
+	unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
 		Session_IsErrorOccur = true;
@@ -328,7 +328,7 @@ bool CSessionModule_Client::SessionModule_Client_GetType(LPCXSTR lpszSessionStr,
 		return false;
 	}
 	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
+	unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszSessionStr);
 	if (stl_MapIterator == stl_MapSession.end())
 	{
 		Session_IsErrorOccur = true;
@@ -373,7 +373,7 @@ bool CSessionModule_Client::SessionModule_Client_GetExist(LPCXSTR lpszClientAddr
 	if (NULL == lpszClientAddr)
 	{
 		bool bFound = false;
-		unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
+		unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
 		for (int i = 0; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++, i++)
 		{
 			if (0 == _tcsxnicmp(lpszClientUser, stl_MapIterator->second.st_UserInfo.tszUserName, _tcsxlen(stl_MapIterator->second.st_UserInfo.tszUserName)))
@@ -392,7 +392,7 @@ bool CSessionModule_Client::SessionModule_Client_GetExist(LPCXSTR lpszClientAddr
 	}
 	else
 	{
-		unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
+		unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.find(lpszClientAddr);
 		if (stl_MapIterator == stl_MapSession.end())
 		{
 			Session_IsErrorOccur = true;
@@ -432,10 +432,10 @@ bool CSessionModule_Client::SessionModule_Client_GetListAddr(XCHAR*** ppptszClie
 	Session_IsErrorOccur = false;
 
 	*pInt_ListCount = stl_MapSession.size();
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)ppptszClientList, stl_MapSession.size(), 128);
+	BaseLib_Memory_Malloc((XPPPMEM)ppptszClientList, stl_MapSession.size(), 128);
 
 	st_Locker.lock_shared();
-	unordered_map<tstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
+	unordered_map<xstring, XENGINE_SESSIONINFO>::iterator stl_MapIterator = stl_MapSession.begin();
 	for (int i = 0; stl_MapIterator != stl_MapSession.end(); stl_MapIterator++, i++)
 	{
 		if (bAddr)

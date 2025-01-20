@@ -29,24 +29,24 @@ CMemoryCache_DBData::~CMemoryCache_DBData()
   类型：整数型
   可空：N
   意思：允许的最后更新时间存在秒数
- 参数.二：nTimeStart
+ 参数.二：nTimeCount
   In/Out：In
   类型：整数型
   可空：N
-  意思：允许的最大保留时间
+  意思：允许的最大保留时间.将不关心是否使用,0不启用
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast, int nTimeStart, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam /* = NULL */)
+bool CMemoryCache_DBData::MemoryCache_DBData_Init(int nTimeLast, int nTimeCount, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE fpCall_MemoryCache, XPVOID lParam /* = NULL */)
 {
     MemoryCache_IsErrorOccur = false;
 
 	bIsRun = true;
 
 	m_nTimeLast = nTimeLast;
-	m_nTimeStart = nTimeStart;
+	m_nTimeCount = nTimeCount;
 	m_lParam = lParam;
 	lpCall_MemoryCache = fpCall_MemoryCache;
 
@@ -136,7 +136,7 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataInsert(XENGINE_DBMESSAGEQUEUE* 
 
 	MEMORYCACHE_DBINFO st_DBInfo = {};
 
-	st_DBInfo.nTimeStart = time(NULL);
+	st_DBInfo.nTimeLast = st_DBInfo.nTimeStart = time(NULL);
 	st_DBInfo.st_DBMessageInfo = *pSt_DBMessageInfo;
 
 	std::tuple<__int64x, std::string> stl_Key(pSt_DBMessageInfo->nQueueSerial, pSt_DBMessageInfo->tszQueueName);
@@ -201,7 +201,7 @@ bool CMemoryCache_DBData::MemoryCache_DBData_DataQuery(XENGINE_DBMESSAGEQUEUE* p
   In/Out：In
   类型：数据结构指针
   可空：N
-  意思：输入要操作的信息
+  意思：输入要操作的信息`
 返回值
   类型：逻辑型
   意思：是否成功
@@ -297,11 +297,11 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 		pClass_This->st_LockerQuery.lock_shared();
 		for (auto stl_MapIterator = pClass_This->stl_MapQuery.begin(); stl_MapIterator != pClass_This->stl_MapQuery.end(); stl_MapIterator++)
 		{
-			if (stl_MapIterator->second.nTimeLast > (nTimeEnd - pClass_This->m_nTimeLast))
+			if ((nTimeEnd - stl_MapIterator->second.nTimeLast) > pClass_This->m_nTimeLast)
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBMessageInfo);
 			}
-			else if (pClass_This->m_nTimeStart > 0 && (nTimeEnd - pClass_This->m_nTimeStart))
+			else if (pClass_This->m_nTimeCount > 0 && ((nTimeEnd - stl_MapIterator->second.nTimeLast) > pClass_This->m_nTimeCount))
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBMessageInfo);
 			}
@@ -313,13 +313,14 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 			XENGINE_DBMESSAGEQUEUE st_DBMessage = *stl_ListIterator;
 			if (pClass_This->MemoryCache_DBData_DataDelete(&st_DBMessage))
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, true, pClass_This->stl_ListInsert.size(), &st_DBMessage, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, true, pClass_This->stl_MapQuery.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
 			}
 			else
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_ListInsert.size(), &st_DBMessage, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY, false, pClass_This->stl_MapQuery.size(), (XPVOID)&st_DBMessage, pClass_This->m_lParam);
 			}
 		}
+		stl_ListDelete.clear();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	return 0;
@@ -339,11 +340,11 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_InsertThread(XPVOID lPara
 
 			if (DataBase_MySQL_Execute(pClass_This->m_xhDBSQL, st_DBInsert.m_StrSQL.c_str()))
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, true, pClass_This->stl_ListInsert.size(), &st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, true, pClass_This->stl_ListInsert.size(), (XPVOID)&st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
 			}
 			else
 			{
-				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, false, pClass_This->stl_ListInsert.size(), &st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
+				pClass_This->lpCall_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_INSERT, false, pClass_This->stl_ListInsert.size(), (XPVOID)&st_DBInsert.st_DBMessageInfo, pClass_This->m_lParam);
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

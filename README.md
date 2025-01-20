@@ -7,6 +7,9 @@
 c c++消息服务 消息中间件  
 c c++Message Service  
 
+## 注意
+编译发布版本将只在github上面发布.
+
 ## 软件架构
 此软件基于XEngine开发.采用C/C++作为开发语言  
 此软件是一款简易的高性能服务,统一的API接口,让用户几乎不需要二次开发就可以直接使用  
@@ -38,7 +41,7 @@ c c++Message Service
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V8.31或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V9或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/libxengine/libxengine  
 GITHUB:https://github.com/libxengine/libxengine
 
@@ -64,7 +67,7 @@ git submodule update
 
 #### Linux
 Linux使用Makefile编译  
-UBUNTU22.04 x64或者RockyLinux9 x64均可  
+UBUNTU24.04 x64或者RockyLinux9 x64均可  
 在控制台运行
 
 ###### 编译命令

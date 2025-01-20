@@ -1,3 +1,39 @@
+XEngine_MQService V3.14.0.1001
+
+增加:删除消息协议支持
+增加:用户信息内存数据库支持
+更新:依赖库
+更新:支持xengine v9版本
+更新:网络错误现在使用新的方法定义
+更新:编译器版本更新到C++20,C17
+优化:自动发布支持更多系统
+修改:消息协议定义值
+修改:VS的字符集从ansi改为unicode
+修改:回调函数返回数据类型
+修正:内存没有删除老旧消息当修改消息的时候
+修正:字符集乱码问题
+修正:某些时候获取统计信息错误的问题
+修正:内存数据库获取统计信息错误的问题
+修正:总可用时间在内存数据库处理不正确的问题
+修正:内存数据查询不正确的问题
+
+added:delete message support
+added:user info memory cache supported
+update:depend library
+update:match xengine v9.x support
+update:Network error codes use a new method definition
+update:c++ compiler 20 and c compiler 17
+improved:ci workflows release more support
+modify:msg protocol define value.
+modify:change ansi to unicode character set on vs
+modify:callback export type for memory cache
+fixed:memory not delete old message when modify message
+fixed:Character set garbled problem
+fixed:sometimes get left count value is incorrect
+fixed:get count is incorrect in data memory cache
+fixed:The total available time of memory cache data is not handled correctly
+fixed:memory cache query is incorrect
+======================================================================================
 XEngine_MQService V3.13.0.1001
 
 增加:为DATA消息数据库增加高速缓存支持

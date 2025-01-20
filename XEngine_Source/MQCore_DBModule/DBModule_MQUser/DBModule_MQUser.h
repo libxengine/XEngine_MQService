@@ -17,7 +17,7 @@ public:
 	CDBModule_MQUser();
 	~CDBModule_MQUser();
 public:
-	bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam = NULL);
+	bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO* pSt_DBConnector, bool bMemoryQuery, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam = NULL);
 	bool DBModule_MQUser_Destory();
 	bool DBModule_MQUser_UserInsert(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
 	bool DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
@@ -51,6 +51,7 @@ private:
 	XPVOID m_lParam;
 	CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH lpCall_TimePublish;
 private:
-	bool bIsRun;
-	XNETHANDLE xhDBSQL;
+	bool bIsRun = false;
+	bool m_bMemoryQuery = false;
+	XNETHANDLE xhDBSQL = 0;
 };

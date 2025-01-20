@@ -43,6 +43,10 @@ extern "C" bool DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE * pSt_DBManage)
 {
 	return m_DBData.DBModule_MQData_Insert(pSt_DBManage);
 }
+extern "C" bool DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
+{
+	return m_DBData.DBModule_MQData_Delete(pSt_DBInfo);
+}
 extern "C" bool DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE * pSt_DBInfo)
 {
 	return m_DBData.DBModule_MQData_Query(pSt_DBInfo);
@@ -71,16 +75,16 @@ extern "C" bool DBModule_MQData_ShowTable(XCHAR * **pppszTableName, int* pInt_Li
 {
 	return m_DBData.DBModule_MQData_ShowTable(pppszTableName, pInt_ListCount);
 }
-extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, int nSerial, int* pInt_Count)
+extern "C" bool DBModule_MQData_GetLeftCount(LPCXSTR lpszTableName, __int64x nSerial, int* pInt_Count)
 {
 	return m_DBData.DBModule_MQData_GetLeftCount(lpszTableName, nSerial, pInt_Count);
 }
 /*************************************************************************
 						消息用户导出函数
 **************************************************************************/
-extern "C" bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam)
+extern "C" bool DBModule_MQUser_Init(DATABASE_MYSQL_CONNECTINFO * pSt_DBConnector, bool bMemoryQuery, CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH fpCall_TimePublish, XPVOID lParam)
 {
-	return m_DBUser.DBModule_MQUser_Init(pSt_DBConnector, fpCall_TimePublish, lParam);
+	return m_DBUser.DBModule_MQUser_Init(pSt_DBConnector, bMemoryQuery, fpCall_TimePublish, lParam);
 }
 extern "C" bool DBModule_MQUser_Destory()
 {

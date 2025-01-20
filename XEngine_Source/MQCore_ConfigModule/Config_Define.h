@@ -59,8 +59,9 @@ typedef struct
     {
         bool bDataQueryEnable;
         bool bDataInsertEnable;
+        bool bUserQueryEnable;
         int nTimeLast;
-        int nTimeStart;
+        int nTimeCount;
     }st_XMemory;
 	struct
 	{
@@ -70,7 +71,7 @@ typedef struct
 	}st_XReport;
     struct
     {
-        list<tstring> *pStl_ListStorage;
+        list<xstring> *pStl_ListStorage;
     }st_XVer;
 }XENGINE_SERVERCONFIG;
 typedef struct

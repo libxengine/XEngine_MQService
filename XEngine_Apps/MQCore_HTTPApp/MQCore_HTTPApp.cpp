@@ -2,8 +2,8 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32")
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib")
-#pragma comment(lib,"x86/XEngine_Client/XClient_APIHelp")
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")
+#pragma comment(lib,"XEngine_Client/XClient_APIHelp")
 #pragma comment(lib,"../../XEngine_Source/Debug/jsoncpp")
 #endif
 #include <stdio.h>
@@ -33,7 +33,7 @@ void MQ_GetUserList()
 		return;
 	}
 	_xtprintf("MQ_GetUserList:%s\n", ptszMsgBody);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_GetOnlineList()
 {
@@ -47,7 +47,7 @@ void MQ_GetOnlineList()
 		return;
 	}
 	_xtprintf("MQ_GetOnlineList:%s\n", ptszMsgBody);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 void MQ_GetTopicList()
 {
@@ -61,7 +61,7 @@ void MQ_GetTopicList()
 		return;
 	}
 	_xtprintf("MQ_GetTopicList:%s\n", ptszMsgBody);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBody);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
 int main()
