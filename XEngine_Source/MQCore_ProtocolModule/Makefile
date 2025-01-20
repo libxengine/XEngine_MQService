@@ -1,4 +1,4 @@
-CC = g++ -Wall -std=c++17 -fPIC
+CC = g++ -Wall -std=c++20 -fPIC
 PLATFORM = linux
 PLATVER = 
 PLATDIR = 
@@ -7,7 +7,7 @@ LIBFLAG =
 RELEASE = 0
 LOADHDR = -I ./ -I ../XEngine_Depend/XEngine_Module/jsoncpp
 LOADSO = -L ../XEngine_Depend/XEngine_Module/jsoncpp
-LIB = -ljsoncpp -lXEngine_BaseLib -lXEngine_OPenSsl -lRfcComponents_MQTTProtocol
+LIB = -ljsoncpp -lXEngine_BaseLib -lXEngine_Cryption -lRfcComponents_MQTTProtocol
 LIBEX = 
 OBJECTS = ProtocolModule_Packet.o ProtocolModule_Parse.o pch.o
 

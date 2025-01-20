@@ -829,7 +829,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_WSCommon(XENGINE_PROTOCOLHDR*
 			}
 			memset(ptszBaseBuffer, '\0', XENGINE_MEMORY_SIZE_MAX);
 
-			OPenSsl_Codec_Base64(lpszMsgBuffer, ptszBaseBuffer, &nBLen, true);
+			Cryption_Codec_Base64(lpszMsgBuffer, ptszBaseBuffer, &nBLen, true);
 			st_JsonPayload["nPayLen"] = nBLen;
 			st_JsonPayload["tszPayData"] = ptszBaseBuffer;
 		}
@@ -861,7 +861,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 			XCHAR tszRVBuffer[1024];
 			MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 
-			BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
+			BaseLib_Memory_Malloc((XPPPMEM)&ppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
 
 			ppSt_HDRProperty[0]->nProLen = 4;
 			ppSt_HDRProperty[0]->st_unValue.nValue = 1024000;
@@ -889,7 +889,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 
 			MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS, &ppSt_HDRProperty, nListCount);
 			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
 		}
 		else
 		{

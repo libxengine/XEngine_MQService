@@ -39,7 +39,7 @@ this software support following features
 ## install
 
 #### XEngine Evn
-you must install XEngine,need V8.31 or above,install XEngine can be refer to xengine Readme docment  
+you must install XEngine,need V9 or above,install XEngine can be refer to xengine Readme docment  
 GITEE:https://gitee.com/libxengine/libxengine  
 GITHUB:https://github.com/libxengine/libxengine
 
@@ -64,7 +64,7 @@ Just Run it.
 
 #### Linux
 Linux use Makefile to complie  
-supproted ubuntu22.04 x64 or RockyLinux9 x64  
+supproted ubuntu24.04 x64 or RockyLinux9 x64  
 
 ###### complie
 execute command in XEngine_Source path

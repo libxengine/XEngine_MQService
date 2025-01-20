@@ -123,7 +123,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassRegister, st_JsonXPass["tszPassRegister"].asCString());
 	_tcsxcpy(pSt_ServerConfig->st_XPass.tszPassUNReg, st_JsonXPass["tszPassUNReg"].asCString());
 
-	if (st_JsonRoot["XMemory"].empty() || (4 != st_JsonRoot["XMemory"].size()))
+	if (st_JsonRoot["XMemory"].empty() || (5 != st_JsonRoot["XMemory"].size()))
 	{
 		Config_IsErrorOccur = true;
 		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XMEMORY;
@@ -132,8 +132,9 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	Json::Value st_JsonXMemory = st_JsonRoot["XMemory"];
 	pSt_ServerConfig->st_XMemory.bDataQueryEnable = st_JsonXMemory["bDataQueryEnable"].asBool();
 	pSt_ServerConfig->st_XMemory.bDataInsertEnable = st_JsonXMemory["bDataInsertEnable"].asBool();
+	pSt_ServerConfig->st_XMemory.bUserQueryEnable = st_JsonXMemory["bUserQueryEnable"].asBool();
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
-	pSt_ServerConfig->st_XMemory.nTimeStart = st_JsonXMemory["nTimeStart"].asInt();
+	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
 
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{
@@ -196,7 +197,7 @@ bool CConfig_Json::Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVE
 		return false;
 	}
 	Json::Value st_JsonXVer = st_JsonRoot["XVer"];
-	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<tstring>;
+	pSt_ServerConfig->st_XVer.pStl_ListStorage = new list<xstring>;
 
 	for (unsigned int i = 0; i < st_JsonXVer.size(); i++)
 	{

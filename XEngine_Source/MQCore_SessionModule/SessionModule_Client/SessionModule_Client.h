@@ -38,5 +38,5 @@ public:
 private:
     shared_mutex st_Locker;
 private:
-    unordered_map<tstring, XENGINE_SESSIONINFO> stl_MapSession;
+    unordered_map<xstring, XENGINE_SESSIONINFO> stl_MapSession;
 };

@@ -41,7 +41,7 @@ c c++Message Service
 ## 安装教程
 
 #### XEngine环境
-必须安装XEngine,版本需要V8.31或者以上版本,安装XEngine可以参考其Readme文档  
+必须安装XEngine,版本需要V9或者以上版本,安装XEngine可以参考其Readme文档  
 GITEE:https://gitee.com/libxengine/libxengine  
 GITHUB:https://github.com/libxengine/libxengine
 
@@ -67,7 +67,7 @@ git submodule update
 
 #### Linux
 Linux使用Makefile编译  
-UBUNTU22.04 x64或者RockyLinux9 x64均可  
+UBUNTU24.04 x64或者RockyLinux9 x64均可  
 在控制台运行
 
 ###### 编译命令

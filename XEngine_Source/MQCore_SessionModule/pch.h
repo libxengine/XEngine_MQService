@@ -29,11 +29,6 @@
 #include "Session_Define.h"
 #include "Session_Error.h"
 using namespace std;
-#ifdef _UNICODE
-typedef std::wstring tstring;
-#else
-typedef std::string tstring;
-#endif
 /********************************************************************
 //    Created:     2021/07/02  10:16:47
 //    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_SessionModule\pch.h

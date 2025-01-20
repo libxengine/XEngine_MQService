@@ -10,3 +10,10 @@ EXPORTS
 	MemoryCache_DBData_DataQuery
 	MemoryCache_DBData_DataDelete
 	MemoryCache_DBData_QueueInsert
+
+	MemoryCache_DBUser_Init
+	MemoryCache_DBUser_SetHandle
+	MemoryCache_DBUser_Destory
+	MemoryCache_DBUser_DataInsert
+	MemoryCache_DBUser_DataQuery
+	MemoryCache_DBUser_DataDelete
