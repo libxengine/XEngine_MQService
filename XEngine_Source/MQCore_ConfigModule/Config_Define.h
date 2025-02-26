@@ -38,6 +38,7 @@ typedef struct
         int nMaxSize;
         int nMaxCount;
         int nLogLeave;
+        int nLogType;
     }st_XLog;
     struct
     {

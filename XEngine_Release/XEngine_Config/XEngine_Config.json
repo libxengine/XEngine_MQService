@@ -19,7 +19,8 @@
         "tszLOGFile":"./XEngine_Log/XEngine_MQServiceApp.Log",
         "MaxSize":1024000,
         "MaxCount":10,
-        "LogLeave":17
+        "LogLeave":32,
+        "LogType":17
     },
     "XSql":{
         "SQLAddr":"10.0.2.6",
@@ -38,7 +39,7 @@
         "bDataQueryEnable":true,
         "bDataInsertEnable":true,
         "bUserQueryEnable":true,
-        "nTimeLast":3600,
+        "nTimeLast":60,
         "nTimeCount":0
     },
     "XReport":{

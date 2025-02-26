@@ -86,7 +86,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
 
-    if (st_JsonRoot["XLog"].empty() || (4 != st_JsonRoot["XLog"].size()))
+    if (st_JsonRoot["XLog"].empty() || (5 != st_JsonRoot["XLog"].size()))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XLOG;
@@ -96,6 +96,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XLog.nMaxSize = st_JsonXLog["MaxSize"].asInt();
     pSt_ServerConfig->st_XLog.nMaxCount = st_JsonXLog["MaxCount"].asInt();
     pSt_ServerConfig->st_XLog.nLogLeave = st_JsonXLog["LogLeave"].asInt();
+	pSt_ServerConfig->st_XLog.nLogType = st_JsonXLog["LogType"].asInt();
 	_tcsxcpy(pSt_ServerConfig->st_XLog.tszLOGFile, st_JsonXLog["tszLOGFile"].asCString());
 
     if (st_JsonRoot["XSql"].empty() || (4 != st_JsonRoot["XSql"].size()))
