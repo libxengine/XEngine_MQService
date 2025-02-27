@@ -90,6 +90,7 @@ jobs:
         with:
           name: XEngine_MQServiceApp-x86_32-Windows
           path: XEngine_Release/
+          retention-days: 1
  
       - name: Upload folder as artifact with x64
         if: matrix.configuration == 'Release' && matrix.platform == 'x64'
@@ -97,3 +98,4 @@ jobs:
         with:
           name: XEngine_MQServiceApp-x86_64-Windows
           path: XEngine_Release/
+          retention-days: 1
