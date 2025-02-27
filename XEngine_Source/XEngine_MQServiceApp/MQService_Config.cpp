@@ -36,6 +36,22 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         {
             pSt_StartlParam->nHttpPort = _ttxoi(argv[++i]);
         }
+		else if (0 == _tcsxcmp("-WP", argv[i]))
+		{
+			pSt_StartlParam->nWSPort = _ttxoi(argv[++i]);
+		}
+		else if (0 == _tcsxcmp("-MP", argv[i]))
+		{
+			pSt_StartlParam->nMQTTPort = _ttxoi(argv[++i]);
+		}
+		else if (0 == _tcsxcmp("-LL", argv[i]))
+		{
+			pSt_StartlParam->st_XLog.nLogLeave = _ttxoi(argv[++i]);
+		}
+		else if (0 == _tcsxcmp("-LT", argv[i]))
+		{
+			pSt_StartlParam->st_XLog.nLogType = _ttxoi(argv[++i]);
+		}
         else if (0 == _tcsxcmp("-d",argv[i]))
         {
             pSt_StartlParam->bDeamon = _ttxoi(argv[++i]);
