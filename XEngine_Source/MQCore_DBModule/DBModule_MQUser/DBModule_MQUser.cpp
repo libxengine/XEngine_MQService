@@ -1163,7 +1163,7 @@ XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 	while (pClass_This->bIsRun)
 	{
 		int nListCount = 0;
-		XENGINE_DBTIMERELEASE** ppSt_DBInfo;
+		XENGINE_DBTIMERELEASE** ppSt_DBInfo = NULL;
 		pClass_This->DBModule_MQUser_TimeQuery(&ppSt_DBInfo, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
