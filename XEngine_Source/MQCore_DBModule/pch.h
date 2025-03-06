@@ -50,15 +50,19 @@ extern XLONG DBModule_dwErrorCode;
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_DataBase.lib")
 #ifdef _DEBUG
-#ifdef _WIN64
+#ifdef _M_X64
 #pragma comment(lib,"../x64/Debug/MQCore_MemoryCache.lib")
-#else
+#elif _M_ARM64
+#pragma comment(lib,"../ARM64/Debug/MQCore_MemoryCache.lib")
+#elif _M_IX86
 #pragma comment(lib,"../Debug/MQCore_MemoryCache.lib")
 #endif
 #else
-#ifdef _WIN64
+#ifdef _M_X64
 #pragma comment(lib,"../x64/Release/MQCore_MemoryCache.lib")
-#else
+#elif _M_ARM64
+#pragma comment(lib,"../ARM64/Release/MQCore_MemoryCache.lib")
+#elif _M_IX86
 #pragma comment(lib,"../Release/MQCore_MemoryCache.lib")
 #endif
 #endif
