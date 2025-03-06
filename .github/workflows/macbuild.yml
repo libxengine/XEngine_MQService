@@ -83,13 +83,13 @@ jobs:
         if: matrix.os == 'macos-13'
         uses: actions/upload-artifact@v4
         with:
-          name: XEngine_MQServiceApp-x86_64-Mac
+          name: XEngine_MQServiceApp-Mac_x86_64
           path: XEngine_Release/
           retention-days: 1
       - name: Upload folder as artifact with mac arm
         if: matrix.os == 'macos-14'
         uses: actions/upload-artifact@v4
         with:
-          name: XEngine_MQServiceApp-Arm64-Mac
+          name: XEngine_MQServiceApp-Mac_Arm64
           path: XEngine_Release/
           retention-days: 1
