@@ -692,7 +692,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				{
 					if (pSt_ProtocolHdr->byIsReply)
 					{
-						pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY;
+						pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_EXISTED;
 						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 					}

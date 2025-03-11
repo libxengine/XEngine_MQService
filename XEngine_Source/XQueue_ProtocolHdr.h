@@ -81,6 +81,8 @@
 #define ERROR_XENGINE_MESSAGE_XMQ_QUERYOWNER 0x2015                        //查询所有者失败
 #define ERROR_XENGINE_MESSAGE_XMQ_MODIFYTOPIC 0x2016                       //修改主题失败
 #define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x2017                         //修改消息失败
+
+#define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x3001                         //HTTP请求参数错误
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////
