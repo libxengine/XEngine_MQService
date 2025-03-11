@@ -28,6 +28,8 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 	st_DBInfo.nQueueSerial = pSt_DBInfo->nIDMsg;
 	_tcsxcpy(st_DBInfo.tszQueueName, pSt_DBInfo->tszQueueName);
 	DBModule_MQData_Query(&st_DBInfo);
+
+	memcpy(&st_MQProtocol.st_MSGAttr, &st_DBInfo.nMsgAttr, sizeof(st_DBInfo.nMsgAttr));
 	//是否需要通知
 	int nListCount = 0;
 	XENGINE_DBUSERKEY** ppSt_ListUser;
