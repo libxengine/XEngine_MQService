@@ -681,6 +681,25 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICCREATE;
+
+			int nListCount = 0;
+			XCHAR** ppszTableName;
+			//检查表是否存在
+			DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+			for (int i = 0; i < nListCount; i++)
+			{
+				if (0 == _tcsxnicmp(ppszTableName[i], st_MQProtocol.tszMQKey, _tcsxlen(ppszTableName[i])))
+				{
+					if (pSt_ProtocolHdr->byIsReply)
+					{
+						pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					}
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,创建主题失败,主题名称:%s,主题存在,无法继续"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
+					return false;
+				}
+			}
 			//创建表
 			if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
 			{
