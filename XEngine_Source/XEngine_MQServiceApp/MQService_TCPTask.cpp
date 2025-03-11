@@ -377,15 +377,19 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
-				//序列号为0,自加
-				if (DBModule_MQData_GetSerial(st_DBQueue.tszQueueName, NULL, NULL, &st_DBIndex))
+				if (!APIHelp_Counter_SerialGet(st_DBQueue.tszQueueName, &st_DBQueue.nQueueSerial))
 				{
-					st_DBQueue.nQueueSerial = st_DBIndex.nQueueSerial + 1;
-				}
-				else
-				{
-					//可能为空表
-					st_DBQueue.nQueueSerial = 1;
+					//序列号为0,自加
+					if (DBModule_MQData_GetSerial(st_DBQueue.tszQueueName, NULL, NULL, &st_DBIndex))
+					{
+						st_DBQueue.nQueueSerial = st_DBIndex.nQueueSerial + 1;
+					}
+					else
+					{
+						//可能为空表
+						st_DBQueue.nQueueSerial = 1;
+					}
+					APIHelp_Counter_SerialSet(st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial);
 				}
 			}
 			//是否被设置定时发布
@@ -768,6 +772,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				return false;
 			}
 			//清楚数据库
+			APIHelp_Counter_SerialDel(st_MQProtocol.tszMQKey);
 			DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
 			DBModule_MQUser_KeyDelete(&st_UserKey);
 			DBModule_MQUser_TimeDelete(&st_DBInfo);
