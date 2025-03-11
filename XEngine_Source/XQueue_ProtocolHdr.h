@@ -54,35 +54,35 @@
 ///////////////////////////////////////////////////////////////////////////
 //                          协议错误定义
 ///////////////////////////////////////////////////////////////////////////
-#define ERROR_XENGINE_MESSAGE_AUTH_LOGGED 0x1001                           //已经登陆过了
-#define ERROR_XENGINE_MESSAGE_AUTH_HTTP 0x1002                             //HTTP PASS验证失败
-#define ERROR_XENGINE_MESSAGE_AUTH_USERPASS 0x1003                         //用户或者密码错误
-#define ERROR_XENGINE_MESSAGE_AUTH_NOTLOGIN 0x1004                         //没有登陆,禁止操作
-#define ERROR_XENGINE_MESSAGE_AUTH_APIREG 0x1005                           //HTTP 远程注册失败
-#define ERROR_XENGINE_MESSAGE_AUTH_EXISTED 0x1006                          //用户已经存在
-#define ERROR_XENGINE_MESSAGE_AUTH_REGISTER 0x1007                         //用户注册失败,数据错误
-#define ERROR_XENGINE_MESSAGE_AUTH_APIDEL 0x1008                           //HTTP API删除失败
-#define ERROR_XENGINE_MESSAGE_AUTH_DELETE 0x1009                           //本地删除失败
+#define ERROR_XENGINE_MESSAGE_AUTH_LOGGED 0x001                           //已经登陆过了
+#define ERROR_XENGINE_MESSAGE_AUTH_HTTP 0x002                             //HTTP PASS验证失败
+#define ERROR_XENGINE_MESSAGE_AUTH_USERPASS 0x003                         //用户或者密码错误
+#define ERROR_XENGINE_MESSAGE_AUTH_NOTLOGIN 0x004                         //没有登陆,禁止操作
+#define ERROR_XENGINE_MESSAGE_AUTH_APIREG 0x005                           //HTTP 远程注册失败
+#define ERROR_XENGINE_MESSAGE_AUTH_EXISTED 0x006                          //用户已经存在
+#define ERROR_XENGINE_MESSAGE_AUTH_REGISTER 0x007                         //用户注册失败,数据错误
+#define ERROR_XENGINE_MESSAGE_AUTH_APIDEL 0x008                           //HTTP API删除失败
+#define ERROR_XENGINE_MESSAGE_AUTH_DELETE 0x009                           //本地删除失败
 
-#define ERROR_XENGINE_MESSAGE_XMQ_EXISTED 0x2001                           //消息存在
-#define ERROR_XENGINE_MESSAGE_XMQ_INSERT 0x2002                            //插入数据库失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MSGQUERY 0x2003                          //查询消息失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BELONG 0x2004                            //指定用户消息,无权使用
-#define ERROR_XENGINE_MESSAGE_XMQ_TIMEOUT 0x2005                           //消息超时,无权使用
-#define ERROR_XENGINE_MESSAGE_XMQ_PUBTIME 0x2006                           //定时消息,无权使用
-#define ERROR_XENGINE_MESSAGE_XMQ_KEYQUERY 0x2007                          //查询绑定消息失败
-#define ERROR_XENGINE_MESSAGE_XMQ_SERIAL 0x2008                            //消息序号错误
-#define ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY 0x2009                         //创建消息KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDOWNER 0x2010                         //绑定所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELOWNER 0x2011                          //删除所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_KEYUP 0x2012                             //更新KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDKEY 0x2013                           //绑定KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELKEY 0x2014                            //删除KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_QUERYOWNER 0x2015                        //查询所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYTOPIC 0x2016                       //修改主题失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x2017                         //修改消息失败
+#define ERROR_XENGINE_MESSAGE_XMQ_EXISTED 0x101                           //消息存在
+#define ERROR_XENGINE_MESSAGE_XMQ_INSERT 0x102                            //插入数据库失败
+#define ERROR_XENGINE_MESSAGE_XMQ_MSGQUERY 0x103                          //查询消息失败
+#define ERROR_XENGINE_MESSAGE_XMQ_BELONG 0x104                            //指定用户消息,无权使用
+#define ERROR_XENGINE_MESSAGE_XMQ_TIMEOUT 0x105                           //消息超时,无权使用
+#define ERROR_XENGINE_MESSAGE_XMQ_PUBTIME 0x106                           //定时消息,无权使用
+#define ERROR_XENGINE_MESSAGE_XMQ_KEYQUERY 0x107                          //查询绑定消息失败
+#define ERROR_XENGINE_MESSAGE_XMQ_SERIAL 0x108                            //消息序号错误
+#define ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY 0x109                         //创建消息KEY失败
+#define ERROR_XENGINE_MESSAGE_XMQ_BINDOWNER 0x110                         //绑定所有者失败
+#define ERROR_XENGINE_MESSAGE_XMQ_DELOWNER 0x111                          //删除所有者失败
+#define ERROR_XENGINE_MESSAGE_XMQ_KEYUP 0x112                             //更新KEY失败
+#define ERROR_XENGINE_MESSAGE_XMQ_BINDKEY 0x113                           //绑定KEY失败
+#define ERROR_XENGINE_MESSAGE_XMQ_DELKEY 0x114                            //删除KEY失败
+#define ERROR_XENGINE_MESSAGE_XMQ_QUERYOWNER 0x115                        //查询所有者失败
+#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYTOPIC 0x116                       //修改主题失败
+#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x117                         //修改消息失败
 
-#define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x3001                         //HTTP请求参数错误
+#define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////
