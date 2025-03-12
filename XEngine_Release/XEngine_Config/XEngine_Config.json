@@ -23,7 +23,7 @@
         "LogType":17
     },
     "XSql":{
-        "SQLAddr":"10.0.2.6",
+        "SQLAddr":"10.0.4.150",
         "SQLPort":3306,
         "SQLUser":"root",
         "SQLPass":"123123aa"
@@ -39,8 +39,13 @@
         "bDataQueryEnable":true,
         "bDataInsertEnable":true,
         "bUserQueryEnable":true,
-        "nTimeLast":60,
+        "nTimeLast":3600,
         "nTimeCount":0
+    },
+    "XAuthorize":{
+        "bHTTPAuth":false,
+        "tszHTTPPass":"",
+        "tszToken":"XENGINE_MQPasskey"
     },
     "XReport":{
         "bEnable":true,

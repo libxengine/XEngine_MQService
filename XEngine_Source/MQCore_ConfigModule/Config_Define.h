@@ -64,6 +64,12 @@ typedef struct
         int nTimeLast;
         int nTimeCount;
     }st_XMemory;
+    struct  
+    {
+		bool bHTTPAuth;
+		XCHAR tszHTTPPass[MAX_PATH];
+		XCHAR tszToken[MAX_PATH];
+    }st_XAuthorize;
 	struct
 	{
 		bool bEnable;

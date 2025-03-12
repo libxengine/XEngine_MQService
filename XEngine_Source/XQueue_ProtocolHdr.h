@@ -83,6 +83,7 @@
 #define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x117                         //修改消息失败
 
 #define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
+#define ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE 0x202                        //验证失败没有权限
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////

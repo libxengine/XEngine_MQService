@@ -137,6 +137,17 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
 	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
 
+	if (st_JsonRoot["XAuthorize"].empty() || (3 != st_JsonRoot["XAuthorize"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTHORIZE;
+		return false;
+	}
+	Json::Value st_JsonXAuthorize = st_JsonRoot["XAuthorize"];
+	pSt_ServerConfig->st_XAuthorize.bHTTPAuth = st_JsonXAuthorize["bHTTPAuth"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XAuthorize.tszHTTPPass, st_JsonXAuthorize["tszHTTPPass"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XAuthorize.tszToken, st_JsonXAuthorize["tszToken"].asCString());
+
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{
 		Config_IsErrorOccur = true;
