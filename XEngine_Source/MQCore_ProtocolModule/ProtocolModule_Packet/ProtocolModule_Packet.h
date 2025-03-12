@@ -29,6 +29,7 @@ public:
     bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType);
     bool ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_ProtocolAuth, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
     bool ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
+    bool ProtocolModule_Packet_PassHttp(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszToken, LPCXSTR lpszAPIUser, LPCXSTR lpszURIApi);
     bool ProtocolModule_Packet_Http(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode = 0, LPCXSTR lpszMsgBuffer = NULL);
     bool ProtocolModule_Packet_UserList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_PROTOCOL_USERINFO*** pppSt_UserInfo, int nListCount);
     bool ProtocolModule_Packet_TopicList(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XCHAR*** pppszTableName, int nListCount);

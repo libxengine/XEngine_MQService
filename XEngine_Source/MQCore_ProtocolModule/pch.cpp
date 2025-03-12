@@ -47,6 +47,10 @@ extern "C" bool ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO * pSt_P
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_PassUser(pSt_ProtocolUser, ptszMsgBuffer, pInt_MsgLen, nCode);
 }
+extern "C" bool ProtocolModule_Packet_PassHttp(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszToken, LPCXSTR lpszAPIUser, LPCXSTR lpszURIApi)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_PassHttp(ptszMsgBuffer, pInt_MsgLen, lpszToken, lpszAPIUser, lpszURIApi);
+}
 extern "C" bool ProtocolModule_Packet_Http(XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nCode, LPCXSTR lpszMsgBuffer)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_Http(ptszMsgBuffer, pInt_MsgLen, nCode, lpszMsgBuffer);

@@ -72,12 +72,28 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 	{
 		//http://127.0.0.1:5202/api?function=user&auth=XENGINE_MQPasskey
 		BaseLib_String_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
-		if (0 != _tcsxncmp(st_ServiceCfg.st_XAuthorize.tszToken, tszValue, _tcsxlen(st_ServiceCfg.st_XAuthorize.tszToken)))
+		if (_tcsxlen(st_ServiceCfg.st_XAuthorize.tszHTTPPass) > 0)
 		{
-			ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "auth key is incorrent");
-			XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,验证失败:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
-			return false;
+			int nHTTPCode = 0;
+			ProtocolModule_Packet_PassHttp(tszPKTBuffer, &nPKTLen, pptszListHdr[1], pptszListHdr[0], pSt_HTTPParam->tszHttpMethod);
+			APIClient_Http_Request("POST", st_ServiceCfg.st_XAuthorize.tszHTTPPass, tszPKTBuffer, &nHTTPCode);
+			if (200 != nHTTPCode)
+			{
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "auth key is incorrent");
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,验证失败:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
+				return false;
+			}
+		}
+		else
+		{
+			if (0 != _tcsxncmp(st_ServiceCfg.st_XAuthorize.tszToken, tszValue, _tcsxlen(st_ServiceCfg.st_XAuthorize.tszToken)))
+			{
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "auth key is incorrent");
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,验证失败:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
+				return false;
+			}
 		}
 		nMethodPos++;
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求HTTP管理接口验证成功,验证TOKEN:%s"), lpszClientAddr, ppSt_ListUrl[1]);
