@@ -176,7 +176,14 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	if (_tcsxlen(pSt_UserInfo->tszUserPass) > 0)
+	{
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	}
+	else
+	{
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s'"), pSt_UserInfo->tszUserName);
+	}
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;

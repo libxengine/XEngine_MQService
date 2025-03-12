@@ -55,6 +55,7 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 	LPCXSTR lpszAPIUser = _X("user");
 	LPCXSTR lpszAPITopic = _X("topic");
 	LPCXSTR lpszAPIOnline = _X("online");
+	LPCXSTR lpszAPIDelete = _X("delete");
 
 	int nUrlCount = 0;
 	XCHAR** ppSt_ListUrl;
@@ -156,10 +157,52 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题消息个数:%d"), lpszClientAddr, nDBCount);
 			}
 		}
+		else if (0 == _tcsxnicmp(lpszAPIDelete, tszValue, _tcsxlen(lpszAPIDelete)))
+		{
+			//http://127.0.0.1:5202/api?function=delete&type=0&name=comm
+
+			memset(tszValue, '\0', MAX_PATH);
+			BaseLib_String_GetKeyValue(ppSt_ListUrl[nMethodPos + 2], _X("="), tszKey, tszValue);
+			if (0 == _ttxoi(tszValue))
+			{
+				//type = 0 删除主题
+				memset(tszValue, '\0', MAX_PATH);
+				BaseLib_String_GetKeyValue(ppSt_ListUrl[nMethodPos + 3], _X("="), tszKey, tszValue);
+			}
+			else
+			{
+				// 删除用户
+				memset(tszValue, '\0', MAX_PATH);
+				BaseLib_String_GetKeyValue(ppSt_ListUrl[nMethodPos + 3], _X("="), tszKey, tszValue);
+
+				XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
+				XENGINE_DBUSERKEY st_UserKey = {};
+				XENGINE_DBTOPICOWNER st_DBOwner = {};
+
+				_tcsxcpy(st_UserInfo.tszUserName, tszValue);
+				_tcsxcpy(st_UserKey.tszUserName, tszValue);
+				_tcsxcpy(st_DBOwner.tszUserName, tszValue);
+
+				if (!DBModule_MQUser_UserQuery(&st_UserInfo))
+				{
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_AUTH_USERPASS, "user name not found");
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除用户失败,用户不存在:%s"), lpszClientAddr, st_UserInfo.tszUserName);
+					return false;
+				}
+				DBModule_MQUser_UserDelete(&st_UserInfo);
+				DBModule_MQUser_KeyDelete(&st_UserKey);
+				DBModule_MQUser_OwnerDelete(&st_DBOwner);
+
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求用户删除成功,用户名:%s"), lpszClientAddr, st_UserInfo.tszUserName);
+			}
+		}
 	}
 	else
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("HTTP消息端:%s,协议错误"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("HTTP客户端:%s,协议错误"), lpszClientAddr);
 	}
 	return true;
 }
