@@ -776,6 +776,17 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			_tcsxcpy(st_UserKey.tszKeyName, st_MQProtocol.tszMQKey);
 			_tcsxcpy(st_DBInfo.tszQueueName, st_MQProtocol.tszMQKey);
 
+			if (_tcsxlen(st_DBOwner.tszUserName) <= 0)
+			{
+				if (pSt_ProtocolHdr->byIsReply)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_DELOWNER;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				}
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,删除主题失败,删除所有者失败,主题名称:%s,用户名为空"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, tszUserName);
+				return false;
+			}
 			if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
 			{
 				if (pSt_ProtocolHdr->byIsReply)

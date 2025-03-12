@@ -168,6 +168,30 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				//type = 0 删除主题
 				memset(tszValue, '\0', MAX_PATH);
 				BaseLib_String_GetKeyValue(ppSt_ListUrl[nMethodPos + 3], _X("="), tszKey, tszValue);
+
+				XENGINE_DBTOPICOWNER st_DBOwner = {};
+				XENGINE_DBUSERKEY st_UserKey = {};
+				XENGINE_DBTIMERELEASE st_DBInfo = {};
+
+				_tcsxcpy(st_DBOwner.tszQueueName, tszValue);
+				_tcsxcpy(st_UserKey.tszKeyName, tszValue);
+				_tcsxcpy(st_DBInfo.tszQueueName, tszValue);
+				if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
+				{
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "topic name not found");
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除主题失败,主题不存在:%s"), lpszClientAddr, tszValue);
+					return false;
+				}
+				//清楚数据库
+				APIHelp_Counter_SerialDel(tszValue);
+				DBModule_MQData_DeleteTable(tszValue);
+				DBModule_MQUser_KeyDelete(&st_UserKey);
+				DBModule_MQUser_TimeDelete(&st_DBInfo);
+
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, tszValue);
 			}
 			else
 			{
@@ -185,7 +209,7 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 
 				if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 				{
-					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_AUTH_USERPASS, "user name not found");
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "user name not found");
 					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除用户失败,用户不存在:%s"), lpszClientAddr, st_UserInfo.tszUserName);
 					return false;

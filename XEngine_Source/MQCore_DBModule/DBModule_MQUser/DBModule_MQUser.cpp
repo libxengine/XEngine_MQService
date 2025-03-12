@@ -1070,9 +1070,19 @@ bool CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBO
 			return false;
 		}
 	}
-	else
+	else if ((_tcsxlen(pSt_DBOwner->tszUserName) > 0) && (_tcsxlen(pSt_DBOwner->tszQueueName) <= 0))
 	{
 		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszUserName = '%s'"), pSt_DBOwner->tszUserName);
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+		{
+			DBModule_IsErrorOccur = true;
+			DBModule_dwErrorCode = DataBase_GetLastError();
+			return false;
+		}
+	}
+	else
+	{
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszKeyName = '%s'"), pSt_DBOwner->tszQueueName);
 		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 		{
 			DBModule_IsErrorOccur = true;

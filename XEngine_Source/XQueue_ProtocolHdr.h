@@ -84,6 +84,7 @@
 
 #define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
 #define ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE 0x202                        //验证失败没有权限
+#define ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND 0x203                         //没有找到请求的数据
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////
