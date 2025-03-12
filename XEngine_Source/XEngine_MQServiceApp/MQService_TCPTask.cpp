@@ -122,6 +122,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
+				if (_tcsxlen(st_UserInfo.tszUserPass) <= 0)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求本地验证失败,密码为空"), lpszClientType, lpszClientAddr);
+					return false;
+				}
 				if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 				{
 					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
@@ -210,6 +218,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
+				if (_tcsxlen(st_UserInfo.tszUserPass) <= 0)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求本地验证失败,密码为空"), lpszClientType, lpszClientAddr);
+					return false;
+				}
 				if (DBModule_MQUser_UserQuery(&st_UserInfo))
 				{
 					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_EXISTED;
