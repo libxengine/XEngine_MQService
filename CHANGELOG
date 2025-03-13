@@ -1,3 +1,35 @@
+XEngine_MQService V3.15.0.1001
+
+增加:HTTP验证授权支持
+增加:删除主题和用户的HTTP接口支持
+增加:帮助模块
+增加:arm64的发布流和编译支持
+增加:设置日志类型支持
+更新:依赖库
+优化:参数解析
+修改:http错误码使用了公用头的错误
+修改:主题存在不允许创建主题
+修改:为队列使用单独的序列号统计
+修改:不允许注册空的密码
+修改:http封包可以设置空的消息
+修正:定时发布不工作的问题
+修正:设置日志级别不工作的问题
+
+added:authorize verification support with http authorize
+added:delete topic and user for http management
+added:help module
+added:arm64 build support and ci release
+added:set log type support
+update:depend library
+improved:parameter parse and more parameter supported
+modify:http error code use protocol common hdr file
+modify:does not allow to create topic when the topic is existed
+modify:Use of separate statistical notation for queue
+modify:does not allow empty for register and login
+modify:http packet can be set null message
+fixed:time publish task not work
+fixed:set log level not work
+======================================================================================
 XEngine_MQService V3.14.0.1001
 
 增加:删除消息协议支持
