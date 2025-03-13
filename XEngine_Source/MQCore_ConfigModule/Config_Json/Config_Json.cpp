@@ -86,7 +86,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
 
-    if (st_JsonRoot["XLog"].empty() || (4 != st_JsonRoot["XLog"].size()))
+    if (st_JsonRoot["XLog"].empty() || (5 != st_JsonRoot["XLog"].size()))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XLOG;
@@ -96,6 +96,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XLog.nMaxSize = st_JsonXLog["MaxSize"].asInt();
     pSt_ServerConfig->st_XLog.nMaxCount = st_JsonXLog["MaxCount"].asInt();
     pSt_ServerConfig->st_XLog.nLogLeave = st_JsonXLog["LogLeave"].asInt();
+	pSt_ServerConfig->st_XLog.nLogType = st_JsonXLog["LogType"].asInt();
 	_tcsxcpy(pSt_ServerConfig->st_XLog.tszLOGFile, st_JsonXLog["tszLOGFile"].asCString());
 
     if (st_JsonRoot["XSql"].empty() || (4 != st_JsonRoot["XSql"].size()))
@@ -135,6 +136,17 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XMemory.bUserQueryEnable = st_JsonXMemory["bUserQueryEnable"].asBool();
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
 	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
+
+	if (st_JsonRoot["XAuthorize"].empty() || (3 != st_JsonRoot["XAuthorize"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTHORIZE;
+		return false;
+	}
+	Json::Value st_JsonXAuthorize = st_JsonRoot["XAuthorize"];
+	pSt_ServerConfig->st_XAuthorize.bHTTPAuth = st_JsonXAuthorize["bHTTPAuth"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XAuthorize.tszHTTPPass, st_JsonXAuthorize["tszHTTPPass"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XAuthorize.tszToken, st_JsonXAuthorize["tszToken"].asCString());
 
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{

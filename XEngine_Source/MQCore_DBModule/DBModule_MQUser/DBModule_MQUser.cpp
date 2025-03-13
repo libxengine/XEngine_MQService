@@ -176,7 +176,14 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 	XCHAR tszSQLStatement[1024];
 	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 
-	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	if (_tcsxlen(pSt_UserInfo->tszUserPass) > 0)
+	{
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s' AND tszUserPass = '%s'"), pSt_UserInfo->tszUserName, pSt_UserInfo->tszUserPass);
+	}
+	else
+	{
+		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s'"), pSt_UserInfo->tszUserName);
+	}
 	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
@@ -1063,9 +1070,19 @@ bool CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBO
 			return false;
 		}
 	}
-	else
+	else if ((_tcsxlen(pSt_DBOwner->tszUserName) > 0) && (_tcsxlen(pSt_DBOwner->tszQueueName) <= 0))
 	{
 		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszUserName = '%s'"), pSt_DBOwner->tszUserName);
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
+		{
+			DBModule_IsErrorOccur = true;
+			DBModule_dwErrorCode = DataBase_GetLastError();
+			return false;
+		}
+	}
+	else
+	{
+		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszKeyName = '%s'"), pSt_DBOwner->tszQueueName);
 		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 		{
 			DBModule_IsErrorOccur = true;
@@ -1163,7 +1180,7 @@ XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 	while (pClass_This->bIsRun)
 	{
 		int nListCount = 0;
-		XENGINE_DBTIMERELEASE** ppSt_DBInfo;
+		XENGINE_DBTIMERELEASE** ppSt_DBInfo = NULL;
 		pClass_This->DBModule_MQUser_TimeQuery(&ppSt_DBInfo, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{

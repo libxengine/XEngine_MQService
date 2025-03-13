@@ -69,5 +69,6 @@ private:
 	std::unique_ptr<std::thread> pSTDThread_Insert;
 private:
 	std::list<MEMORYCACHE_DBINSERT> stl_ListInsert;
+	std::unordered_map<std::string, std::atomic<__int64x>> stl_MapSerial;
 	std::unordered_map<std::tuple<__int64x, std::string>, MEMORYCACHE_DBINFO, TupleHash> stl_MapQuery;
 };

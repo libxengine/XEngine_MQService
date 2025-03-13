@@ -1,0 +1,8 @@
+LIBRARY
+
+EXPORTS
+	APIHelp_GetLastError
+
+	APIHelp_Counter_SerialSet
+	APIHelp_Counter_SerialGet
+	APIHelp_Counter_SerialDel

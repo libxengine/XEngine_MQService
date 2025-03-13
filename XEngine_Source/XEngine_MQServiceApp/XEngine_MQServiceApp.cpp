@@ -147,13 +147,13 @@ int main(int argc, char** argv)
 	st_XLogConfig.XLog_MaxSize = st_ServiceCfg.st_XLog.nMaxSize;
 	_tcsxcpy(st_XLogConfig.tszFileName, st_ServiceCfg.st_XLog.tszLOGFile);
 
-	xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_STD | HELPCOMPONENTS_XLOG_OUTTYPE_FILE, &st_XLogConfig);
+	xhLog = HelpComponents_XLog_Init(st_ServiceCfg.st_XLog.nLogType, &st_XLogConfig);
 	if (NULL == xhLog)
 	{
 		printf("启动服务器失败，启动日志失败，错误：%lX", XLog_GetLastError());
 		goto NETSERVICEEXIT;
 	}
-	HelpComponents_XLog_SetLogPriority(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
+	HelpComponents_XLog_SetLogPriority(xhLog, st_ServiceCfg.st_XLog.nLogLeave);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化日志系统成功"));
 
 	if (!Config_Json_DBFile(lpszDBConfig, &st_DBConfig))

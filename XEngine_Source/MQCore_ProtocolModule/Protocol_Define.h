@@ -154,6 +154,40 @@ extern "C" bool ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH* pSt_Pr
 *********************************************************************/
 extern "C" bool ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USERINFO* pSt_ProtocolUser, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nCode);
 /********************************************************************
+函数名称：ProtocolModule_Packet_PassHttp
+函数功能：HTTP请求验证打包函数
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+ 参数.三：lpszToken
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的TOKEN
+ 参数.四：lpszAPIUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的API接口
+ 参数.五：lpszURIApi
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的完整URL地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Packet_PassHttp(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszToken, LPCXSTR lpszAPIUser, LPCXSTR lpszURIApi);
+/********************************************************************
 函数名称：ProtocolModule_Packet_Http
 函数功能：HTTP封包类
  参数.一：pSt_ProtocolHdr

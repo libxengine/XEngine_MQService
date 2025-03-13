@@ -229,7 +229,7 @@ XHTHREAD CALLBACK CMemoryCache_DBUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBUserInfo);
 			}
-			else if (pClass_This->m_nTimeCount > 0 && ((nTimeEnd - stl_MapIterator->second.nTimeLast) > pClass_This->m_nTimeCount))
+			else if (pClass_This->m_nTimeCount > 0 && ((nTimeEnd - stl_MapIterator->second.nTimeStart) > pClass_This->m_nTimeCount))
 			{
 				stl_ListDelete.push_back(stl_MapIterator->second.st_DBUserInfo);
 			}

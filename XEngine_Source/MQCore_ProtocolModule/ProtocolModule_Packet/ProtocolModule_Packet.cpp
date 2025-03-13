@@ -280,6 +280,68 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_PassUser(XENGINE_PROTOCOL_USE
 	return true;
 }
 /********************************************************************
+函数名称：ProtocolModule_Packet_PassHttp
+函数功能：HTTP请求验证打包函数
+ 参数.一：ptszMsgBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出打好包的缓冲区
+ 参数.二：pInt_MsgLen
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出缓冲区大小
+ 参数.三：lpszToken
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的TOKEN
+ 参数.四：lpszAPIUser
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的API接口
+ 参数.五：lpszURIApi
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入用户请求的完整URL地址
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Packet::ProtocolModule_Packet_PassHttp(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszToken, LPCXSTR lpszAPIUser, LPCXSTR lpszURIApi)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonAuth;
+	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonAuth["lpszToken"] = lpszToken;
+	st_JsonAuth["lpszAPIUser"] = lpszAPIUser;
+	st_JsonAuth["lpszURIApi"] = lpszURIApi;
+
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["wReserve"] = 0;
+	st_JsonRoot["byVersion"] = 2;
+	st_JsonRoot["st_Auth"] = st_JsonAuth;
+
+	st_JsonBuilder["emitUTF8"] = true;
+
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
+	return true;
+}
+/********************************************************************
 函数名称：ProtocolModule_Packet_Http
 函数功能：HTTP封包类
  参数.一：pSt_ProtocolHdr
@@ -312,7 +374,14 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Http(XCHAR* ptszMsgBuffer, in
 	Json::Value st_JsonRoot;
 	Json::StreamWriterBuilder st_JsonBuilder;
 
-	st_JsonRoot["msg"] = lpszMsgBuffer;
+	if (NULL == lpszMsgBuffer)
+	{
+		st_JsonRoot["msg"] = "success";
+	}
+	else
+	{
+		st_JsonRoot["msg"] = lpszMsgBuffer;
+	}
 	st_JsonRoot["code"] = nCode;
 
 	st_JsonBuilder["emitUTF8"] = true;

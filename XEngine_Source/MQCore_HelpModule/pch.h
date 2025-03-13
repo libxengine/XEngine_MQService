@@ -7,55 +7,32 @@
 #ifndef PCH_H
 #define PCH_H
 
-#ifdef _WINDOWS
 // 添加要在此处预编译的标头
+#ifdef _MSC_BUILD
 #include "framework.h"
-#include <tchar.h>
-#else
 #endif
 #endif //PCH_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <string>
-#include <memory>
-#include <list>
-#include <json/json.h>
-using namespace std;
+#include <atomic>
+#include <shared_mutex>
+#include <unordered_map>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
-#include "Config_Define.h"
-#include "Config_Error.h"
+#include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include "APIHelp_Define.h"
+#include "APIHelp_Error.h"
 /********************************************************************
-//    Created:     2021/07/01  10:47:37
-//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_ConfigModule\pch.h
-//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_ConfigModule
+//    Created:     2025/03/11  14:46:04
+//    File Name:   D:\XEngine_MQService\XEngine_Source\MQCore_HelpModule\pch.h
+//    File Path:   D:\XEngine_MQService\XEngine_Source\MQCore_HelpModule
 //    File Base:   pch
 //    File Ext:    h
-//    Project:     XEngine(网络通信引擎)
+//    Project:     XEngine
 //    Author:      qyt
 //    Purpose:     公用头文件
 //    History:
 *********************************************************************/
-extern bool Config_IsErrorOccur;
-extern XLONG Config_dwErrorCode;
-
-#ifdef _MSC_BUILD
-#ifdef _DEBUG
-#ifdef _M_X64
-#pragma comment(lib,"../x64/Debug/jsoncpp")
-#elif _M_ARM64
-#pragma comment(lib,"../ARM64/Debug/jsoncpp")
-#elif _M_IX86
-#pragma comment(lib,"../Debug/jsoncpp")
-#endif
-#else
-#ifdef _M_X64
-#pragma comment(lib,"../x64/Release/jsoncpp")
-#elif _M_ARM64
-#pragma comment(lib,"../ARM64/Release/jsoncpp")
-#elif _M_IX86
-#pragma comment(lib,"../Release/jsoncpp")
-#endif
-#endif
-#endif
+extern bool APIHelp_IsErrorOccur;
+extern XLONG APIHelp_dwErrorCode;

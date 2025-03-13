@@ -122,6 +122,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
+				if (_tcsxlen(st_UserInfo.tszUserPass) <= 0)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求本地验证失败,密码为空"), lpszClientType, lpszClientAddr);
+					return false;
+				}
 				if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 				{
 					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
@@ -210,6 +218,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
+				if (_tcsxlen(st_UserInfo.tszUserPass) <= 0)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_USERPASS;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求本地验证失败,密码为空"), lpszClientType, lpszClientAddr);
+					return false;
+				}
 				if (DBModule_MQUser_UserQuery(&st_UserInfo))
 				{
 					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_EXISTED;
@@ -377,15 +393,19 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else
 			{
-				//序列号为0,自加
-				if (DBModule_MQData_GetSerial(st_DBQueue.tszQueueName, NULL, NULL, &st_DBIndex))
+				if (!APIHelp_Counter_SerialGet(st_DBQueue.tszQueueName, &st_DBQueue.nQueueSerial))
 				{
-					st_DBQueue.nQueueSerial = st_DBIndex.nQueueSerial + 1;
-				}
-				else
-				{
-					//可能为空表
-					st_DBQueue.nQueueSerial = 1;
+					//序列号为0,自加
+					if (DBModule_MQData_GetSerial(st_DBQueue.tszQueueName, NULL, NULL, &st_DBIndex))
+					{
+						st_DBQueue.nQueueSerial = st_DBIndex.nQueueSerial + 1;
+					}
+					else
+					{
+						//可能为空表
+						st_DBQueue.nQueueSerial = 1;
+					}
+					APIHelp_Counter_SerialSet(st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial);
 				}
 			}
 			//是否被设置定时发布
@@ -681,6 +701,25 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE == pSt_ProtocolHdr->unOperatorCode)
 		{
 			pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICCREATE;
+
+			int nListCount = 0;
+			XCHAR** ppszTableName;
+			//检查表是否存在
+			DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+			for (int i = 0; i < nListCount; i++)
+			{
+				if (0 == _tcsxnicmp(ppszTableName[i], st_MQProtocol.tszMQKey, _tcsxlen(ppszTableName[i])))
+				{
+					if (pSt_ProtocolHdr->byIsReply)
+					{
+						pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_EXISTED;
+						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+					}
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,创建主题失败,主题名称:%s,主题存在,无法继续"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
+					return false;
+				}
+			}
 			//创建表
 			if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
 			{
@@ -737,6 +776,17 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			_tcsxcpy(st_UserKey.tszKeyName, st_MQProtocol.tszMQKey);
 			_tcsxcpy(st_DBInfo.tszQueueName, st_MQProtocol.tszMQKey);
 
+			if (_tcsxlen(st_DBOwner.tszUserName) <= 0)
+			{
+				if (pSt_ProtocolHdr->byIsReply)
+				{
+					pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_XMQ_DELOWNER;
+					ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+					XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				}
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,删除主题失败,删除所有者失败,主题名称:%s,用户名为空"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey, tszUserName);
+				return false;
+			}
 			if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
 			{
 				if (pSt_ProtocolHdr->byIsReply)
@@ -749,6 +799,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				return false;
 			}
 			//清楚数据库
+			APIHelp_Counter_SerialDel(st_MQProtocol.tszMQKey);
 			DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
 			DBModule_MQUser_KeyDelete(&st_UserKey);
 			DBModule_MQUser_TimeDelete(&st_DBInfo);
