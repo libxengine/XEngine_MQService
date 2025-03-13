@@ -374,7 +374,14 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Http(XCHAR* ptszMsgBuffer, in
 	Json::Value st_JsonRoot;
 	Json::StreamWriterBuilder st_JsonBuilder;
 
-	st_JsonRoot["msg"] = lpszMsgBuffer;
+	if (NULL == lpszMsgBuffer)
+	{
+		st_JsonRoot["msg"] = "success";
+	}
+	else
+	{
+		st_JsonRoot["msg"] = lpszMsgBuffer;
+	}
 	st_JsonRoot["code"] = nCode;
 
 	st_JsonBuilder["emitUTF8"] = true;
