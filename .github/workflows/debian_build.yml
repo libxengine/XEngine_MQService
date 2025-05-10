@@ -42,6 +42,9 @@ jobs:
           repository: libxengine/XEngine_OPenSource
           path: XEngine_Source/XEngine_Depend
 
+      - name: Set TERM variable
+        run: echo "TERM=xterm" >> $GITHUB_ENV
+        
       - name: install system package
         run: |
             apt update -y

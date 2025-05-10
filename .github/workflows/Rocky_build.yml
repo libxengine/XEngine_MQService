@@ -47,11 +47,15 @@ jobs:
         with:
           repository: libxengine/XEngine_OPenSource
           path: XEngine_Source/XEngine_Depend
-          
+
+      - name: Set TERM variable
+        run: echo "TERM=xterm" >> $GITHUB_ENV
+        
       - name: install system package
         run: |
             dnf update -y
             dnf install gcc g++ make git jq unzip -y
+
       - name: Set up Dependency rocky linux Environment
         run: |
             cd libxengine

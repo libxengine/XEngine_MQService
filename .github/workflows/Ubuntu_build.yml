@@ -38,6 +38,9 @@ jobs:
             git submodule init
             git submodule update
 
+      - name: Set TERM variable
+        run: echo "TERM=xterm" >> $GITHUB_ENV
+        
       - name: Set up Dependency ubuntu24.04 x86-64 Environment
         if: matrix.os == 'ubuntu-24.04'
         run: |
