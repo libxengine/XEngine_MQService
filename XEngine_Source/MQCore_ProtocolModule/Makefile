@@ -1,10 +1,7 @@
 CC = g++ -Wall -std=c++20 -fPIC
-PLATFORM = linux
 PLATVER = 
-PLATDIR = 
 FILEEXT = 
 LIBFLAG = 
-RELEASE = 0
 LOADHDR = -I ./ -I ../XEngine_Depend/XEngine_Module/jsoncpp
 LOADSO = -L ../XEngine_Depend/XEngine_Module/jsoncpp
 LIB = -ljsoncpp -lXEngine_BaseLib -lXEngine_Cryption -lRfcComponents_MQTTProtocol
@@ -12,25 +9,29 @@ LIBEX =
 OBJECTS = ProtocolModule_Packet.o ProtocolModule_Parse.o pch.o
 
 ifeq ($(RELEASE),1)
-FLAGS = -c 
-DEBUG = 
+FLAGS = -c -D _RELEASE
+DEBUG = -O2
 else
 	ifeq ($(PLATFORM),mac)
 		FLAGS = -c
-		DEBUG = -g 
+		DEBUG = -g -D _DEBUG
 	else
 		FLAGS = -c -lc_p
-		DEBUG = -g -pg 
+		DEBUG = -g -pg -D _DEBUG
 	endif
+endif
+
+ifeq ($(UNICODE),1)
+override UNICODE := -D __UNICODE__
+else
+override UNICODE := -D __ANSI__
 endif
 
 ifeq ($(PLATFORM),linux)
 	ifeq (/etc/redhat-release,$(wildcard /etc/redhat-release))
 		PLATVER = -D __CENTOS__
-		PLATDIR = XEngine_Linux/Centos
 	else
 		PLATVER = -D __UBUNTU__
-		PLATDIR = XEngine_Linux/Ubuntu
 	endif
 	FILEEXT = so
 	LIBFLAG = -shared
@@ -39,7 +40,6 @@ ifeq ($(PLATFORM),linux)
 else ifeq ($(PLATFORM),mac)
 	CC += -Wno-deprecated-declarations
 	PLATVER = -D __MACOS__
-	PLATDIR = XEngine_Mac
 	FILEEXT = dylib
 	LIBFLAG = -dynamiclib
 	LIBEX = -lpthread -ldl
@@ -51,12 +51,12 @@ all:$(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) -o libMQCore_ProtocolModule.$(FILEEXT) $(LIBFLAG) $(LIB) $(LIBEX) $(LOADSO) $(LOADBIN)
 
 ProtocolModule_Packet.o:./ProtocolModule_Packet/ProtocolModule_Packet.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./ProtocolModule_Packet/ProtocolModule_Packet.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./ProtocolModule_Packet/ProtocolModule_Packet.cpp 
 ProtocolModule_Parse.o:./ProtocolModule_Parse/ProtocolModule_Parse.cpp             
-	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./ProtocolModule_Parse/ProtocolModule_Parse.cpp 
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./ProtocolModule_Parse/ProtocolModule_Parse.cpp 
 							              
 pch.o:./pch.cpp                 		       	    
-	$(CC) $(DEBUG) $(FLAGS) $(PLATVER) $(LOADHDR) ./pch.cpp
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp
 
 
 InstallAll:InstallSo 
