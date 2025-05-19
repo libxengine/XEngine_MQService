@@ -54,13 +54,8 @@ jobs:
       - name: install system package
         run: |
             dnf update -y
-            dnf install gcc g++ make git jq unzip -y
+            dnf install gcc g++ make git jq unzip wget -y
 
-      - name: Set up Dependency rocky linux Environment
-        run: |
-            cd libxengine
-            chmod 777 *
-            ./XEngine_LINEnv.sh -i 0
       - name: install xengine library
         run: |
             latest_tag=$(curl -s https://api.github.com/repos/libxengine/libxengine/releases/latest | jq -r .tag_name)
@@ -68,9 +63,8 @@ jobs:
             unzip ./XEngine_RockyLinux_9_${{ matrix.artifact }}.zip -d ./XEngine_RockyLinux_9_${{ matrix.artifact }}
             cd XEngine_RockyLinux_9_${{ matrix.artifact }}
             
-            cp -rf ./XEngine_Include /usr/local/include
-            find ./XEngine_Linux -name "*.so" -exec cp {} /usr/lib64 \;         
-            ldconfig
+            chmod 777 *
+            ./XEngine_LINEnv.sh -i 3
 
       - name: make
         run: | 
