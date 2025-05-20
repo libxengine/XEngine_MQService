@@ -48,6 +48,9 @@
     <ClCompile Include="MQService_HTTPTask\MQService_HTTPPost.cpp">
       <Filter>源文件\MQService_HTTPTask</Filter>
     </ClCompile>
+    <ClCompile Include="MQService_HTTPTask\MQService_HTTPGet.cpp">
+      <Filter>源文件\MQService_HTTPTask</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MQService_Config.h">
@@ -75,6 +78,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MQService_HTTPTask\MQService_HTTPPost.h">
+      <Filter>头文件\MQService_HTTPTask</Filter>
+    </ClInclude>
+    <ClInclude Include="MQService_HTTPTask\MQService_HTTPGet.h">
       <Filter>头文件\MQService_HTTPTask</Filter>
     </ClInclude>
   </ItemGroup>

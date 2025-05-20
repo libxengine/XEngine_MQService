@@ -60,6 +60,7 @@ using namespace std;
 #include "../MQCore_MemoryCache/MemoryCache_Define.h"
 #include "../MQCore_MemoryCache/MemoryCache_Error.h"
 #include "MQService_HTTPTask/MQService_HTTPPost.h"
+#include "MQService_HTTPTask/MQService_HTTPGet.h"
 
 extern bool bIsRun;
 extern bool bIsTest;
