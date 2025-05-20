@@ -236,6 +236,7 @@
   <ItemGroup>
     <ClCompile Include="MQService_Config.cpp" />
     <ClCompile Include="MQService_HttpTask.cpp" />
+    <ClCompile Include="MQService_HTTPTask\MQService_HTTPPost.cpp" />
     <ClCompile Include="MQService_MQTTTask.cpp" />
     <ClCompile Include="MQService_Net.cpp" />
     <ClCompile Include="MQService_Task.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="MQService_Config.h" />
     <ClInclude Include="MQService_Hdr.h" />
     <ClInclude Include="MQService_HttpTask.h" />
+    <ClInclude Include="MQService_HTTPTask\MQService_HTTPPost.h" />
     <ClInclude Include="MQService_MQTTTask.h" />
     <ClInclude Include="MQService_Net.h" />
     <ClInclude Include="MQService_Task.h" />

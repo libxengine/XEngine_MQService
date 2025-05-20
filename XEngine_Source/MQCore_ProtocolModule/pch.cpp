@@ -35,6 +35,10 @@ extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR *
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 }
+extern "C" bool ProtocolModule_Packet_HTTPCommon(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nHTTPCode, LPCXSTR lpszMSGBuffer)
+{
+	return m_ProtocolPacket.ProtocolModule_Packet_HTTPCommon(ptszMsgBuffer, pInt_MsgLen, nHTTPCode, lpszMSGBuffer);
+}
 extern "C" bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_MQNUMBER * pSt_MQNumber, XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, pSt_MQNumber, ptszMsgBuffer, pInt_MsgLen, nNetType);
@@ -89,4 +93,8 @@ extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR * ptsz
 extern "C" bool ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XCHAR *ptszMsgBuffer, int* pInt_MsgLen)
 {
 	return m_ProtocolParse.ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, pSt_ProtocolHdr, ptszMsgBuffer, pInt_MsgLen);
+}
+extern "C" bool ProtocolModule_Parse_Register(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, pSt_UserInfo);
 }

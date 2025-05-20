@@ -58,11 +58,6 @@
 #define ERROR_XENGINE_MESSAGE_AUTH_HTTP 0x002                             //HTTP PASS验证失败
 #define ERROR_XENGINE_MESSAGE_AUTH_USERPASS 0x003                         //用户或者密码错误
 #define ERROR_XENGINE_MESSAGE_AUTH_NOTLOGIN 0x004                         //没有登陆,禁止操作
-#define ERROR_XENGINE_MESSAGE_AUTH_APIREG 0x005                           //HTTP 远程注册失败
-#define ERROR_XENGINE_MESSAGE_AUTH_EXISTED 0x006                          //用户已经存在
-#define ERROR_XENGINE_MESSAGE_AUTH_REGISTER 0x007                         //用户注册失败,数据错误
-#define ERROR_XENGINE_MESSAGE_AUTH_APIDEL 0x008                           //HTTP API删除失败
-#define ERROR_XENGINE_MESSAGE_AUTH_DELETE 0x009                           //本地删除失败
 
 #define ERROR_XENGINE_MESSAGE_XMQ_EXISTED 0x101                           //消息存在
 #define ERROR_XENGINE_MESSAGE_XMQ_INSERT 0x102                            //插入数据库失败
@@ -85,6 +80,13 @@
 #define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
 #define ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE 0x202                        //验证失败没有权限
 #define ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND 0x203                         //没有找到请求的数据
+#define ERROR_XENGINE_MESSAGE_HTTP_PARSE 0x204                            //解析失败,负载协议错误
+#define ERROR_XENGINE_MESSAGE_HTTP_SERVICE 0x205                          //服务器错误
+#define ERROR_XENGINE_MESSAGE_HTTP_APIREG 0x206                           //HTTP 远程注册失败
+#define ERROR_XENGINE_MESSAGE_HTTP_EXISTED 0x207                          //用户已经存在
+#define ERROR_XENGINE_MESSAGE_HTTP_REGISTER 0x208                         //用户注册失败,数据错误
+#define ERROR_XENGINE_MESSAGE_HTTP_APIDEL 0x209                           //HTTP API删除失败
+#define ERROR_XENGINE_MESSAGE_HTTP_DELETE 0x210                           //本地删除失败
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////
