@@ -14,9 +14,15 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 {
 	int nSDLen = 0;
 	XCHAR tszSDBuffer[1024] = {};
+	XCHAR tszKeyStr[MAX_PATH] = {};
+	XCHAR tszVluStr[MAX_PATH] = {};
 	LPCXSTR lpszAPIRegister = _X("register");
-	LPCXSTR lpszAPIDelete = _X("delete");
-	
+	LPCXSTR lpszAPIGetUser = _X("getuser");
+	LPCXSTR lpszAPIGetTopic = _X("gettopic");
+	LPCXSTR lpszAPIGetList = _X("getlist");
+	LPCXSTR lpszAPIGetOnline = _X("getonline");
+	LPCXSTR lpszAPIDelTopic = _X("deltopic");
+	LPCXSTR lpszAPIDelUser = _X("deluser");
 	//判断请求
 	if (0 == _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
@@ -79,7 +85,84 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求用户注册成功,用户名:%s,密码:%s"), lpszClientAddr, st_UserInfo.tszUserName, st_UserInfo.tszUserPass);
 	}
-	else if (0 == _tcsxnicmp(lpszAPIDelete, lpszFuncName, _tcsxlen(lpszAPIDelete)))
+	else if (0 == _tcsxnicmp(lpszAPIGetUser, lpszFuncName, _tcsxlen(lpszAPIGetUser)))
+	{
+		//用户 http://127.0.0.1:5202/api?function=getuser
+		int nListCount = 0;
+		XENGINE_PROTOCOL_USERINFO** ppSt_UserInfo;
+		DBModule_MQUser_UserList(&ppSt_UserInfo, &nListCount);
+		ProtocolModule_Packet_UserList(tszSDBuffer, &nSDLen, &ppSt_UserInfo, nListCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIGetOnline, lpszFuncName, _tcsxlen(lpszAPIGetOnline)))
+	{
+		//获取在线用户 http://127.0.0.1:5202/api?function=getonline
+		int nType = 0;
+		int nListCount = 0;
+		XCHAR** pptszListAddr;
+
+		ProtocolModule_Parse_Type(lpszMsgBuffer, nMsgLen, &nType);
+		SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, nType);
+		ProtocolModule_Packet_OnlineList(tszSDBuffer, &nSDLen, &pptszListAddr, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取在线用户列表请求成功,获取到的列表个数:%d,类型:%d"), lpszClientAddr, nListCount, nType);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIGetTopic, lpszFuncName, _tcsxlen(lpszAPIGetTopic)))
+	{
+		//主题 http://127.0.0.1:5202/api?function=gettopic
+		int nDBCount = 0;
+		XCHAR tszTopicName[MAX_PATH] = {};
+		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
+		DBModule_MQData_GetLeftCount(tszTopicName, 0, &nDBCount);
+		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, tszTopicName, nDBCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题:%s 消息个数:%d"), lpszClientAddr, tszTopicName, nDBCount);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIGetList, lpszFuncName, _tcsxlen(lpszAPIGetList)))
+	{
+		//主题 http://127.0.0.1:5202/api?function=getlist
+		int nListCount = 0;
+		XCHAR** ppszTableName;
+		DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+		ProtocolModule_Packet_TopicList(tszSDBuffer, &nSDLen, &ppszTableName, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIDelTopic, lpszFuncName, _tcsxlen(lpszAPIDelTopic)))
+	{
+		//http://127.0.0.1:5202/api?function=deltopic
+		XENGINE_DBTOPICOWNER st_DBOwner = {};
+		XENGINE_DBUSERKEY st_UserKey = {};
+		XENGINE_DBTIMERELEASE st_DBInfo = {};
+
+		XCHAR tszTopicName[MAX_PATH] = {};
+		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
+
+		_tcsxcpy(st_DBOwner.tszQueueName, tszTopicName);
+		_tcsxcpy(st_UserKey.tszKeyName, tszTopicName);
+		_tcsxcpy(st_DBInfo.tszQueueName, tszTopicName);
+		if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "topic name not found");
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除主题失败,主题不存在:%s"), lpszClientAddr, tszTopicName);
+			return false;
+		}
+		//清楚数据库
+		APIHelp_Counter_SerialDel(tszTopicName);
+		DBModule_MQData_DeleteTable(tszTopicName);
+		DBModule_MQUser_KeyDelete(&st_UserKey);
+		DBModule_MQUser_TimeDelete(&st_DBInfo);
+
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, tszTopicName);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIDelUser, lpszFuncName, _tcsxlen(lpszAPIDelUser)))
 	{
 		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
 		if (!ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, &st_UserInfo))
