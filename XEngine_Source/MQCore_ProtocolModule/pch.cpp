@@ -35,10 +35,6 @@ extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR *
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 }
-extern "C" bool ProtocolModule_Packet_HTTPCommon(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nHTTPCode, LPCXSTR lpszMSGBuffer)
-{
-	return m_ProtocolPacket.ProtocolModule_Packet_HTTPCommon(ptszMsgBuffer, pInt_MsgLen, nHTTPCode, lpszMSGBuffer);
-}
 extern "C" bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_MQNUMBER * pSt_MQNumber, XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, pSt_MQNumber, ptszMsgBuffer, pInt_MsgLen, nNetType);

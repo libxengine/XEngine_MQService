@@ -62,35 +62,6 @@ extern "C" XLONG Protocol_GetLastError(int* pInt_SysError = NULL);
 *********************************************************************/
 extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_PROTOCOL_XMQ* pSt_MQProtocol, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, LPCXSTR lpszMsgBuffer = NULL, int nMsgLen = 0);
 /********************************************************************
-函数名称：ProtocolModule_Packet_HTTPCommon
-函数功能：HTTP通用消息打包
- 参数.一：ptszMsgBuffer
-  In/Out：Out
-  类型：字符指针
-  可空：N
-  意思：导出包装好的缓冲区
- 参数.二：pInt_MsgLen
-  In/Out：Out
-  类型：整数型指针
-  可空：N
-  意思：输出包装大小
- 参数.三：nHTTPCode
-  In/Out：In
-  类型：整数型
-  可空：Y
-  意思：输入返回的code
- 参数.四：lpszMSGBuffer
-  In/Out：In
-  类型：常量字符指针
-  可空：N
-  意思：输入返回的消息
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-extern "C" bool ProtocolModule_Packet_HTTPCommon(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nHTTPCode = 0, LPCXSTR lpszMSGBuffer = NULL);
-/********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
 函数功能：获取序列打包函数
  参数.一：pSt_ProtocolHdr

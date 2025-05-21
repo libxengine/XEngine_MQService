@@ -4,7 +4,6 @@ EXPORTS
 	Protocol_GetLastError
 
 	ProtocolModule_Packet_Common
-	ProtocolModule_Packet_HTTPCommon
 	ProtocolModule_Packet_MQNumber
 	ProtocolModule_Packet_PassAuth
 	ProtocolModule_Packet_PassUser
