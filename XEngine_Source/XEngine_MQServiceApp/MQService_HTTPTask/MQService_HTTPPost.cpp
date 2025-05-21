@@ -82,7 +82,13 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	else if (0 == _tcsxnicmp(lpszAPIDelete, lpszFuncName, _tcsxlen(lpszAPIDelete)))
 	{
 		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
-
+		if (!ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, &st_UserInfo))
+		{
+			ProtocolModule_Packet_HTTPCommon(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求注册消息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
 		if (!DBModule_MQUser_UserDelete(&st_UserInfo))
 		{
 			ProtocolModule_Packet_HTTPCommon(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_DELETE, _X("delete user failure"));
