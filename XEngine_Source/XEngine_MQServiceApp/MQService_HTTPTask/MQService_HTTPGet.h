@@ -10,4 +10,4 @@
 //    Purpose:     HTTP GET方法处理
 //    History:
 *********************************************************************/
-bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LPCXSTR lpszMsgBuffer, int nMsgLen, int nMethodPos, XCHAR*** pptszListHdr, int nUrlCount);
+bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCHAR*** pptszListHdr, int nUrlCount);

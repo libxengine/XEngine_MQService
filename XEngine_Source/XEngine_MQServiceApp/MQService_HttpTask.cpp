@@ -58,48 +58,31 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,参数错误:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
 		return false;
 	}
-	int nMethodPos = 0;
-	//判断是否需要验证
-	if (st_ServiceCfg.st_XAuthorize.bHTTPAuth)
-	{
-		//http://127.0.0.1:5202/api?function=user&auth=XENGINE_MQPasskey
-		BaseLib_String_GetKeyValue(ppSt_ListUrl[1], _X("="), tszKey, tszValue);
-		if (_tcsxlen(st_ServiceCfg.st_XAuthorize.tszHTTPPass) > 0)
-		{
-			int nHTTPCode = 0;
-			ProtocolModule_Packet_PassHttp(tszPKTBuffer, &nPKTLen, pptszListHdr[1], pptszListHdr[0], pSt_HTTPParam->tszHttpMethod);
-			APIClient_Http_Request("POST", st_ServiceCfg.st_XAuthorize.tszHTTPPass, tszPKTBuffer, &nHTTPCode);
-			if (200 != nHTTPCode)
-			{
-				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "auth key is incorrent");
-				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,验证失败:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
-				return false;
-			}
-		}
-		else
-		{
-			if (0 != _tcsxncmp(st_ServiceCfg.st_XAuthorize.tszToken, tszValue, _tcsxlen(st_ServiceCfg.st_XAuthorize.tszToken)))
-			{
-				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "auth key is incorrent");
-				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP管理接口失败,验证失败:%s"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
-				return false;
-			}
-		}
-		nMethodPos++;
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求HTTP管理接口验证成功,验证TOKEN:%s"), lpszClientAddr, ppSt_ListUrl[1]);
-	}
 	//判断请求
 	if (0 == _tcsxnicmp(lpszPostMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszPostMethod)))
 	{
+		//判断是否需要验证
+		if (st_ServiceCfg.st_XAuthorize.bHTTPAuth)
+		{
+			XNETHANDLE xhToken = 0;
+			if (ProtocolModule_Parse_Token(lpszMsgBuffer, nMsgLen, &xhToken))
+			{
+				if (!Session_Token_Get(xhToken))
+				{
+					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "not authorize");
+					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求的API:%s 失败,因为没有经过验证"), lpszClientAddr, pSt_HTTPParam->tszHttpUri);
+					return false;
+				}
+			}
+		}
 		BaseLib_String_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
 		MessageQueue_HttpTask_Post(lpszClientAddr, tszValue, lpszMsgBuffer, nMsgLen);
 	}
 	else if (0 == _tcsxnicmp(lpszGetMethod, pSt_HTTPParam->tszHttpMethod, _tcsxlen(lpszGetMethod)))
 	{
 		BaseLib_String_GetKeyValue(ppSt_ListUrl[0], _X("="), tszKey, tszValue);
-		MessageQueue_HttpTask_Get(lpszClientAddr, tszValue, lpszMsgBuffer, nMsgLen, nMethodPos, &ppSt_ListUrl, nUrlCount);
+		MessageQueue_HttpTask_Get(lpszClientAddr, tszValue, &ppSt_ListUrl, nUrlCount);
 	}
 	else
 	{

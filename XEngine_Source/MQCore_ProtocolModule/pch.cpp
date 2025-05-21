@@ -94,3 +94,15 @@ extern "C" bool ProtocolModule_Parse_Register(LPCXSTR lpszMsgBuffer, int nMsgLen
 {
 	return m_ProtocolParse.ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, pSt_UserInfo);
 }
+extern "C" bool ProtocolModule_Parse_Token(LPCXSTR lpszMsgBuffer, int nMsgLen, XNETHANDLE* pxhToken)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_Token(lpszMsgBuffer, nMsgLen, pxhToken);
+}
+extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, int* pInt_Type)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_Type(lpszMsgBuffer, nMsgLen, pInt_Type);
+}
+extern "C" bool ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, ptszMSGBuffer);
+}

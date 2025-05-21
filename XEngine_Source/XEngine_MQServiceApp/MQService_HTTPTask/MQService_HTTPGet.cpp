@@ -10,128 +10,94 @@
 //    Purpose:     HTTP GET方法处理
 //    History:
 *********************************************************************/
-bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LPCXSTR lpszMsgBuffer, int nMsgLen, int nMethodPos, XCHAR*** pptszListHdr, int nUrlCount)
+bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCHAR*** pptszListHdr, int nUrlCount)
 {
 	int nSDLen = 0;
 	XCHAR tszSDBuffer[1024] = {};
 	XCHAR tszKeyStr[MAX_PATH] = {};
-	XCHAR tszVluStr[MAX_PATH] = {};
-	LPCXSTR lpszAPIGet = _X("get");
-	LPCXSTR lpszAPIUser = _X("user");
-	LPCXSTR lpszAPITopic = _X("topic");
-	LPCXSTR lpszAPIOnline = _X("online");
-	LPCXSTR lpszAPIDelete = _X("delete");
+
+	LPCXSTR lpszAPILogin = _X("login");
+	LPCXSTR lpszAPIUPDate = _X("update");
+	LPCXSTR lpszAPIClose = _X("close");
+
+	if (0 == _tcsxnicmp(lpszAPILogin, lpszFuncName, _tcsxlen(lpszAPILogin)))
+	{
+		//http://app.xyry.org:5202/api?function=login&user=123123aa&pass=123123
+		XNETHANDLE xhToken = 0;
+		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
+
+		BaseLib_String_GetKeyValue((*pptszListHdr)[1], "=", tszKeyStr, st_UserInfo.tszUserName);
+		BaseLib_String_GetKeyValue((*pptszListHdr)[2], "=", tszKeyStr, st_UserInfo.tszUserPass);
+
+		if (!DBModule_MQUser_UserQuery(&st_UserInfo))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "user or pass is incorrect");
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求本地验证失败,用户或者密码不正确,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
+			return false;
+		}
+		//用户是否存在会话,存在就返回,并且更新TOKEN
+		if (Session_Token_GetUser(st_UserInfo.tszUserName, st_UserInfo.tszUserPass, &xhToken))
+		{
+			XCHAR tszTokenStr[128] = {};
+			_xstprintf(tszTokenStr, _X("%lld"), xhToken);
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, 0, tszTokenStr);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求登录发现会话已经存在,直接返回TOKEN:%lld 成功"), lpszClientAddr, xhToken);
+			return true;
+		}
+		//权限是否正确
+		if (0 != st_UserInfo.nUserLevel)
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "permission error");
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端：%s，用户名：%s，登录失败，客户端权限不足够"), lpszClientAddr, st_UserInfo.tszUserName);
+			return false;
+		}
+		if (0 == xhToken)
+		{
+			BaseLib_Handle_Create(&xhToken);
+		}
+		Session_Token_Insert(xhToken, &st_UserInfo);
+
+		XCHAR tszTokenStr[128] = {};
+		_xstprintf(tszTokenStr, _X("%lld"), xhToken);
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, 0, tszTokenStr);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求登录获得TOKEN:%lld 成功,用户级别:%d"), lpszClientAddr, xhToken, st_UserInfo.nUserLevel);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIUPDate, lpszFuncName, _tcsxlen(lpszAPIUPDate)))
+	{
+		//http://app.xyry.org:5202/api?function=update&token=1000112345
+		XCHAR tszUserToken[128];
+		memset(tszUserToken, '\0', sizeof(tszUserToken));
+
+		BaseLib_String_GetKeyValue((*pptszListHdr)[1], "=", tszKeyStr, tszUserToken);
+
+		if (!Session_Token_UPDate(_ttxoll(tszUserToken)))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "token not found");
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端：%s，更新TOKEN失败，不存在的Token:%s"), lpszClientAddr, tszUserToken);
+			return false;
+		}
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, 0, tszUserToken);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求更新TOKEN:%s 成功"), lpszClientAddr, tszUserToken);
+	}
+	else if (0 == _tcsxnicmp(lpszAPIClose, lpszFuncName, _tcsxlen(lpszAPIClose)))
+	{
+		//http://app.xyry.org:5202/api?function=close&token=1000112345
+		XCHAR tszUserToken[128];
+		memset(tszUserToken, '\0', sizeof(tszUserToken));
+
+		BaseLib_String_GetKeyValue((*pptszListHdr)[1], "=", tszKeyStr, tszUserToken);
+		//主动关闭
+		Session_Token_Delete(_ttxoll(tszUserToken));
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, 0, tszUserToken);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求关闭TOKEN:%s 成功"), lpszClientAddr, tszUserToken);
+	}
 	
-	if (0 == _tcsxnicmp(lpszAPIUser, lpszFuncName, _tcsxlen(lpszAPIUser)))
-	{
-		//用户 http://127.0.0.1:5202/api?function=user&token=0
-		int nListCount = 0;
-		XENGINE_PROTOCOL_USERINFO** ppSt_UserInfo;
-		DBModule_MQUser_UserList(&ppSt_UserInfo, &nListCount);
-		ProtocolModule_Packet_UserList(tszSDBuffer, &nSDLen, &ppSt_UserInfo, nListCount);
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_UserInfo, nListCount);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取用户列表请求成功,获取到的用户列表个数:%d"), lpszClientAddr, nListCount);
-	}
-	else if (0 == _tcsxnicmp(lpszAPIOnline, lpszFuncName, _tcsxlen(lpszAPIOnline)))
-	{
-		//获取在线用户 http://127.0.0.1:5202/api?function=online&token=0&type=0
-		int nListCount = 0;
-		XCHAR** pptszListAddr;
-
-		BaseLib_String_GetKeyValue((*pptszListHdr)[nMethodPos + 1], _X("="), tszKeyStr, tszVluStr);
-		SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, _ttxoi(tszVluStr));
-		ProtocolModule_Packet_OnlineList(tszSDBuffer, &nSDLen, &pptszListAddr, nListCount);
-		BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取在线用户列表请求成功,获取到的列表个数:%d"), lpszClientAddr, nListCount);
-	}
-	else if (0 == _tcsxnicmp(lpszAPITopic, lpszFuncName, _tcsxlen(lpszAPITopic)))
-	{
-		//主题 http://127.0.0.1:5202/api?function=topic&name=comm
-		if (2 == nUrlCount)
-		{
-			int nListCount = 0;
-			XCHAR** ppszTableName;
-			DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
-			ProtocolModule_Packet_TopicList(tszSDBuffer, &nSDLen, &ppszTableName, nListCount);
-			BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
-		}
-		else
-		{
-			int nDBCount = 0;
-			BaseLib_String_GetKeyValue((*pptszListHdr)[nMethodPos + 1], _X("="), tszKeyStr, tszVluStr);
-			DBModule_MQData_GetLeftCount(tszVluStr, 0, &nDBCount);
-			ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, tszVluStr, nDBCount);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题消息个数:%d"), lpszClientAddr, nDBCount);
-		}
-	}
-	else if (0 == _tcsxnicmp(lpszAPIDelete, lpszFuncName, _tcsxlen(lpszAPIDelete)))
-	{
-		//http://127.0.0.1:5202/api?function=delete&type=0&name=comm
-		BaseLib_String_GetKeyValue((*pptszListHdr)[nMethodPos + 2], _X("="), tszKeyStr, tszVluStr);
-		if (0 == _ttxoi(tszVluStr))
-		{
-			//type = 0 删除主题
-			memset(tszVluStr, '\0', sizeof(tszVluStr));
-			BaseLib_String_GetKeyValue((*pptszListHdr)[nMethodPos + 3], _X("="), tszKeyStr, tszVluStr);
-
-			XENGINE_DBTOPICOWNER st_DBOwner = {};
-			XENGINE_DBUSERKEY st_UserKey = {};
-			XENGINE_DBTIMERELEASE st_DBInfo = {};
-
-			_tcsxcpy(st_DBOwner.tszQueueName, tszVluStr);
-			_tcsxcpy(st_UserKey.tszKeyName, tszVluStr);
-			_tcsxcpy(st_DBInfo.tszQueueName, tszVluStr);
-			if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
-			{
-				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "topic name not found");
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除主题失败,主题不存在:%s"), lpszClientAddr, tszVluStr);
-				return false;
-			}
-			//清楚数据库
-			APIHelp_Counter_SerialDel(tszVluStr);
-			DBModule_MQData_DeleteTable(tszVluStr);
-			DBModule_MQUser_KeyDelete(&st_UserKey);
-			DBModule_MQUser_TimeDelete(&st_DBInfo);
-
-			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, tszVluStr);
-		}
-		else
-		{
-			// 删除用户
-			memset(tszVluStr, '\0', sizeof(tszVluStr));
-			BaseLib_String_GetKeyValue((*pptszListHdr)[nMethodPos + 3], _X("="), tszKeyStr, tszVluStr);
-
-			XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
-			XENGINE_DBUSERKEY st_UserKey = {};
-			XENGINE_DBTOPICOWNER st_DBOwner = {};
-
-			_tcsxcpy(st_UserInfo.tszUserName, tszVluStr);
-			_tcsxcpy(st_UserKey.tszUserName, tszVluStr);
-			_tcsxcpy(st_DBOwner.tszUserName, tszVluStr);
-
-			if (!DBModule_MQUser_UserQuery(&st_UserInfo))
-			{
-				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "user name not found");
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除用户失败,用户不存在:%s"), lpszClientAddr, st_UserInfo.tszUserName);
-				return false;
-			}
-			DBModule_MQUser_UserDelete(&st_UserInfo);
-			DBModule_MQUser_KeyDelete(&st_UserKey);
-			DBModule_MQUser_OwnerDelete(&st_DBOwner);
-
-			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求用户删除成功,用户名:%s"), lpszClientAddr, st_UserInfo.tszUserName);
-		}
-	}
 	return true;
 }

@@ -460,3 +460,75 @@ extern "C" bool ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLe
 备注：
 *********************************************************************/
 extern "C" bool ProtocolModule_Parse_Register(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
+/********************************************************************
+函数名称：ProtocolModule_Parse_Token
+函数功能：解析TOKEN
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要解析的缓冲区
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要解析的大小
+ 参数.三：pxhToken
+  In/Out：Out
+  类型：句柄
+  可空：N
+  意思：输出解析到的TOKEN值
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Parse_Token(LPCXSTR lpszMsgBuffer, int nMsgLen, XNETHANDLE* pxhToken);
+/********************************************************************
+函数名称：ProtocolModule_Parse_Type
+函数功能：解析负载的类型字段
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：pInt_Type
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出解析到的类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, int* pInt_Type);
+/********************************************************************
+函数名称：ProtocolModule_Parse_Name
+函数功能：解析负载的类型字段
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：ptszMSGBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出解析到的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer);
