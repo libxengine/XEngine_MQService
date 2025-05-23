@@ -44,9 +44,9 @@ else
 endif
 libXEngine_Token.so:
 ifeq ($(FLAGS), InstallAll)
-	cp $(BASE_THIRDPART_REPORT)/libXEngine_Token.$(FILEEXT) ../XEngine_Release/
+	cp $(BASE_THIRDPART_TOKEN)/libXEngine_Token.$(FILEEXT) ../XEngine_Release/
 else
-	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_THIRDPART_TOKEN) PLATFORM=$(PLATFORM) $(FLAGS)
 endif
 
 libMQCore_ConfigModule.so:
