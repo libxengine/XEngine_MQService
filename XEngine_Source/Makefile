@@ -5,6 +5,7 @@ FLAGS=
 #要编译的模块
 BASE_THIRDPART_JSONCPP = ./XEngine_Depend/XEngine_Module/jsoncpp
 BASE_THIRDPART_REPORT = ./XEngine_Depend/XEngine_Module/XEngine_InfoReport
+BASE_THIRDPART_TOKEN = ./XEngine_Depend/XEngine_Module/XEngine_Token
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
@@ -21,7 +22,7 @@ else ifeq ($(PLATFORM),mac)
 	FILEEXT = dylib
 endif
 
-XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
+XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so libXEngine_Token.so        \
                 libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_MemoryCache.so libMQCore_DBModule.so libMQCore_HelpModule.so    \
 		        XEngine_MQServiceApp.exe 
 
@@ -38,6 +39,12 @@ endif
 libXEngine_InfoReport.so:
 ifeq ($(FLAGS), InstallAll)
 	cp $(BASE_THIRDPART_REPORT)/libXEngine_InfoReport.$(FILEEXT) ../XEngine_Release/
+else
+	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
+endif
+libXEngine_Token.so:
+ifeq ($(FLAGS), InstallAll)
+	cp $(BASE_THIRDPART_REPORT)/libXEngine_Token.$(FILEEXT) ../XEngine_Release/
 else
 	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
 endif
