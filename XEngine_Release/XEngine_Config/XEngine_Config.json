@@ -43,9 +43,7 @@
         "nTimeCount":0
     },
     "XAuthorize":{
-        "bHTTPAuth":true,
-        "tszHTTPPass":"",
-        "tszToken":"MQPasskey"
+        "bHTTPAuth":true
     },
     "XReport":{
         "bEnable":true,

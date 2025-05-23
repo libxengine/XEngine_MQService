@@ -67,8 +67,6 @@ typedef struct
     struct  
     {
 		bool bHTTPAuth;
-		XCHAR tszHTTPPass[MAX_PATH];
-		XCHAR tszToken[MAX_PATH];
     }st_XAuthorize;
 	struct
 	{

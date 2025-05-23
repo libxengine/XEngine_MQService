@@ -23,8 +23,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIGetList = _X("getlist");
 	LPCXSTR lpszAPIGetOnline = _X("getonline");
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
-	LPCXSTR lpszAPIDelTopic = _X("deltopic");
-	LPCXSTR lpszAPIDelUser = _X("deluser");
+	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
+	LPCXSTR lpszAPIDelUser = _X("deleteuser");
 
 	//判断是否需要验证，不是注册协议
 	if (st_ServiceCfg.st_XAuthorize.bHTTPAuth && (0 != _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister))))
@@ -162,12 +162,12 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 
 		st_ProtocolHdr.xhToken = xhToken;
 		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOLHDR), XENGINE_MQAPP_NETTYPE_HTTP);
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
 	else if (0 == _tcsxnicmp(lpszAPIDelTopic, lpszFuncName, _tcsxlen(lpszAPIDelTopic)))
 	{
-		//http://127.0.0.1:5202/api?function=deltopic
+		//http://127.0.0.1:5202/api?function=deletetopic
 
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
@@ -177,7 +177,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 
 		st_ProtocolHdr.xhToken = xhToken;
 		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOLHDR), XENGINE_MQAPP_NETTYPE_HTTP);
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
 	else if (0 == _tcsxnicmp(lpszAPIDelUser, lpszFuncName, _tcsxlen(lpszAPIDelUser)))
