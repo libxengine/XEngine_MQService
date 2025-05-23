@@ -6,7 +6,7 @@ LOADHDR = -I ./
 LOADSO = 
 LIB = 
 LIBEX = 
-OBJECTS = APIHelp_Counter.o pch.o
+OBJECTS = APIHelp_Counter.o APIHelp_MQHelp.o pch.o
 
 ifeq ($(RELEASE),1)
 FLAGS = -c -D _RELEASE
@@ -52,6 +52,8 @@ all:$(OBJECTS)
 
 APIHelp_Counter.o:./APIHelp_Counter/APIHelp_Counter.cpp             
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./APIHelp_Counter/APIHelp_Counter.cpp 
+APIHelp_MQHelp.o:./APIHelp_MQHelp/APIHelp_MQHelp.cpp             
+	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./APIHelp_MQHelp/APIHelp_MQHelp.cpp 
 
 pch.o:./pch.cpp                 		       	    
 	$(CC) $(DEBUG) $(FLAGS) $(UNICODE) $(PLATVER) $(LOADHDR) ./pch.cpp

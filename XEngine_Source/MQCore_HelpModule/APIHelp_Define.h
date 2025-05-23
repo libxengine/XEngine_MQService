@@ -69,3 +69,20 @@ extern "C" bool APIHelp_Counter_SerialGet(LPCXSTR lpszQueueName, __int64x* pInt_
 备注：
 *********************************************************************/
 extern "C" bool APIHelp_Counter_SerialDel(LPCXSTR lpszQueueName);
+/*************************************************************************
+                        通用帮助函数导出
+**************************************************************************/
+/********************************************************************
+函数名称：APIHelp_MQHelp_ProtocolToHex
+函数功能：协议转二进制
+ 参数.一：pSt_ProtocolHdr
+  In/Out：In/Out
+  类型：数据结构指针
+  可空：N
+  意思：打包的协议
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool APIHelp_MQHelp_JsonToHex(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr);

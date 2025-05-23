@@ -19,6 +19,12 @@
     <Filter Include="源文件\APIHelp_Counter">
       <UniqueIdentifier>{75ffe4ca-a70b-4320-98d0-219b06839ac3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\APIHelp_MQHelp">
+      <UniqueIdentifier>{0d962ca1-ecd7-42ec-a59d-8a9e2f8eb1d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\APIHelp_MQHelp">
+      <UniqueIdentifier>{343456e5-68f5-4e4e-9e32-61b7e0418105}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +42,9 @@
     <ClInclude Include="APIHelp_Error.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="APIHelp_MQHelp\APIHelp_MQHelp.h">
+      <Filter>头文件\APIHelp_MQHelp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -46,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="APIHelp_Counter\APIHelp_Counter.cpp">
       <Filter>源文件\APIHelp_Counter</Filter>
+    </ClCompile>
+    <ClCompile Include="APIHelp_MQHelp\APIHelp_MQHelp.cpp">
+      <Filter>源文件\APIHelp_MQHelp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

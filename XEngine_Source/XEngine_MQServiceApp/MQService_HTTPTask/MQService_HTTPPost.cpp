@@ -13,6 +13,7 @@
 bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LPCXSTR lpszMsgBuffer, int nMsgLen)
 {
 	int nSDLen = 0;
+	XNETHANDLE xhToken = 0;
 	XCHAR tszSDBuffer[1024] = {};
 	XCHAR tszKeyStr[MAX_PATH] = {};
 	XCHAR tszVluStr[MAX_PATH] = {};
@@ -21,13 +22,13 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIGetTopic = _X("gettopic");
 	LPCXSTR lpszAPIGetList = _X("getlist");
 	LPCXSTR lpszAPIGetOnline = _X("getonline");
+	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deltopic");
 	LPCXSTR lpszAPIDelUser = _X("deluser");
 
 	//判断是否需要验证，不是注册协议
 	if (st_ServiceCfg.st_XAuthorize.bHTTPAuth && (0 != _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister))))
 	{
-		XNETHANDLE xhToken = 0;
 		if (ProtocolModule_Parse_Token(lpszMsgBuffer, nMsgLen, &xhToken))
 		{
 			if (!Session_Token_Get(xhToken))
@@ -149,35 +150,35 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,发送的获取主题列表请求成功,获取到的主题列表个数:%d"), lpszClientAddr, nListCount);
 	}
+	else if (0 == _tcsxnicmp(lpszAPICreateTopic, lpszFuncName, _tcsxlen(lpszAPICreateTopic)))
+	{
+		//http://127.0.0.1:5202/api?function=createtopic
+
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
+
+		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, st_MQProtocol.tszMQKey);
+		APIHelp_MQHelp_JsonToHex(&st_ProtocolHdr);
+
+		st_ProtocolHdr.xhToken = xhToken;
+		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOLHDR), XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
+	}
 	else if (0 == _tcsxnicmp(lpszAPIDelTopic, lpszFuncName, _tcsxlen(lpszAPIDelTopic)))
 	{
 		//http://127.0.0.1:5202/api?function=deltopic
-		XENGINE_DBTOPICOWNER st_DBOwner = {};
-		XENGINE_DBUSERKEY st_UserKey = {};
-		XENGINE_DBTIMERELEASE st_DBInfo = {};
 
-		XCHAR tszTopicName[MAX_PATH] = {};
-		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
+		
+		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, st_MQProtocol.tszMQKey);
+		APIHelp_MQHelp_JsonToHex(&st_ProtocolHdr);
 
-		_tcsxcpy(st_DBOwner.tszQueueName, tszTopicName);
-		_tcsxcpy(st_UserKey.tszKeyName, tszTopicName);
-		_tcsxcpy(st_DBInfo.tszQueueName, tszTopicName);
-		if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
-		{
-			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, "topic name not found");
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求HTTP删除主题失败,主题不存在:%s"), lpszClientAddr, tszTopicName);
-			return false;
-		}
-		//清楚数据库
-		APIHelp_Counter_SerialDel(tszTopicName);
-		DBModule_MQData_DeleteTable(tszTopicName);
-		DBModule_MQUser_KeyDelete(&st_UserKey);
-		DBModule_MQUser_TimeDelete(&st_DBInfo);
-
-		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, tszTopicName);
+		st_ProtocolHdr.xhToken = xhToken;
+		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOLHDR), XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
 	else if (0 == _tcsxnicmp(lpszAPIDelUser, lpszFuncName, _tcsxlen(lpszAPIDelUser)))
 	{
