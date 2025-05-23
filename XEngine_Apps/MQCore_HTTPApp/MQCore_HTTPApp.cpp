@@ -125,6 +125,50 @@ void MQ_GetOnlineList()
 	_xtprintf("MQ_GetOnlineList:%s\n", ptszMsgBody);
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
+void MQ_TopicCreate()
+{
+	LPCXSTR lpszPostUrl = _X("http://127.0.0.1:5202/api?function=createtopic");
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonObject;
+	
+	st_JsonObject["name"] = "topictest";
+
+	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["Object"] = st_JsonObject;
+
+	int nLen = 0;
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, st_JsonRoot.toStyledString().c_str(), NULL, &ptszMsgBody, &nLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+	_xtprintf("MQ_TopicCreate:%s\n", ptszMsgBody);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
+}
+void MQ_TopicDelete()
+{
+	LPCXSTR lpszPostUrl = _X("http://127.0.0.1:5202/api?function=deletetopic");
+
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonObject;
+
+	st_JsonObject["name"] = "topictest";
+
+	st_JsonRoot["xhToken"] = xhToken;
+	st_JsonRoot["Object"] = st_JsonObject;
+
+	int nLen = 0;
+	XCHAR* ptszMsgBody = NULL;
+	if (!APIClient_Http_Request(_X("POST"), lpszPostUrl, st_JsonRoot.toStyledString().c_str(), NULL, &ptszMsgBody, &nLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+	_xtprintf("MQ_TopicDelete:%s\n", ptszMsgBody);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
+}
 void MQ_GetTopicList()
 {
 	LPCXSTR lpszPostUrl = _X("http://127.0.0.1:5202/api?function=getlist");
@@ -154,7 +198,9 @@ int main()
 	MQ_UserLogin();
 	MQ_GetUserList();
 	MQ_GetOnlineList();
+	MQ_TopicCreate();
 	MQ_GetTopicList();
+	MQ_TopicDelete();
 	MQ_UserDelete();
 #ifdef _MSC_BUILD
 	WSACleanup();
