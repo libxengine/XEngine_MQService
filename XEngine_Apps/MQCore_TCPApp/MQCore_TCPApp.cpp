@@ -28,57 +28,6 @@ LPCXSTR lpszKey = _X("XEngine_CommKey");  //主题
 LPCXSTR lpszUser = _X("aaadddzxc");
 LPCXSTR lpszPass = _X("123123");
 
-void MQ_Register()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERREG;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;           //获得处理返回结果
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolInfo.nUserLevel = 0;
-	st_ProtocolInfo.nUserState = 0;
-	st_ProtocolInfo.nPhoneNumber = 13699999999;
-	st_ProtocolInfo.nIDNumber = 511000000000101010;
-	strcpy(st_ProtocolInfo.tszUserName, lpszUser);
-	strcpy(st_ProtocolInfo.tszUserPass, lpszPass);
-	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERINFO);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 0;
-	XCHAR* ptszMsgBuffer;
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	_xtprintf("%d\n", st_ProtocolHdr.wReserve);
-	if (nLen > 0)
-	{
-		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-	}
-}
 void MQ_Authorize()
 {
 	int nLen = 0;
@@ -176,55 +125,6 @@ void MQ_GetUNRead(int nType = 0)
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-}
-//删除用户
-void MQ_DeleteUser()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_USERINFO st_ProtocolInfo;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_ProtocolInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_AUTH;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSERDEL;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;    
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_USERINFO);
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolInfo.nUserLevel = 0;
-	st_ProtocolInfo.nUserState = 0;
-	st_ProtocolInfo.nPhoneNumber = 13699999999;
-	st_ProtocolInfo.nIDNumber = 511000000000101010;
-	strcpy(st_ProtocolInfo.tszUserName, lpszUser);
-	strcpy(st_ProtocolInfo.tszUserPass, lpszPass);
-	strcpy(st_ProtocolInfo.tszEMailAddr, "486179@qq.com");
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolInfo, sizeof(XENGINE_PROTOCOL_USERINFO));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-
-	return;
 }
 
 void MQ_Create()
@@ -628,7 +528,6 @@ int main(int argc, char** argv)
 	}
 	_xtprintf("连接成功！\n");
 
-	MQ_Register();
 	MQ_Authorize();
 	MQ_GetUNRead();
 	MQ_Create();
@@ -647,7 +546,6 @@ int main(int argc, char** argv)
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
 	MQ_TimePublish();
 	MQ_DeleteTopic();
-	MQ_DeleteUser();
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	XClient_TCPSelect_Close(m_Socket);
