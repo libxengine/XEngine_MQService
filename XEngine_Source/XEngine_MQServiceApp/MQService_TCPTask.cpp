@@ -49,6 +49,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	{
 		lpszClientType = _X("WEBSOCKET");
 	}
+	else if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+	{
+		lpszClientType = _X("HTTP");
+	}
 	else
 	{
 		lpszClientType = _X("MQTT");
@@ -193,20 +197,27 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)
 	{
-		XENGINE_PROTOCOL_XMQ st_MQProtocol;
-		XCHAR tszUserName[MAX_PATH];
-
-		memset(&st_MQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-		memset(tszUserName, '\0', MAX_PATH);
-
-		if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
+		XCHAR tszUserName[MAX_PATH] = {};
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		//根据协议处理
+		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
 		{
-			pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_NOTLOGIN;
-			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
-			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
-			return false;
+			XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
+			Session_Token_Get(pSt_ProtocolHdr->xhToken, &st_UserInfo);
+			_tcsxcpy(tszUserName, st_UserInfo.tszUserName);
 		}
+		else
+		{
+			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
+			{
+				pSt_ProtocolHdr->wReserve = ERROR_XENGINE_MESSAGE_AUTH_NOTLOGIN;
+				ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端:%s,请求失败,用户没有通过验证"), lpszClientType, lpszClientAddr);
+				return false;
+			}
+		}
+
 		if (nMsgLen >= (int)sizeof(XENGINE_PROTOCOL_XMQ))
 		{
 			memcpy(&st_MQProtocol, lpszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
@@ -590,10 +601,12 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen);
 						XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, nNetType);
 					}
+					BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s消息端:%s,创建主题失败,主题名称:%s,主题存在,无法继续"), lpszClientType, lpszClientAddr, st_MQProtocol.tszMQKey);
 					return false;
 				}
 			}
+			BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
 			//创建表
 			if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
 			{
