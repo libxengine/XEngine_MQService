@@ -18,3 +18,7 @@ EXPORTS
 	ProtocolModule_Packet_UNReadDelete
 
 	ProtocolModule_Parse_Websocket
+	ProtocolModule_Parse_Register
+	ProtocolModule_Parse_Token
+	ProtocolModule_Parse_Type
+	ProtocolModule_Parse_Name

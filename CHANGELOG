@@ -1,3 +1,39 @@
+XEngine_MQService V3.16.0.1001
+
+增加:使用内存池发送数据
+增加:CI发布更多系统支持
+增加:HTTP创建主题支持
+更新:编译脚本
+更新:依赖库
+修改:调整用户默认注册级别
+修改:只有在发布版本下才发送信息报告了
+修改:注册和删除协议使用HTTP替代
+修改:http获取方法移动合并到新的目录
+修改:调整http验证方法,现在使用token替代了
+修改:http请求api 使用post并且只有post才做验证
+修改:区分了http的get和post处理
+修改:http删除和创建主题名称并且都交给tcp代码处理
+修改:tcp处理支持http协议了
+修复:删除协议解析不生效
+删除:多余代码
+
+added:memory pool send message
+added:ci more release support
+added:create topic support for http
+update:make file build flags
+update:depend library
+modify:adjust user register level
+modify:only release work for report info and improved get time function
+modify:register and delete protocol use http instead
+modify:http get method move to http task dir
+modify:adjust http authorize method.now it use token instead with get
+modify:http request info api to post and post verification
+modify:The http protocol distinguishes the API get information
+modify:delete and create topic convert to tcp handle
+modify:tcp task handle http type support
+fixed:delete not parse protocol
+delete:redundant functions
+======================================================================================
 XEngine_MQService V3.15.0.1001
 
 增加:HTTP验证授权支持

@@ -45,7 +45,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Error.h>
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Define.h"
 #include "../XEngine_Depend/XEngine_Module/XEngine_InfoReport/InfoReport_Error.h"
-
+#include "../XEngine_Depend/XEngine_Module/XEngine_Token/Session_Define.h"
+#include "../XEngine_Depend/XEngine_Module/XEngine_Token/Session_Error.h"
 #include "../XQueue_ProtocolHdr.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
@@ -59,6 +60,8 @@ using namespace std;
 #include "../MQCore_HelpModule/APIHelp_Error.h"
 #include "../MQCore_MemoryCache/MemoryCache_Define.h"
 #include "../MQCore_MemoryCache/MemoryCache_Error.h"
+#include "MQService_HTTPTask/MQService_HTTPPost.h"
+#include "MQService_HTTPTask/MQService_HTTPGet.h"
 
 extern bool bIsRun;
 extern bool bIsTest;
@@ -76,10 +79,12 @@ extern XHANDLE xhTCPPool;
 extern XHANDLE xhHttpPool;
 extern XHANDLE xhWSPool;
 extern XHANDLE xhMQTTPool;
+extern XHANDLE xhMemPool;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 
+#include "MQService_MemoryPool.h"
 #include "MQService_Config.h"
 #include "MQService_Net.h"
 #include "MQService_TCPTask.h"
@@ -108,6 +113,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Debug/MQCore_DBModule.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_HelpModule.lib")
 #pragma comment(lib,"../x64/Debug/XEngine_InfoReport.lib")
+#pragma comment(lib,"../x64/Debug/XEngine_Token.lib")
 #pragma comment(lib,"../x64/Debug/MQCore_MemoryCache.lib")
 #elif _M_ARM64
 #pragma comment(lib,"../ARM64/Debug/MQCore_ConfigModule.lib")
@@ -116,6 +122,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../ARM64/Debug/MQCore_DBModule.lib")
 #pragma comment(lib,"../ARM64/Debug/MQCore_HelpModule.lib")
 #pragma comment(lib,"../ARM64/Debug/XEngine_InfoReport.lib")
+#pragma comment(lib,"../ARM64/Debug/XEngine_Token.lib")
 #pragma comment(lib,"../ARM64/Debug/MQCore_MemoryCache.lib")
 #elif _M_IX86
 #pragma comment(lib,"../Debug/MQCore_ConfigModule.lib")
@@ -124,6 +131,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../Debug/MQCore_DBModule.lib")
 #pragma comment(lib,"../Debug/MQCore_HelpModule.lib")
 #pragma comment(lib,"../Debug/XEngine_InfoReport.lib")
+#pragma comment(lib,"../Debug/XEngine_Token.lib")
 #pragma comment(lib,"../Debug/MQCore_MemoryCache.lib")
 #endif
 #else
@@ -134,6 +142,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../x64/Release/MQCore_DBModule.lib")
 #pragma comment(lib,"../x64/Release/MQCore_HelpModule.lib")
 #pragma comment(lib,"../x64/Release/XEngine_InfoReport.lib")
+#pragma comment(lib,"../x64/Release/XEngine_Token.lib")
 #pragma comment(lib,"../x64/Release/MQCore_MemoryCache.lib")
 #elif _M_ARM64
 #pragma comment(lib,"../ARM64/Release/MQCore_ConfigModule.lib")
@@ -142,6 +151,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../ARM64/Release/MQCore_DBModule.lib")
 #pragma comment(lib,"../ARM64/Release/MQCore_HelpModule.lib")
 #pragma comment(lib,"../ARM64/Release/XEngine_InfoReport.lib")
+#pragma comment(lib,"../ARM64/Release/XEngine_Token.lib")
 #pragma comment(lib,"../ARM64/Release/MQCore_MemoryCache.lib")
 #elif _M_IX86
 #pragma comment(lib,"../Release/MQCore_ConfigModule.lib")
@@ -150,6 +160,7 @@ extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 #pragma comment(lib,"../Release/MQCore_DBModule.lib")
 #pragma comment(lib,"../Release/MQCore_HelpModule.lib")
 #pragma comment(lib,"../Release/XEngine_InfoReport.lib")
+#pragma comment(lib,"../Release/XEngine_Token.lib")
 #pragma comment(lib,"../Release/MQCore_MemoryCache.lib")
 #endif
 #endif

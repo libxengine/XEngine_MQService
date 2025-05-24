@@ -75,6 +75,10 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
 	{
 		ProtocolModule_Packet_WSCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 	}
+	else if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+	{
+		ProtocolModule_Packet_Http(ptszMsgBuffer, pInt_MsgLen, pSt_ProtocolHdr->wReserve);
+	}
 	else
 	{
 		ProtocolModule_Packet_MQTTCommon(pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);

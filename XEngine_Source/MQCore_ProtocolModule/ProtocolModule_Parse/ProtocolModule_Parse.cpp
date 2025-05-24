@@ -220,3 +220,243 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 	}
 	return true;
 }
+/********************************************************************
+函数名称：ProtocolModule_Parse_Register
+函数功能：解析用户信息
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要解析的缓冲区
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要解析的大小
+ 参数.三：pSt_UserInfo
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出解析的数据
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_Register(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == lpszMsgBuffer) || (NULL == pSt_UserInfo))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	Json::Value st_JsonProtocol = st_JsonRoot["st_UserInfo"];
+	if (!st_JsonProtocol["tszUserName"].isNull())
+	{
+		_tcsxcpy(pSt_UserInfo->tszUserName, st_JsonProtocol["tszUserName"].asCString());
+	}
+	if (!st_JsonProtocol["tszUserPass"].isNull())
+	{
+		_tcsxcpy(pSt_UserInfo->tszUserPass, st_JsonProtocol["tszUserPass"].asCString());
+	}
+	if (!st_JsonProtocol["tszEMailAddr"].isNull())
+	{
+		_tcsxcpy(pSt_UserInfo->tszEMailAddr, st_JsonProtocol["tszEMailAddr"].asCString());
+	}
+	if (!st_JsonProtocol["tszLoginTime"].isNull())
+	{
+		_tcsxcpy(pSt_UserInfo->tszLoginTime, st_JsonProtocol["tszLoginTime"].asCString());
+	}
+	if (!st_JsonProtocol["tszCreateTime"].isNull())
+	{
+		_tcsxcpy(pSt_UserInfo->tszCreateTime, st_JsonProtocol["tszCreateTime"].asCString());
+	}
+	if (!st_JsonProtocol["nPhoneNumber"].isNull())
+	{
+		pSt_UserInfo->nPhoneNumber = st_JsonProtocol["nPhoneNumber"].asInt64();
+	}
+	if (!st_JsonProtocol["nIDNumber"].isNull())
+	{
+		pSt_UserInfo->nIDNumber = st_JsonProtocol["nIDNumber"].asInt64();
+	}
+	if (!st_JsonProtocol["nUserLevel"].isNull())
+	{
+		pSt_UserInfo->nUserLevel = st_JsonProtocol["nUserLevel"].asInt();
+	}
+	if (!st_JsonProtocol["nUserState"].isNull())
+	{
+		pSt_UserInfo->nUserState = st_JsonProtocol["nUserState"].asInt();
+	}
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Parse_Token
+函数功能：解析TOKEN
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：输入要解析的缓冲区
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要解析的大小
+ 参数.三：pxhToken
+  In/Out：Out
+  类型：句柄
+  可空：N
+  意思：输出解析到的TOKEN值
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_Token(LPCXSTR lpszMsgBuffer, int nMsgLen, XNETHANDLE* pxhToken)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == lpszMsgBuffer) || (NULL == pxhToken))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	if (st_JsonRoot["xhToken"].isNull())
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	*pxhToken = st_JsonRoot["xhToken"].asUInt64();
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Parse_Type
+函数功能：解析负载的类型字段
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：pInt_Type
+  In/Out：Out
+  类型：整数型指针
+  可空：N
+  意思：输出解析到的类型
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, int* pInt_Type)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == lpszMsgBuffer))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	Json::Value st_JsonObject = st_JsonRoot["Object"];
+	if (!st_JsonObject["nType"].isNull())
+	{
+		*pInt_Type = st_JsonObject["nType"].asInt();
+	}
+	
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Parse_Name
+函数功能：解析负载的类型字段
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：ptszMSGBuffer
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出解析到的名称
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer)
+{
+	Protocol_IsErrorOccur = false;
+
+	if ((NULL == lpszMsgBuffer))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	Json::Value st_JsonObject = st_JsonRoot["Object"];
+	if (!st_JsonObject["name"].isNull())
+	{
+		_tcsxcpy(ptszMSGBuffer, st_JsonObject["name"].asCString());
+	}
+
+	return true;
+}

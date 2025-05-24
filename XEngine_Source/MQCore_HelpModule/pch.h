@@ -21,6 +21,7 @@
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include "../XQueue_ProtocolHdr.h"
 #include "APIHelp_Define.h"
 #include "APIHelp_Error.h"
 /********************************************************************

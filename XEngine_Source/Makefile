@@ -5,6 +5,7 @@ FLAGS=
 #要编译的模块
 BASE_THIRDPART_JSONCPP = ./XEngine_Depend/XEngine_Module/jsoncpp
 BASE_THIRDPART_REPORT = ./XEngine_Depend/XEngine_Module/XEngine_InfoReport
+BASE_THIRDPART_TOKEN = ./XEngine_Depend/XEngine_Module/XEngine_Token
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
@@ -21,7 +22,7 @@ else ifeq ($(PLATFORM),mac)
 	FILEEXT = dylib
 endif
 
-XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so          \
+XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so libXEngine_Token.so        \
                 libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_MemoryCache.so libMQCore_DBModule.so libMQCore_HelpModule.so    \
 		        XEngine_MQServiceApp.exe 
 
@@ -41,19 +42,25 @@ ifeq ($(FLAGS), InstallAll)
 else
 	make -C $(BASE_THIRDPART_REPORT) PLATFORM=$(PLATFORM) $(FLAGS)
 endif
+libXEngine_Token.so:
+ifeq ($(FLAGS), InstallAll)
+	cp $(BASE_THIRDPART_TOKEN)/libXEngine_Token.$(FILEEXT) ../XEngine_Release/
+else
+	make -C $(BASE_THIRDPART_TOKEN) PLATFORM=$(PLATFORM) $(FLAGS)
+endif
 
 libMQCore_ConfigModule.so:
-	make -C $(BASE_CONFIG_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_CONFIG_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 libMQCore_ProtocolModule.so:
-	make -C $(BASE_PROTOCOL_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_PROTOCOL_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 libMQCore_SessionModule.so:
-	make -C $(BASE_SESSION_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_SESSION_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 libMQCore_MemoryCache.so:
-	make -C $(BASE_MEMORYCACHE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_MEMORYCACHE_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 libMQCore_DBModule.so:
-	make -C $(BASE_DATABASE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_DATABASE_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 libMQCore_HelpModule.so:
-	make -C $(BASE_HELP_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(BASE_HELP_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
 
 XEngine_MQServiceApp.exe:
-	make -C $(APP_SERVICE_PATH) PLATFORM=$(PLATFORM) $(FLAGS)
+	make -C $(APP_SERVICE_PATH) PLATFORM=$(PLATFORM) UNICODE=$(UNICODE) RELEASE=$(RELEASE) $(FLAGS)
