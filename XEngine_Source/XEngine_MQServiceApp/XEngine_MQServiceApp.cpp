@@ -16,6 +16,7 @@ XHANDLE xhTCPPool = NULL;
 XHANDLE xhHttpPool = NULL;
 XHANDLE xhWSPool = NULL;
 XHANDLE xhMQTTPool = NULL;
+XHANDLE xhMemPool = NULL;
 
 XENGINE_SERVERCONFIG st_ServiceCfg;
 MESSAGEQUEUE_DBCONFIG st_DBConfig;
@@ -41,6 +42,7 @@ void ServiceApp_Stop(int signo)
 		ManagePool_Thread_NQDestroy(xhHttpPool);
 		ManagePool_Thread_NQDestroy(xhWSPool);
 		ManagePool_Thread_NQDestroy(xhMQTTPool);
+		ManagePool_Memory_Destory(xhMemPool);
 
 		DBModule_MQData_Destory();
 		DBModule_MQUser_Destory();
@@ -151,7 +153,7 @@ int main(int argc, char** argv)
 	if (NULL == xhLog)
 	{
 		printf("启动服务器失败，启动日志失败，错误：%lX", XLog_GetLastError());
-		goto NETSERVICEEXIT;
+		goto XENGINE_APPEXIST;
 	}
 	HelpComponents_XLog_SetLogPriority(xhLog, st_ServiceCfg.st_XLog.nLogLeave);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化日志系统成功"));
@@ -159,7 +161,7 @@ int main(int argc, char** argv)
 	if (!Config_Json_DBFile(lpszDBConfig, &st_DBConfig))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化数据库配置失败，错误：%lX"), Config_GetLastError());
-		goto NETSERVICEEXIT;
+		goto XENGINE_APPEXIST;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库配置成功"));
 
@@ -174,12 +176,20 @@ int main(int argc, char** argv)
 	signal(SIGABRT, ServiceApp_Stop);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化服务器信号管理成功"));
 
+	xhMemPool = ManagePool_Memory_Create();
+	if (NULL == xhMemPool)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化内存池失败，错误：%lX"), ManagePool_GetLastError());
+		goto XENGINE_APPEXIST;
+	}
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化内存池成功"));
+
 	if (st_ServiceCfg.st_XMemory.bDataQueryEnable || st_ServiceCfg.st_XMemory.bDataInsertEnable)
 	{
 		if (!MemoryCache_DBData_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount, MessageQueue_CBTask_MemoryCache))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息内容高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化消息内容高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
@@ -192,7 +202,7 @@ int main(int argc, char** argv)
 		if (!MemoryCache_DBUser_Init(st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount, MessageQueue_CBTask_MemoryCache))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化用户信息高速缓存服务失败，错误：%lX"), MemoryCache_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化用户信息高速缓存服务成功,更新最大时间:%d,存储最大时间:%d"), st_ServiceCfg.st_XMemory.nTimeLast, st_ServiceCfg.st_XMemory.nTimeCount);
 	}
@@ -206,12 +216,12 @@ int main(int argc, char** argv)
 		if (!DBModule_MQData_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, st_ServiceCfg.st_XMemory.bDataQueryEnable, st_ServiceCfg.st_XMemory.bDataInsertEnable))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息数据数据库失败，错误：%lX"), DBModule_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		if (!DBModule_MQUser_Init((DATABASE_MYSQL_CONNECTINFO*)&st_ServiceCfg.st_XSql, st_ServiceCfg.st_XMemory.bUserQueryEnable, MessageQueue_CBTask_TimePublish))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化消息用户数据库失败，错误：%lX"), DBModule_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化数据库服务成功"));
 	}
@@ -219,7 +229,7 @@ int main(int argc, char** argv)
 	if (!SessionModule_Client_Init())
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("初始化客户端会话管理器失败，错误：%lX"), SessionModule_GetLastError());
-		goto NETSERVICEEXIT;
+		goto XENGINE_APPEXIST;
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化客户端会话管理器成功"));
 	//TCP消息服务
@@ -230,7 +240,7 @@ int main(int argc, char** argv)
 		if (NULL == xhTCPPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("初始化TCP组包器失败，错误：%lX"), Packets_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动TCP组包器成功"));
 		//启动网络
@@ -238,7 +248,7 @@ int main(int argc, char** argv)
 		if (NULL == xhTCPSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动TCP网络服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动TCP网络服务器成功,TCP端口:%d,IO:%d"), st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nIOThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
@@ -257,7 +267,7 @@ int main(int argc, char** argv)
 		if (NULL == xhTCPPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动TCP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动TCP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nTCPThread);
 	}
@@ -272,7 +282,7 @@ int main(int argc, char** argv)
 		if (NULL == xhHTTPPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务器中，初始化HTTP组包失败，错误：%lX"), HttpProtocol_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化HTTP组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
 
@@ -280,7 +290,7 @@ int main(int argc, char** argv)
 		if (NULL == xhHTTPSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动HTTP网络服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动HTTP网络服务器成功,HTTP端口:%d,IO:%d"), st_ServiceCfg.nHttpPort, st_ServiceCfg.st_XMax.nIOThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhHTTPSocket, MessageQueue_Callback_HttpLogin, MessageQueue_Callback_HttpRecv, MessageQueue_Callback_HttpLeave);
@@ -299,7 +309,7 @@ int main(int argc, char** argv)
 		if (NULL == xhHttpPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动HTTP线程池服务失败，错误：%lX"), ManagePool_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动HTTP线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nHttpThread);
 	}
@@ -314,7 +324,7 @@ int main(int argc, char** argv)
 		if (NULL == xhWSPacket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务器中，初始化Websocket组包失败，错误：%lX"), WSFrame_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化Websocket组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nWSThread);
 
@@ -322,7 +332,7 @@ int main(int argc, char** argv)
 		if (NULL == xhWSSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动Websocket网络服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动Websocket网络服务器成功,Websocket端口:%d,IO:%d"), st_ServiceCfg.nWSPort, st_ServiceCfg.st_XMax.nIOThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhWSSocket, MessageQueue_Callback_WSLogin, MessageQueue_Callback_WSRecv, MessageQueue_Callback_WSLeave);
@@ -341,7 +351,7 @@ int main(int argc, char** argv)
 		if (NULL == xhWSPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动Websocket线程池服务失败，错误：%lX"), ManagePool_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动Websocket线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nWSThread);
 	}
@@ -355,7 +365,7 @@ int main(int argc, char** argv)
 		if (!MQTTProtocol_Parse_Init(st_ServiceCfg.st_XMax.nMQTTThread))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务器中，初始化MQTT组包失败，错误：%lX"), MQTTProtocol_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化MQTT组包成功，IO线程个数:%d"), st_ServiceCfg.st_XMax.nMQTTThread);
 
@@ -363,7 +373,7 @@ int main(int argc, char** argv)
 		if (NULL == xhMQTTSocket)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动MQTT网络服务器失败，错误：%lX"), NetCore_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT网络服务器成功,MQTT端口:%d,IO:%d"), st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMQTTThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhMQTTSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
@@ -382,7 +392,7 @@ int main(int argc, char** argv)
 		if (NULL == xhWSPool)
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动MQTT线程池服务失败，错误：%lX"), ManagePool_GetLastError());
-			goto NETSERVICEEXIT;
+			goto XENGINE_APPEXIST;
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT线程池服务成功,启动个数:%d"), st_ServiceCfg.st_XMax.nMQTTThread);
 	}
@@ -420,7 +430,7 @@ int main(int argc, char** argv)
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-NETSERVICEEXIT:
+XENGINE_APPEXIST:
 
 	bIsRun = false;
 	if (bIsTest && 0 == nRet)
@@ -446,6 +456,7 @@ NETSERVICEEXIT:
 	ManagePool_Thread_NQDestroy(xhHttpPool);
 	ManagePool_Thread_NQDestroy(xhWSPool);
 	ManagePool_Thread_NQDestroy(xhMQTTPool);
+	ManagePool_Memory_Destory(xhMemPool);
 
 	DBModule_MQData_Destory();
 	DBModule_MQUser_Destory();

@@ -177,19 +177,16 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
     {
-		int nPKTLen = 8196;
-		XCHAR tszPKTBuffer[8196];
-		RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr;
-
-		memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
-		memset(&st_HTTPHdr, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
+		int nSDLen = XENGINE_MEMORY_SIZE_MAX;
+		RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr = {};
 
 		st_HTTPHdr.nHttpCode = 200;
 		st_HTTPHdr.bIsClose = true;
 		_tcsxcpy(st_HTTPHdr.tszMimeType, _X("json"));
 
-		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, tszPKTBuffer, &nPKTLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
-		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, tszPKTBuffer, nPKTLen))
+		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, m_MQMemoryPool.get(), &nSDLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
+		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, m_MQMemoryPool.get(), nSDLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
@@ -197,11 +194,9 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
-		XCHAR tszPKTBuffer[8196];
-		memset(tszPKTBuffer, '\0', sizeof(tszPKTBuffer));
-
-        RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, tszPKTBuffer, &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
-		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszPKTBuffer, nMsgLen))
+		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
+        RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
+		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, m_MQMemoryPool.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;

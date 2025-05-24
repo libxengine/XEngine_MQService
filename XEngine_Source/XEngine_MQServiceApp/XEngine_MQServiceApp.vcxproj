@@ -251,6 +251,7 @@
     <ClInclude Include="MQService_HttpTask.h" />
     <ClInclude Include="MQService_HTTPTask\MQService_HTTPGet.h" />
     <ClInclude Include="MQService_HTTPTask\MQService_HTTPPost.h" />
+    <ClInclude Include="MQService_MemoryPool.h" />
     <ClInclude Include="MQService_MQTTTask.h" />
     <ClInclude Include="MQService_Net.h" />
     <ClInclude Include="MQService_Task.h" />

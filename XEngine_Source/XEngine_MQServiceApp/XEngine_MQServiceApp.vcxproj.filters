@@ -83,5 +83,8 @@
     <ClInclude Include="MQService_HTTPTask\MQService_HTTPGet.h">
       <Filter>头文件\MQService_HTTPTask</Filter>
     </ClInclude>
+    <ClInclude Include="MQService_MemoryPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

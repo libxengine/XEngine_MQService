@@ -79,10 +79,12 @@ extern XHANDLE xhTCPPool;
 extern XHANDLE xhHttpPool;
 extern XHANDLE xhWSPool;
 extern XHANDLE xhMQTTPool;
+extern XHANDLE xhMemPool;
 
 extern XENGINE_SERVERCONFIG st_ServiceCfg;
 extern MESSAGEQUEUE_DBCONFIG st_DBConfig;
 
+#include "MQService_MemoryPool.h"
 #include "MQService_Config.h"
 #include "MQService_Net.h"
 #include "MQService_TCPTask.h"
