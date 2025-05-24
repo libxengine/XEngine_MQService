@@ -1,5 +1,6 @@
 XEngine_MQService V3.16.0.1001
 
+增加:使用内存池发送数据
 增加:CI发布更多系统支持
 增加:HTTP创建主题支持
 更新:编译脚本
@@ -16,6 +17,7 @@ XEngine_MQService V3.16.0.1001
 修复:删除协议解析不生效
 删除:多余代码
 
+added:memory pool send message
 added:ci more release support
 added:create topic support for http
 update:make file build flags
