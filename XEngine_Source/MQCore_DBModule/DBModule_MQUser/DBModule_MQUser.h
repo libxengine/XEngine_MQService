@@ -44,7 +44,7 @@ public:
 	bool DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOwner);
 	bool DBModule_MQUser_OwnerTopicUPDate(LPCXSTR lpszSourceTable, LPCXSTR lpszDestTable);
 protected:
-	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
+	static XHTHREAD XCALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
 private:
 	shared_ptr<std::thread> pSTDThread;
 private:

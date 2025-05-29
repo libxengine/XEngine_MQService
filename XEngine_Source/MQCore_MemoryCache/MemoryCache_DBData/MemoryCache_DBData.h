@@ -52,8 +52,8 @@ public:
 public:
 	bool MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XENGINE_DBMESSAGEQUEUE* pSt_DBMessageInfo);
 protected:
-	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
-	static XHTHREAD CALLBACK DBModule_MQUser_InsertThread(XPVOID lParam);
+	static XHTHREAD XCALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
+	static XHTHREAD XCALLBACK DBModule_MQUser_InsertThread(XPVOID lParam);
 private:
 	bool bIsRun = false;
 	int m_nTimeLast = 0;

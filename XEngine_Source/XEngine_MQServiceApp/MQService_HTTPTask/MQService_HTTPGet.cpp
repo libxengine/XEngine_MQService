@@ -14,7 +14,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 {
 	int nSDLen = 0;
 	XCHAR tszSDBuffer[1024] = {};
-	XCHAR tszKeyStr[MAX_PATH] = {};
+	XCHAR tszKeyStr[XPATH_MAX] = {};
 
 	LPCXSTR lpszAPILogin = _X("login");
 	LPCXSTR lpszAPIUPDate = _X("update");

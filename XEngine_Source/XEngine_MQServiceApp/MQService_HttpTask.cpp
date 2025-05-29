@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
+XHTHREAD XCALLBACK MessageQueue_HttpThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -29,7 +29,7 @@ XHTHREAD CALLBACK MessageQueue_HttpThread(XPVOID lParam)
 				if (HttpProtocol_Server_GetMemoryEx(xhHTTPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_HTTPReqparam, &ppszHdrList, &nHdrCount))
 				{
 					MessageQueue_Http_Handle(&st_HTTPReqparam, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, ppszHdrList, nHdrCount);
-					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 					BaseLib_Memory_Free((XPPPMEM)&ppszHdrList, nHdrCount);
 				}
 			}
@@ -42,8 +42,8 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 {
 	int nPKTLen = 4096;
 	XCHAR tszPKTBuffer[4096] = {};
-	XCHAR tszKey[MAX_PATH] = {};
-	XCHAR tszValue[MAX_PATH] = {};
+	XCHAR tszKey[XPATH_MAX] = {};
+	XCHAR tszValue[XPATH_MAX] = {};
 
 	LPCXSTR lpszPostMethod = _X("POST");
 	LPCXSTR lpszGetMethod = _X("GET");

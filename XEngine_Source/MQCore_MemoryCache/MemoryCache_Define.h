@@ -19,7 +19,7 @@ typedef enum
 //////////////////////////////////////////////////////////////////////////
 //                       导出的回调
 //////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE)(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XPVOID pSt_DBInfo, XPVOID lParam);
+typedef void(XCALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_CACHE)(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XPVOID pSt_DBInfo, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////

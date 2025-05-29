@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
+XHTHREAD XCALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -24,7 +24,7 @@ XHTHREAD CALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 				if (RfcComponents_WSPacket_GetMemoryEx(xhWSPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &enOPCode))
 				{
 					MessageQueue_Websocket_Handle(ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, enOPCode);
-					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				}
 			}
 		}
@@ -37,14 +37,14 @@ bool MessageQueue_Websocket_Handle(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 	if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_CLOSE == enOPCode)
 	{
 		int nSDLen = 0;
-		XCHAR tszMSGBuffer[MAX_PATH] = {};
+		XCHAR tszMSGBuffer[XPATH_MAX] = {};
 		RfcComponents_WSCodec_EncodeMsg(NULL, tszMSGBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_CLOSE);
 		NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszMSGBuffer, nSDLen);
 	}
 	else if (ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_PING == enOPCode)
 	{
 		int nSDLen = 0;
-		XCHAR tszMSGBuffer[MAX_PATH] = {};
+		XCHAR tszMSGBuffer[XPATH_MAX] = {};
 		RfcComponents_WSCodec_EncodeMsg(NULL, tszMSGBuffer, &nSDLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_PONG);
 		NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, tszMSGBuffer, nSDLen);
 	}

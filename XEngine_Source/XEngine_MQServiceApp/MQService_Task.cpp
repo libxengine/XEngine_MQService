@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo, XPVOID lParam)
+void XCALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo, XPVOID lParam)
 {
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[4096];
@@ -63,7 +63,7 @@ void CALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo,
 	}
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("定时任务,消息主题:%s,序列:%lld,定时任务分发成功,客户端个数:%d"), pSt_DBInfo->tszQueueName, pSt_DBInfo->nIDMsg, nListCount);
 }
-void CALLBACK MessageQueue_CBTask_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XPVOID pSt_DBInfo, XPVOID lParam)
+void XCALLBACK MessageQueue_CBTask_MemoryCache(ENUM_MEMORYCACHE_CALLBACK_TYPE enMemoryType, bool bSuccess, size_t nListCount, XPVOID pSt_DBInfo, XPVOID lParam)
 {
 	if (ENUM_MEMORYCACHE_CALLBACK_TYPE_DATA_QUERY == enMemoryType)
 	{

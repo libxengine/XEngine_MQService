@@ -286,7 +286,7 @@ bool CMemoryCache_DBData::MemoryCache_DBData_QueueInsert(LPCXSTR lpszSQLStr, XEN
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
-XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
+XHTHREAD XCALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 {
 	CMemoryCache_DBData* pClass_This = (CMemoryCache_DBData*)lParam;
 
@@ -325,7 +325,7 @@ XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_TimeThread(XPVOID lParam)
 	}
 	return 0;
 }
-XHTHREAD CALLBACK CMemoryCache_DBData::DBModule_MQUser_InsertThread(XPVOID lParam)
+XHTHREAD XCALLBACK CMemoryCache_DBData::DBModule_MQUser_InsertThread(XPVOID lParam)
 {
 	CMemoryCache_DBData* pClass_This = (CMemoryCache_DBData*)lParam;
 

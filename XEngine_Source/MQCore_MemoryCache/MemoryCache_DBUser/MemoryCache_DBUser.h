@@ -31,7 +31,7 @@ public:
 	bool MemoryCache_DBUser_DataQuery(XENGINE_PROTOCOL_USERINFO* pSt_DBUserInfo);
 	bool MemoryCache_DBUser_DataDelete(XENGINE_PROTOCOL_USERINFO* pSt_DBUserInfo);
 protected:
-	static XHTHREAD CALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
+	static XHTHREAD XCALLBACK DBModule_MQUser_TimeThread(XPVOID lParam);
 private:
 	bool bIsRun = false;
 	int m_nTimeLast = 0;

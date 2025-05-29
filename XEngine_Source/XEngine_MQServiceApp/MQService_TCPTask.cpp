@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
+XHTHREAD XCALLBACK MessageQueue_TCPThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -26,7 +26,7 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
 				if (HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
 					MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, XENGINE_MQAPP_NETTYPE_TCP);
-					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				}
 			}
 		}
@@ -153,7 +153,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT == pSt_ProtocolHdr->unOperatorCode)
 		{
-			XCHAR tszUserName[MAX_PATH] = {};
+			XCHAR tszUserName[XPATH_MAX] = {};
 			XENGINE_PROTOCOL_USERINFO st_ProtocolInfo = {};
 
 			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
@@ -197,7 +197,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)
 	{
-		XCHAR tszUserName[MAX_PATH] = {};
+		XCHAR tszUserName[XPATH_MAX] = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		//根据协议处理
 		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
@@ -455,7 +455,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				{
 					//有过期时间,判断是否过期
 					__int64x nTimeRet = 0;
-					XCHAR tszTimeStr[MAX_PATH] = {};
+					XCHAR tszTimeStr[XPATH_MAX] = {};
 					BaseLib_Time_TimeToStr(tszTimeStr);
 					BaseLib_TimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeStr, &nTimeRet, 3);
 					//如果超时并且不允许主动获取,返回错误

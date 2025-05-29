@@ -15,8 +15,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	int nSDLen = 0;
 	XNETHANDLE xhToken = 0;
 	XCHAR tszSDBuffer[1024] = {};
-	XCHAR tszKeyStr[MAX_PATH] = {};
-	XCHAR tszVluStr[MAX_PATH] = {};
+	XCHAR tszKeyStr[XPATH_MAX] = {};
+	XCHAR tszVluStr[XPATH_MAX] = {};
 	LPCXSTR lpszAPIRegister = _X("register");
 	LPCXSTR lpszAPIGetUser = _X("getuser");
 	LPCXSTR lpszAPIGetTopic = _X("gettopic");
@@ -131,7 +131,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	{
 		//主题 http://127.0.0.1:5202/api?function=gettopic
 		int nDBCount = 0;
-		XCHAR tszTopicName[MAX_PATH] = {};
+		XCHAR tszTopicName[XPATH_MAX] = {};
 		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
 		DBModule_MQData_GetLeftCount(tszTopicName, 0, &nDBCount);
 		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, tszTopicName, nDBCount);
