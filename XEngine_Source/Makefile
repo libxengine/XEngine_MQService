@@ -3,9 +3,9 @@ UNICODE = 0
 PLATFORM=linux
 FLAGS= 
 #要编译的模块
-BASE_THIRDPART_JSONCPP = ./XEngine_Depend/XEngine_Module/jsoncpp
-BASE_THIRDPART_REPORT = ./XEngine_Depend/XEngine_Module/XEngine_InfoReport
-BASE_THIRDPART_TOKEN = ./XEngine_Depend/XEngine_Module/XEngine_Token
+BASE_THIRDPART_JSONCPP = ./XEngine_DependLibrary/XEngine_Module/jsoncpp
+BASE_THIRDPART_REPORT = ./XEngine_DependLibrary/XEngine_Module/XEngine_InfoReport
+BASE_THIRDPART_TOKEN = ./XEngine_DependLibrary/XEngine_Module/XEngine_Token
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
