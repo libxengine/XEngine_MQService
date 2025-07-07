@@ -18,47 +18,59 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
 
     for (int i = 0;i < argc;i++)
     {
-        if ((0 == _tcsxcmp("-h",argv[i])) || (0 == _tcsxcmp("-H",argv[i])))
+        if (0 == _tcsxicmp("-h",argv[i]))
         {
             MQ_Service_ParamentHelp();
             return false;
         }
-        else if ((0 == _tcsxcmp("-v",argv[i])) || (0 == _tcsxcmp("-V",argv[i])))
+        else if (0 == _tcsxicmp("-v",argv[i]))
         {
             printf("Version：V1.1.0\n");
             return false;
         }
-        else if (0 == _tcsxcmp("-TP",argv[i]))
+        else if (0 == _tcsxicmp("-tp",argv[i]))
         {
             pSt_StartlParam->nTCPPort = _ttxoi(argv[++i]);
         }
-        else if (0 == _tcsxcmp("-HP",argv[i]))
+        else if (0 == _tcsxicmp("-hp",argv[i]))
         {
             pSt_StartlParam->nHttpPort = _ttxoi(argv[++i]);
         }
-		else if (0 == _tcsxcmp("-WP", argv[i]))
+		else if (0 == _tcsxicmp("-wp", argv[i]))
 		{
 			pSt_StartlParam->nWSPort = _ttxoi(argv[++i]);
 		}
-		else if (0 == _tcsxcmp("-MP", argv[i]))
+		else if (0 == _tcsxicmp("-mp", argv[i]))
 		{
 			pSt_StartlParam->nMQTTPort = _ttxoi(argv[++i]);
 		}
-		else if (0 == _tcsxcmp("-LL", argv[i]))
-		{
-			pSt_StartlParam->st_XLog.nLogLeave = _ttxoi(argv[++i]);
-		}
-		else if (0 == _tcsxcmp("-LT", argv[i]))
-		{
-			pSt_StartlParam->st_XLog.nLogType = _ttxoi(argv[++i]);
-		}
-        else if (0 == _tcsxcmp("-d",argv[i]))
+        else if (0 == _tcsxicmp("-d",argv[i]))
         {
             pSt_StartlParam->bDeamon = _ttxoi(argv[++i]);
         }
-		else if (0 == _tcsxcmp("-t", argv[i]))
+		else if (0 == _tcsxicmp("-t", argv[i]))
 		{
             bIsTest = true;
+		}
+		else if (0 == _tcsxicmp("-lt", argv[i]))
+		{
+			pSt_StartlParam->st_XLog.nLogType = _ttxoi(argv[++i]);
+		}
+		else if (0 == _tcsxcmp("-l", argv[i]))
+		{
+			LPCXSTR lpszLogLevel = argv[++i];
+			if (0 == _tcsxcmp("debug", lpszLogLevel))
+			{
+				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DETAIL;
+			}
+			else if (0 == _tcsxcmp("detail", lpszLogLevel))
+			{
+				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DETAIL;
+			}
+			else if (0 == _tcsxcmp("info", lpszLogLevel))
+			{
+				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO;
+			}
 		}
     }
 
