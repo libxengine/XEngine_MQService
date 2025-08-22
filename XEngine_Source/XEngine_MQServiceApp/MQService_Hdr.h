@@ -43,6 +43,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_RfcComponents/WSProtocol_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Error.h>
+#include "../XEngine_DependLibrary/XEngine_Module/XEngine_Verification/Verification_Define.h"
+#include "../XEngine_DependLibrary/XEngine_Module/XEngine_Verification/Verification_Error.h"
 #include "../XEngine_DependLibrary/XEngine_Module/XEngine_InfoReport/InfoReport_Define.h"
 #include "../XEngine_DependLibrary/XEngine_Module/XEngine_InfoReport/InfoReport_Error.h"
 #include "../XEngine_DependLibrary/XEngine_Module/XEngine_Token/Session_Define.h"
