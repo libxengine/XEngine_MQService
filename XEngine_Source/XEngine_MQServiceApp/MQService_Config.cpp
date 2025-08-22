@@ -56,18 +56,18 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
 		{
 			pSt_StartlParam->st_XLog.nLogType = _ttxoi(argv[++i]);
 		}
-		else if (0 == _tcsxcmp("-l", argv[i]))
+		else if (0 == _tcsxicmp("-l", argv[i]))
 		{
 			LPCXSTR lpszLogLevel = argv[++i];
-			if (0 == _tcsxcmp("debug", lpszLogLevel))
+			if (0 == _tcsxicmp("debug", lpszLogLevel))
 			{
 				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DETAIL;
 			}
-			else if (0 == _tcsxcmp("detail", lpszLogLevel))
+			else if (0 == _tcsxicmp("detail", lpszLogLevel))
 			{
 				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DETAIL;
 			}
-			else if (0 == _tcsxcmp("info", lpszLogLevel))
+			else if (0 == _tcsxicmp("info", lpszLogLevel))
 			{
 				pSt_StartlParam->st_XLog.nLogLeave = XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO;
 			}
