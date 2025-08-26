@@ -25,7 +25,7 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         }
         else if (0 == _tcsxicmp("-v",argv[i]))
         {
-            printf("Version：V1.1.0\n");
+            printf("Version：%s\n", st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
             return false;
         }
         else if (0 == _tcsxicmp("-tp",argv[i]))
