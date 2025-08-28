@@ -312,6 +312,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else if (0 == st_MQProtocol.nPubTime)
 			{
+				pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
 				//设置为0,不是定时发布,即时通知
 				if (1 == st_MQProtocol.st_MSGAttr.byAttrAll)
 				{
@@ -329,8 +330,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						int nClientType = 0;
 						memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
-						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-
 						SessionModule_Client_GetType(pptszListAddr[i], &nClientType);
 						ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
 						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType);
@@ -339,8 +338,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				}
 				else
 				{
-					pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-
 					if (_tcsxlen(st_MQProtocol.tszMQUsr) > 0)
 					{
 						//如果发送指定用户被指定.
