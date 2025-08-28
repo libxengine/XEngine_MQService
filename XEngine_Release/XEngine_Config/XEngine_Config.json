@@ -42,8 +42,10 @@
         "nTimeLast":3600,
         "nTimeCount":0
     },
-    "XAuthorize":{
-        "bHTTPAuth":true
+    "XVerification":{
+        "bEnable": false,
+        "nVType": 1,
+        "tszAuthPass": "http://192.168.1.7:5200/Api/Pass/UPFile"
     },
     "XReport":{
         "bEnable":true,

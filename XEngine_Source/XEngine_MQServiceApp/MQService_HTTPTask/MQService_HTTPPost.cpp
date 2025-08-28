@@ -25,21 +25,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
 	LPCXSTR lpszAPIDelUser = _X("deleteuser");
-
-	//判断是否需要验证，不是注册协议
-	if (st_ServiceCfg.st_XAuthorize.bHTTPAuth && (0 != _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister))))
-	{
-		if (ProtocolModule_Parse_Token(lpszMsgBuffer, nMsgLen, &xhToken))
-		{
-			if (!Session_Token_Get(xhToken))
-			{
-				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "not authorize");
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求的API:%s 失败,因为没有经过验证"), lpszClientAddr, lpszFuncName);
-				return false;
-			}
-		}
-	}
 	//判断请求
 	if (0 == _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{

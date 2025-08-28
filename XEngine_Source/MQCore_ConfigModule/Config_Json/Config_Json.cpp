@@ -128,14 +128,16 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
 	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
 
-	if (st_JsonRoot["XAuthorize"].empty() || (1 != st_JsonRoot["XAuthorize"].size()))
+	if (st_JsonRoot["XVerification"].empty() || (3 != st_JsonRoot["XVerification"].size()))
 	{
 		Config_IsErrorOccur = true;
 		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTHORIZE;
 		return false;
 	}
-	Json::Value st_JsonXAuthorize = st_JsonRoot["XAuthorize"];
-	pSt_ServerConfig->st_XAuthorize.bHTTPAuth = st_JsonXAuthorize["bHTTPAuth"].asBool();
+	Json::Value st_JsonXVerification = st_JsonRoot["XVerification"];
+	pSt_ServerConfig->st_XVerification.bEnable = st_JsonXVerification["bEnable"].asBool();
+	pSt_ServerConfig->st_XVerification.nVType = st_JsonXVerification["nVType"].asInt();
+	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{

@@ -66,8 +66,10 @@ typedef struct
     }st_XMemory;
     struct  
     {
-		bool bHTTPAuth;
-    }st_XAuthorize;
+		bool bEnable;
+        int nVType;
+        XCHAR tszAuthPass[XPATH_MID];
+    }st_XVerification;
 	struct
 	{
 		bool bEnable;
