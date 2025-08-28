@@ -139,6 +139,25 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XVerification.nVType = st_JsonXVerification["nVType"].asInt();
 	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 
+	if (st_JsonRoot["XNotify"].empty() || (2 != st_JsonRoot["XNotify"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XNOTIFY;
+		return false;
+	}
+	Json::Value st_JsonXNotify = st_JsonRoot["XNotify"];
+	Json::Value st_JsonEMailNotify = st_JsonXNotify["EmailNotify"];
+	Json::Value st_JsonSMSNotify = st_JsonXNotify["SMSNotify"];
+
+	pSt_ServerConfig->st_XNotify.st_EMailNotify.bEnable = st_JsonEMailNotify["bEnable"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszEMailSubject, st_JsonEMailNotify["tszEMailSubject"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszServiceAddr, st_JsonEMailNotify["tszServiceAddr"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszUser, st_JsonEMailNotify["tszUser"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszPass, st_JsonEMailNotify["tszPass"].asCString());
+
+	pSt_ServerConfig->st_XNotify.st_SMSNotify.bEnable = st_JsonSMSNotify["bEnable"].asBool();
+
+	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{
 		Config_IsErrorOccur = true;

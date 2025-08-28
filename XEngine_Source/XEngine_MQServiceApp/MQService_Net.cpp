@@ -167,16 +167,16 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 //////////////////////////////////////////////////////////////////////////
 bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto)
 {
-    if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
-    {
-        if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
-        {
-            XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给TCP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
-            return false;
-        }
-    }
-    else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
-    {
+	if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
+	{
+		if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给TCP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
+			return false;
+		}
+	}
+	else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
+	{
 		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
 		int nSDLen = XENGINE_MEMORY_SIZE_MAX;
 		RFCCOMPONENTS_HTTP_HDRPARAM st_HTTPHdr = {};
@@ -191,22 +191,30 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
 		}
-    }
-    else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
-    {
+	}
+	else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
+	{
 		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
-        RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
+		RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
 		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, m_MQMemoryPool.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
 		}
-    }
+	}
 	else if (XENGINE_MQAPP_NETTYPE_MQTT == nIPProto)
 	{
 		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给MQTT客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
+			return false;
+		}
+	}
+	else if (XENGINE_MQAPP_NETTYPE_EMAIL == nIPProto)
+	{
+		if (!MSGNotify_EMail_Send(st_ServiceCfg.st_XNotify.st_EMailNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszUser, st_ServiceCfg.st_XNotify.st_EMailNotify.tszPass, lpszClientAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszEMailSubject, lpszMsgBuffer))
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
 			return false;
 		}
 	}

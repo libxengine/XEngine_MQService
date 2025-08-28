@@ -70,6 +70,21 @@ typedef struct
         int nVType;
         XCHAR tszAuthPass[XPATH_MID];
     }st_XVerification;
+    struct  
+    {
+        struct  
+        {
+            XCHAR tszEMailSubject[XPATH_MID];
+            XCHAR tszServiceAddr[XPATH_MIN];
+            XCHAR tszUser[XPATH_MIN];
+            XCHAR tszPass[XPATH_MIN];
+            bool bEnable;
+        }st_EMailNotify;
+        struct  
+        {
+            bool bEnable;
+        }st_SMSNotify;
+    }st_XNotify;
 	struct
 	{
 		bool bEnable;

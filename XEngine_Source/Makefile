@@ -7,6 +7,7 @@ BASE_THIRDPART_JSONCPP = ./XEngine_DependLibrary/XEngine_Module/jsoncpp
 BASE_THIRDPART_REPORT = ./XEngine_DependLibrary/XEngine_Module/XEngine_InfoReport
 BASE_THIRDPART_TOKEN = ./XEngine_DependLibrary/XEngine_Module/XEngine_Token
 BASE_THIRDPART_VERIFICATION = ./XEngine_DependLibrary/XEngine_Module/XEngine_Verification
+BASE_THIRDPART_NOTIFY = ./XEngine_DependLibrary/XEngine_Module/XEngine_MSGNotify
 
 BASE_CONFIG_PATH = ./MQCore_ConfigModule
 BASE_PROTOCOL_PATH = ./MQCore_ProtocolModule
@@ -23,7 +24,7 @@ else ifeq ($(PLATFORM),mac)
 	FILEEXT = dylib
 endif
 
-XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so libXEngine_Token.so libXEngine_Verification.so    \
+XENGINE_MODULES = libjsoncpp.so libXEngine_InfoReport.so libXEngine_Token.so libXEngine_Verification.so libXEngine_MSGNotify.so    \
                 libMQCore_ConfigModule.so libMQCore_ProtocolModule.so libMQCore_SessionModule.so libMQCore_MemoryCache.so libMQCore_DBModule.so libMQCore_HelpModule.so    \
 		        XEngine_MQServiceApp.exe 
 
@@ -54,6 +55,12 @@ ifeq ($(FLAGS), InstallAll)
 	cp $(BASE_THIRDPART_VERIFICATION)/libXEngine_Verification.$(FILEEXT) ../XEngine_Release/
 else
 	make -C $(BASE_THIRDPART_VERIFICATION) PLATFORM=$(PLATFORM) $(FLAGS)
+endif
+libXEngine_MSGNotify.so:
+ifeq ($(FLAGS), InstallAll)
+	cp $(BASE_THIRDPART_NOTIFY)/libXEngine_MSGNotify.$(FILEEXT) ../XEngine_Release/
+else
+	make -C $(BASE_THIRDPART_NOTIFY) PLATFORM=$(PLATFORM) $(FLAGS)
 endif
 
 libMQCore_ConfigModule.so:
