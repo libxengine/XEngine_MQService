@@ -641,13 +641,20 @@ XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTO
 	pSt_UNRead->nType = enPayType;
 	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
 	{
+		pSt_UNRead->st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+		pSt_UNRead->st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+		pSt_UNRead->st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+		pSt_UNRead->st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUNREAD;
 		pSt_UNRead->st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
 	}
 	else
 	{
+		pSt_UNRead->st_JsonRoot["wHeader"] = pSt_ProtocolHdr->wHeader;
+		pSt_UNRead->st_JsonRoot["wTail"] = pSt_ProtocolHdr->wTail;
 		pSt_UNRead->st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
 		pSt_UNRead->st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
-		pSt_UNRead->st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
+		pSt_UNRead->st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+		pSt_UNRead->st_JsonRoot["wReserve"] = 0;
 	}
 	return pSt_UNRead;
 }
