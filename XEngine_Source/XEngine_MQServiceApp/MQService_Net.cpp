@@ -165,7 +165,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
     SessionModule_Client_Delete(lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////
-bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto)
+bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto, XENGINE_PROTOCOL_MSGATTR* pSt_MSGAttr, LPCXSTR lpszUserName)
 {
 	if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
 	{
@@ -210,13 +210,32 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			return false;
 		}
 	}
-	else if (XENGINE_MQAPP_NETTYPE_EMAIL == nIPProto)
+
+	if (NULL != pSt_MSGAttr)
 	{
-		if (!MSGNotify_EMail_Send(st_ServiceCfg.st_XNotify.st_EMailNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszUser, st_ServiceCfg.st_XNotify.st_EMailNotify.tszPass, lpszClientAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszEMailSubject, lpszMsgBuffer))
+		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
+		_tcsxcpy(st_UserInfo.tszUserName, lpszUserName);
+		
+		if (!DBModule_MQUser_UserQuery(&st_UserInfo))
 		{
-			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,用户名:%s 请求消息通知失败,因为没有找到指定的用户信息,错误码:%lX"), lpszClientAddr,lpszUserName, DBModule_GetLastError());
 			return false;
 		}
+		//是否需要邮件通知
+		if (pSt_MSGAttr->byAttrEMail)
+		{
+			if (!APIAddr_EMail_IsEMailAddr(st_UserInfo.tszEMailAddr))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,用户名:%s 请求消息通知失败,通知邮件地址不正确,错误码:%lX"), lpszClientAddr, lpszUserName, APIAddr_GetLastError());
+				return false;
+			}
+			if (!MSGNotify_EMail_Send(st_ServiceCfg.st_XNotify.st_EMailNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszUser, st_ServiceCfg.st_XNotify.st_EMailNotify.tszPass, lpszClientAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszEMailSubject, lpszMsgBuffer))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+				return false;
+			}
+		}
 	}
+	
     return true;
 }
