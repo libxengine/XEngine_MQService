@@ -47,7 +47,7 @@ void XCALLBACK MessageQueue_CBTask_TimePublish(XENGINE_DBTIMERELEASE* pSt_DBInfo
 		SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 		SessionModule_Client_GetType(tszUserAddr, &nNetType);
 		ProtocolModule_Packet_Common(nNetType, &st_ProtocolHdr, &st_MQProtocol, tszMsgBuffer, &nMsgLen, st_DBInfo.tszMsgBuffer, st_DBInfo.nMsgLen);
-		XEngine_MQXService_Send(tszUserAddr, tszMsgBuffer, nMsgLen, nNetType);
+		XEngine_MQXService_Send(tszUserAddr, tszMsgBuffer, nMsgLen, nNetType, &st_MQProtocol.st_MSGAttr, ppSt_ListUser[i]->tszUserName);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
 	

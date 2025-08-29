@@ -355,7 +355,6 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
 							XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, tszTmpUser);
 						}
-						
 					}
 					else
 					{
@@ -378,13 +377,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 							//只有在线用户才需要即时通知
 							if (SessionModule_Client_GetExist(NULL, ppSt_ListUser[i]->tszUserName))
 							{
-								XCHAR tszTmpUser[XPATH_MID] = {};
-
 								SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 								SessionModule_Client_GetType(tszUserAddr, &nClientType);
-								SessionModule_Client_GetUser(tszUserAddr, tszTmpUser);
 								ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
-								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, tszTmpUser);
+								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, ppSt_ListUser[i]->tszUserName);
 							}
 						}
 						BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUser, nListCount);

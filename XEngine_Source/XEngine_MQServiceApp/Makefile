@@ -3,7 +3,7 @@ PLATVER =
 LOADHDR = -I ./ 
 LOADSO = -L ../MQCore_ConfigModule -L ../MQCore_ProtocolModule -L ../MQCore_SessionModule -L ../MQCore_MemoryCache -L ../MQCore_DBModule -L ../MQCore_HelpModule \
 		 -L ../XEngine_DependLibrary/XEngine_Module/jsoncpp -L ../XEngine_DependLibrary/XEngine_Module/XEngine_InfoReport -L ../XEngine_DependLibrary/XEngine_Module/XEngine_Token -L ../XEngine_DependLibrary/XEngine_Module/XEngine_Verification -L ../XEngine_DependLibrary/XEngine_Module/XEngine_MSGNotify
-LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXClient_APIHelp -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpProtocol -lRfcComponents_MQTTProtocol \
+LIB = -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_Core -lXEngine_ManagePool -lXClient_APIHelp -lNetHelp_APIAddr -lXEngine_SystemApi -lHelpComponents_XLog -lHelpComponents_Packets -lRfcComponents_WSProtocol -lRfcComponents_HttpProtocol -lRfcComponents_MQTTProtocol \
       -lMQCore_ConfigModule -lMQCore_ProtocolModule -lMQCore_SessionModule -lMQCore_MemoryCache -lMQCore_DBModule -lMQCore_HelpModule \
 	  -ljsoncpp -lXEngine_InfoReport -lXEngine_Token -lXEngine_Verification -lXEngine_MSGNotify
 LIBEX = 
