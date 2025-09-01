@@ -579,7 +579,7 @@ int main(int argc, char** argv)
 	_xtprintf("连接成功！\n");
 
 	MQ_Authorize();
-	MQ_PostEMail("test for email");
+	//MQ_PostEMail("test for email");
 	MQ_GetUNRead();
 	MQ_Create();
 	MQ_Post(NULL, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN, -1, true);

@@ -35,6 +35,9 @@ this software support following features
 19. message attritube
 20. point to point message
 21. Memory Database
+22. http verification
+23. email notify
+24. sms notify(plan)
 
 ## install
 
