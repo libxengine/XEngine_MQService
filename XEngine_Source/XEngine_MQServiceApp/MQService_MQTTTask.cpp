@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_MQTTThread(XPVOID lParam)
+XHTHREAD XCALLBACK MessageQueue_MQTTThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -108,7 +108,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == pSt_MQTTHdr->byMsgType)
 	{
 		XSHOT wMsgID = 0;
-		XCHAR tszTopicName[MAX_PATH] = {};
+		XCHAR tszTopicName[XPATH_MAX] = {};
 		int nListCount = 0;
 		MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 		MQTTPROTOCOL_HDRSUBSCRIBE st_SubScribe = {};
@@ -137,7 +137,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE == pSt_MQTTHdr->byMsgType)
 	{
 		XSHOT wMsgID = 0;
-		XCHAR tszTopicName[MAX_PATH] = {};
+		XCHAR tszTopicName[XPATH_MAX] = {};
 		int nListCount = 0;
 		MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 
@@ -166,7 +166,7 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 	{
 		int nListCount = 0;
 		XSHOT wMsgID = 0;
-		XCHAR tszTopicName[MAX_PATH] = {};
+		XCHAR tszTopicName[XPATH_MAX] = {};
 		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
 		MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 

@@ -214,7 +214,7 @@ bool CMemoryCache_DBUser::MemoryCache_DBUser_DataDelete(XENGINE_PROTOCOL_USERINF
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
-XHTHREAD CALLBACK CMemoryCache_DBUser::DBModule_MQUser_TimeThread(XPVOID lParam)
+XHTHREAD XCALLBACK CMemoryCache_DBUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 {
 	CMemoryCache_DBUser* pClass_This = (CMemoryCache_DBUser*)lParam;
 

@@ -39,8 +39,8 @@ typedef struct
 //用户消息
 typedef struct
 {
-	XCHAR tszUserName[MAX_PATH];                                          //用户名
-	XCHAR tszKeyName[MAX_PATH];                                           //绑定的KEY
+	XCHAR tszUserName[XPATH_MAX];                                          //用户名
+	XCHAR tszKeyName[XPATH_MAX];                                           //绑定的KEY
 	XCHAR tszUPTime[64];                                                  //最后更新时间
 	XCHAR tszCreateTime[64];                                              //创建的时间
 	__int64x nKeySerial;                                                  //包序列号
@@ -55,7 +55,7 @@ typedef struct
 //////////////////////////////////////////////////////////////////////////
 //                       导出的回调
 //////////////////////////////////////////////////////////////////////////
-typedef void(CALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(XENGINE_DBTIMERELEASE* pSt_DBInfo, XPVOID lParam);
+typedef void(XCALLBACK* CALLBACK_MESSAGEQUEUE_MODULE_DATABASE_TIMEPUBLISH)(XENGINE_DBTIMERELEASE* pSt_DBInfo, XPVOID lParam);
 //////////////////////////////////////////////////////////////////////////
 //                       导出的函数
 //////////////////////////////////////////////////////////////////////////

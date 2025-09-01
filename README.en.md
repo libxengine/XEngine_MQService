@@ -35,6 +35,9 @@ this software support following features
 19. message attritube
 20. point to point message
 21. Memory Database
+22. http verification
+23. email notify
+24. sms notify(plan)
 
 ## install
 
@@ -54,7 +57,7 @@ Requires MYSQL service support, execute XEngine_SQLFile/CreateDatabase.sql to cr
 Execute XEngine_SQLFile/XEngine_MQData.sql and XEngine_SQLFile/XEngine_MQUser.sql to create the table  
 
 #### sub module
-Due to the dependent sub-modules, after you checkout the warehouse, execute the following command in the warehouse directory to pull the sub-modules  
+Due to the dependent sub-modules, after you checkout the resprepository, execute the following command in the resprepository directory to pull the sub-modules  
 git submodule init  
 git submodule update  
 

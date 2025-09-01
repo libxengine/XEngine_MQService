@@ -1173,7 +1173,7 @@ bool CDBModule_MQUser::DBModule_MQUser_OwnerTopicUPDate(LPCXSTR lpszSourceTable,
 //////////////////////////////////////////////////////////////////////////
 //                         线程函数
 //////////////////////////////////////////////////////////////////////////
-XHTHREAD CALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
+XHTHREAD XCALLBACK CDBModule_MQUser::DBModule_MQUser_TimeThread(XPVOID lParam)
 {
 	CDBModule_MQUser* pClass_This = (CDBModule_MQUser*)lParam;
 

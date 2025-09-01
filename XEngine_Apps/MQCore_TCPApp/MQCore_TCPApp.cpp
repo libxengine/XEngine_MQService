@@ -25,7 +25,7 @@ using namespace std;
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;
 LPCXSTR lpszKey = _X("XEngine_CommKey");  //主题
-LPCXSTR lpszUser = _X("aaadddzxc");
+LPCXSTR lpszUser = _X("123123aa");
 LPCXSTR lpszPass = _X("123123");
 
 void MQ_Authorize()
@@ -228,6 +228,56 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 		memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 		memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 	}
+
+	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+	nLen = 2048;
+	XCHAR* ptszMsgBuffer;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+
+	if (!XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+	{
+		_xtprintf("接受数据失败！\n");
+		return;
+	}
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+}
+void MQ_PostEMail(LPCXSTR lpszMsgBuffer)
+{
+	int nLen = 0;
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
+	XCHAR tszMsgBuffer[2048];
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
+	st_ProtocolHdr.byIsReply = true;           //获得处理返回结果
+	st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + strlen(lpszMsgBuffer);
+	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+
+	st_XMQProtocol.nSerial = 0;          //序列号,0服务会自动处理
+	st_XMQProtocol.nKeepTime = 0;
+	st_XMQProtocol.nPubTime = 0;
+	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
+	strcpy(st_XMQProtocol.tszMQUsr, "486179@qq.com");
+
+	st_XMQProtocol.st_MSGAttr.byAttrEMail = 1;
+	
+	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
+	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
@@ -529,6 +579,7 @@ int main(int argc, char** argv)
 	_xtprintf("连接成功！\n");
 
 	MQ_Authorize();
+	//MQ_PostEMail("test for email");
 	MQ_GetUNRead();
 	MQ_Create();
 	MQ_Post(NULL, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN, -1, true);

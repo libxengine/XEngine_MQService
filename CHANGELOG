@@ -1,3 +1,33 @@
+XEngine_MQService V3.17.0.1001
+
+增加:rocky linux 10 支持
+增加:http basic和digest验证支持
+增加:电子邮件通知功能
+更新:依赖库
+更新:匹配最新xengine 版本
+优化:消息响应设置
+修改:依赖库目录名
+修改:启动参数不区分大小写
+修改:消息协议头大小
+修正:某些时候配置读取内存溢出
+修正:版本输出错误
+修正:未读消息协议头字段不正确
+删除:注册验证
+
+added:ci rocky linux 10 support
+added:http basic and digest verification support
+added:email notify support
+update:depend library
+update:match xengine last version
+improved:reply message protocol set
+modify:depend library direction name
+modify:start parameter are not case sensitive
+modify:message header size
+fixed:sometime load configure memory leak
+fixed:version print failure when set -v parameter
+fixed:header protocol field incorrect when unread message reply
+delete:register authorize
+======================================================================================
 XEngine_MQService V3.16.0.1001
 
 增加:使用内存池发送数据

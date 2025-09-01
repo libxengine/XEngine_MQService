@@ -37,6 +37,9 @@ c c++Message Service
 19. 消息属性
 20. 点对点消息
 21. 高速缓存
+22. http验证
+23. 电子邮件通知
+24. 短信通知(plan)
 
 ## 安装教程
 
@@ -59,7 +62,7 @@ macos执行:./XEngine_LINEnv.sh -i 3
 由于依赖的子模块,在你checkout仓库后,在仓库目录下执行下面的命令拉取子模块  
 git submodule init  
 git submodule update  
-如果github访问失败,你也可以clone该项目,在主目录下使用命令:git clone https://gitee.com/xengine/XEngine_OPenSource.git XEngine_Source/XEngine_Depend
+如果github访问失败,你也可以clone该项目,在主目录下使用命令:git clone https://gitee.com/xengine/XEngine_OPenSource.git XEngine_Source/XEngine_DependLibrary
 
 #### Windows
 使用VS打开并且编译,支持WINDOWS 7SP1以上系统  

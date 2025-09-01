@@ -15,8 +15,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	int nSDLen = 0;
 	XNETHANDLE xhToken = 0;
 	XCHAR tszSDBuffer[1024] = {};
-	XCHAR tszKeyStr[MAX_PATH] = {};
-	XCHAR tszVluStr[MAX_PATH] = {};
+	XCHAR tszKeyStr[XPATH_MAX] = {};
+	XCHAR tszVluStr[XPATH_MAX] = {};
 	LPCXSTR lpszAPIRegister = _X("register");
 	LPCXSTR lpszAPIGetUser = _X("getuser");
 	LPCXSTR lpszAPIGetTopic = _X("gettopic");
@@ -25,21 +25,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
 	LPCXSTR lpszAPIDelUser = _X("deleteuser");
-
-	//判断是否需要验证，不是注册协议
-	if (st_ServiceCfg.st_XAuthorize.bHTTPAuth && (0 != _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister))))
-	{
-		if (ProtocolModule_Parse_Token(lpszMsgBuffer, nMsgLen, &xhToken))
-		{
-			if (!Session_Token_Get(xhToken))
-			{
-				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "not authorize");
-				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求的API:%s 失败,因为没有经过验证"), lpszClientAddr, lpszFuncName);
-				return false;
-			}
-		}
-	}
 	//判断请求
 	if (0 == _tcsxnicmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
@@ -131,7 +116,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	{
 		//主题 http://127.0.0.1:5202/api?function=gettopic
 		int nDBCount = 0;
-		XCHAR tszTopicName[MAX_PATH] = {};
+		XCHAR tszTopicName[XPATH_MAX] = {};
 		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
 		DBModule_MQData_GetLeftCount(tszTopicName, 0, &nDBCount);
 		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, tszTopicName, nDBCount);

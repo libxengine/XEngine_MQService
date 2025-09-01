@@ -43,21 +43,12 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT;
         return false;
     }
-    int nCount = 0;
-    XCHAR tszMsgBuffer[4096];
-    while (1)
-    {
-        int nRet = fread(tszMsgBuffer + nCount, 1, 2048, pSt_File);
-        if (nRet <= 0)
-        {
-            break;
-        }
-        nCount += nRet;
-    }
+	XCHAR tszMsgBuffer[4096] = {};
+	size_t nSize = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
     fclose(pSt_File);
 
     std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_JsonBuilder.newCharReader());
-    if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nCount, &st_JsonRoot, &st_JsonError))
+    if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nSize, &st_JsonRoot, &st_JsonError))
     {
         Config_IsErrorOccur = true;
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
@@ -137,15 +128,36 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XMemory.nTimeLast = st_JsonXMemory["nTimeLast"].asInt();
 	pSt_ServerConfig->st_XMemory.nTimeCount = st_JsonXMemory["nTimeCount"].asInt();
 
-	if (st_JsonRoot["XAuthorize"].empty() || (1 != st_JsonRoot["XAuthorize"].size()))
+	if (st_JsonRoot["XVerification"].empty() || (3 != st_JsonRoot["XVerification"].size()))
 	{
 		Config_IsErrorOccur = true;
 		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XAUTHORIZE;
 		return false;
 	}
-	Json::Value st_JsonXAuthorize = st_JsonRoot["XAuthorize"];
-	pSt_ServerConfig->st_XAuthorize.bHTTPAuth = st_JsonXAuthorize["bHTTPAuth"].asBool();
+	Json::Value st_JsonXVerification = st_JsonRoot["XVerification"];
+	pSt_ServerConfig->st_XVerification.bEnable = st_JsonXVerification["bEnable"].asBool();
+	pSt_ServerConfig->st_XVerification.nVType = st_JsonXVerification["nVType"].asInt();
+	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 
+	if (st_JsonRoot["XNotify"].empty() || (2 != st_JsonRoot["XNotify"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XNOTIFY;
+		return false;
+	}
+	Json::Value st_JsonXNotify = st_JsonRoot["XNotify"];
+	Json::Value st_JsonEMailNotify = st_JsonXNotify["EmailNotify"];
+	Json::Value st_JsonSMSNotify = st_JsonXNotify["SMSNotify"];
+
+	pSt_ServerConfig->st_XNotify.st_EMailNotify.bEnable = st_JsonEMailNotify["bEnable"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszEMailSubject, st_JsonEMailNotify["tszEMailSubject"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszServiceAddr, st_JsonEMailNotify["tszServiceAddr"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszUser, st_JsonEMailNotify["tszUser"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszPass, st_JsonEMailNotify["tszPass"].asCString());
+
+	pSt_ServerConfig->st_XNotify.st_SMSNotify.bEnable = st_JsonSMSNotify["bEnable"].asBool();
+
+	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))
 	{
 		Config_IsErrorOccur = true;

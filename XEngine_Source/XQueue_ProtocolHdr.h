@@ -14,6 +14,8 @@
 #define XENGINE_MQAPP_NETTYPE_HTTP 2
 #define XENGINE_MQAPP_NETTYPE_WEBSOCKET 3
 #define XENGINE_MQAPP_NETTYPE_MQTT 4
+#define XENGINE_MQAPP_NETTYPE_EMAIL 10
+#define XENGINE_MQAPP_NETTYPE_SMS 11
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据定义
 ///////////////////////////////////////////////////////////////////////////
@@ -98,8 +100,8 @@ typedef struct
 	XBYTE byAttrSelf : 1;                                                //自己也能接受
 	XBYTE byAttrReply : 1;                                               //对方必须回复
 	XBYTE byAttrActive : 1;                                              //主动获取不受限制,比如超时的,不是自己发给自己的
-	XBYTE byAttrResver4 : 1;
-	XBYTE byAttrResver5 : 1;
+	XBYTE byAttrEMail : 1;                                               //此消息需要邮件通知,仅限即时和定时消息
+	XBYTE byAttrPhone : 1;                                               //此消息需要短信通知,仅限即时和定时消息
 	XBYTE byAttrResver6 : 1;
 	XBYTE byAttrResver7 : 1;
 	XBYTE byAttrResver;
@@ -107,8 +109,8 @@ typedef struct
 //消息队列服务协议
 typedef struct 
 {
-	XCHAR tszMQKey[MAX_PATH];                                             //此消息的KEY，不填就是 XEngine_CommKey
-	XCHAR tszMQUsr[MAX_PATH];                                             //此消息接受用户
+	XCHAR tszMQKey[XPATH_MIN];                                             //此消息的KEY，不填就是 XEngine_CommKey
+	XCHAR tszMQUsr[XPATH_MIN];                                             //此消息接受用户
 	__int64x nSerial;                                                     //包序列号
 	__int64x nPubTime;                                                    //发布时间，根据自己需求配置时区,-1表示投递的消息通过用户主动获取,0表示即时发布消息给当前订阅的在线用户,>0表示发布的日期
 	int nKeepTime;                                                        //可用时间,单位秒,>0 超时秒数

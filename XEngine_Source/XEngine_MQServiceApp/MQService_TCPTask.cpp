@@ -1,6 +1,6 @@
 ﻿#include "MQService_Hdr.h"
 
-XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
+XHTHREAD XCALLBACK MessageQueue_TCPThread(XPVOID lParam)
 {
 	int nThreadPos = *(int*)lParam;
 	nThreadPos++;
@@ -26,7 +26,7 @@ XHTHREAD CALLBACK MessageQueue_TCPThread(XPVOID lParam)
 				if (HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
 					MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, XENGINE_MQAPP_NETTYPE_TCP);
-					BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				}
 			}
 		}
@@ -153,7 +153,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 		}
 		else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUSEROUT == pSt_ProtocolHdr->unOperatorCode)
 		{
-			XCHAR tszUserName[MAX_PATH] = {};
+			XCHAR tszUserName[XPATH_MAX] = {};
 			XENGINE_PROTOCOL_USERINFO st_ProtocolInfo = {};
 
 			if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
@@ -197,7 +197,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	}
 	else if (ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ == pSt_ProtocolHdr->unOperatorType)
 	{
-		XCHAR tszUserName[MAX_PATH] = {};
+		XCHAR tszUserName[XPATH_MAX] = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		//根据协议处理
 		if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
@@ -312,6 +312,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			}
 			else if (0 == st_MQProtocol.nPubTime)
 			{
+				pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
 				//设置为0,不是定时发布,即时通知
 				if (1 == st_MQProtocol.st_MSGAttr.byAttrAll)
 				{
@@ -327,20 +328,18 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						}
 						nSDLen = 0;
 						int nClientType = 0;
+						XCHAR tszTmpUser[XPATH_MID] = {};
 						memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
-						pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-
 						SessionModule_Client_GetType(pptszListAddr[i], &nClientType);
+						SessionModule_Client_GetUser(pptszListAddr[i], tszTmpUser);
 						ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
-						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType);
+						XEngine_MQXService_Send(pptszListAddr[i], tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, tszTmpUser);
 						BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
 					}
 				}
 				else
 				{
-					pSt_ProtocolHdr->unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY;
-
 					if (_tcsxlen(st_MQProtocol.tszMQUsr) > 0)
 					{
 						//如果发送指定用户被指定.
@@ -348,11 +347,13 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						{
 							int nClientType = 0;
 							XCHAR tszUserAddr[128] = {};
+							XCHAR tszTmpUser[XPATH_MID] = {};
 
 							SessionModule_Client_GetAddr(st_MQProtocol.tszMQUsr, tszUserAddr);
 							SessionModule_Client_GetType(tszUserAddr, &nClientType);
+							SessionModule_Client_GetUser(tszUserAddr, tszTmpUser);
 							ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
-							XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
+							XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, tszTmpUser);
 						}
 					}
 					else
@@ -379,7 +380,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 								SessionModule_Client_GetAddr(ppSt_ListUser[i]->tszUserName, tszUserAddr);
 								SessionModule_Client_GetType(tszUserAddr, &nClientType);
 								ProtocolModule_Packet_Common(nClientType, pSt_ProtocolHdr, &st_MQProtocol, tszSDBuffer, &nSDLen, lpszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ), nMsgLen - sizeof(XENGINE_PROTOCOL_XMQ));
-								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType);
+								XEngine_MQXService_Send(tszUserAddr, tszSDBuffer, nSDLen, nClientType, &st_MQProtocol.st_MSGAttr, ppSt_ListUser[i]->tszUserName);
 							}
 						}
 						BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUser, nListCount);
@@ -455,7 +456,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				{
 					//有过期时间,判断是否过期
 					__int64x nTimeRet = 0;
-					XCHAR tszTimeStr[MAX_PATH] = {};
+					XCHAR tszTimeStr[XPATH_MAX] = {};
 					BaseLib_Time_TimeToStr(tszTimeStr);
 					BaseLib_TimeSpan_GetForStr(st_MessageQueue.tszQueueLeftTime, tszTimeStr, &nTimeRet, 3);
 					//如果超时并且不允许主动获取,返回错误

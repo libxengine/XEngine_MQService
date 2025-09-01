@@ -34,7 +34,7 @@ typedef struct
     }st_XMax;
     struct
     {
-        XCHAR tszLOGFile[MAX_PATH];
+        XCHAR tszLOGFile[XPATH_MAX];
         int nMaxSize;
         int nMaxCount;
         int nLogLeave;
@@ -50,10 +50,10 @@ typedef struct
     }st_XSql;
     struct  
     {
-        XCHAR tszPassRegister[MAX_PATH];
-        XCHAR tszPassUNReg[MAX_PATH];
-        XCHAR tszPassLogin[MAX_PATH];
-        XCHAR tszPassLogout[MAX_PATH];
+        XCHAR tszPassRegister[XPATH_MAX];
+        XCHAR tszPassUNReg[XPATH_MAX];
+        XCHAR tszPassLogin[XPATH_MAX];
+        XCHAR tszPassLogout[XPATH_MAX];
         int nTimeout;
     }st_XPass;
     struct  
@@ -66,12 +66,29 @@ typedef struct
     }st_XMemory;
     struct  
     {
-		bool bHTTPAuth;
-    }st_XAuthorize;
+		bool bEnable;
+        int nVType;
+        XCHAR tszAuthPass[XPATH_MID];
+    }st_XVerification;
+    struct  
+    {
+        struct  
+        {
+            XCHAR tszEMailSubject[XPATH_MID];
+            XCHAR tszServiceAddr[XPATH_MIN];
+            XCHAR tszUser[XPATH_MIN];
+            XCHAR tszPass[XPATH_MIN];
+            bool bEnable;
+        }st_EMailNotify;
+        struct  
+        {
+            bool bEnable;
+        }st_SMSNotify;
+    }st_XNotify;
 	struct
 	{
 		bool bEnable;
-		XCHAR tszAPIUrl[MAX_PATH];
+		XCHAR tszAPIUrl[XPATH_MAX];
 		XCHAR tszServiceName[128];
 	}st_XReport;
     struct

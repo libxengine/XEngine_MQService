@@ -1,53 +1,67 @@
 {
-    "tszIPAddr":"127.0.0.1",
-    "tszTopic":"XEngine_CommKey",
-    "bDeamon":0,
-    "nTCPPort":5200,
-    "nWSPort":5201,
-    "nHttpPort":5202,
-    "nMQTTPort":5203,
-    "XMax":{
-        "nMaxClient":10000,
-        "nMaxQueue":10000,
-        "nIOThread":2,
-        "nTCPThread":2,
-        "nHttpThread":2,
-        "nWSThread":2,
-        "nMQTTThread":2
+    "tszIPAddr": "127.0.0.1",
+    "tszTopic": "XEngine_CommKey",
+    "bDeamon": 0,
+    "nTCPPort": 5200,
+    "nWSPort": 5201,
+    "nHttpPort": 5202,
+    "nMQTTPort": 5203,
+    "XMax": {
+        "nMaxClient": 10000,
+        "nMaxQueue": 10000,
+        "nIOThread": 2,
+        "nTCPThread": 2,
+        "nHttpThread": 2,
+        "nWSThread": 2,
+        "nMQTTThread": 2
     },
-    "XLog":{
-        "tszLOGFile":"./XEngine_Log/XEngine_MQServiceApp.Log",
-        "MaxSize":1024000,
-        "MaxCount":10,
-        "LogLeave":32,
-        "LogType":17
+    "XLog": {
+        "tszLOGFile": "./XEngine_Log/XEngine_MQServiceApp.Log",
+        "MaxSize": 1024000,
+        "MaxCount": 10,
+        "LogLeave": 32,
+        "LogType": 17
     },
-    "XSql":{
-        "SQLAddr":"10.0.4.150",
-        "SQLPort":3306,
-        "SQLUser":"root",
-        "SQLPass":"123123aa"
+    "XSql": {
+        "SQLAddr": "127.0.0.1",
+        "SQLPort": 3306,
+        "SQLUser": "root",
+        "SQLPass": "123123"
     },
-    "XPass":{
-        "nTimeout":2,
-        "tszPassRegister":"",
-        "tszPassUNReg":"",
-        "tszPassLogin":"",
-        "tszPassLogout":""
+    "XPass": {
+        "nTimeout": 2,
+        "tszPassRegister": "",
+        "tszPassUNReg": "",
+        "tszPassLogin": "",
+        "tszPassLogout": ""
     },
-    "XMemory":{
-        "bDataQueryEnable":true,
-        "bDataInsertEnable":true,
-        "bUserQueryEnable":true,
-        "nTimeLast":3600,
-        "nTimeCount":0
+    "XMemory": {
+        "bDataQueryEnable": true,
+        "bDataInsertEnable": true,
+        "bUserQueryEnable": true,
+        "nTimeLast": 3600,
+        "nTimeCount": 0
     },
-    "XAuthorize":{
-        "bHTTPAuth":true
+    "XVerification": {
+        "bEnable": false,
+        "nVType": 1,
+        "tszAuthPass": ""
     },
-    "XReport":{
-        "bEnable":true,
-        "tszServiceName":"XEngine_MQService",
-        "tszAPIUrl":"http://app.xyry.org:5501/api?function=machine"
+    "XNotify": {
+        "EmailNotify": {
+            "bEnable": true,
+            "tszEMailSubject": "XEngine MessageQueue Notify",
+            "tszServiceAddr": "smtp://smtp.163.com",
+            "tszUser": "ggqytgodlove@163.com",
+            "tszPass": "1"
+        },
+        "SMSNotify": {
+            "bEnable": false
+        }
+    },
+    "XReport": {
+        "bEnable": true,
+        "tszServiceName": "XEngine_MQService",
+        "tszAPIUrl": "http://app.xyry.org:5501/api?function=machine"
     }
 }
