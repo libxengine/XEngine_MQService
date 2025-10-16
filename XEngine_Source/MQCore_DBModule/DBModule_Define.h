@@ -39,8 +39,8 @@ typedef struct
 //用户消息
 typedef struct
 {
-	XCHAR tszUserName[XPATH_MAX];                                          //用户名
-	XCHAR tszKeyName[XPATH_MAX];                                           //绑定的KEY
+	XCHAR tszUserName[XPATH_MIN];                                          //用户名
+	XCHAR tszKeyName[XPATH_MIN];                                           //绑定的KEY
 	XCHAR tszUPTime[64];                                                  //最后更新时间
 	XCHAR tszCreateTime[64];                                              //创建的时间
 	__int64x nKeySerial;                                                  //包序列号

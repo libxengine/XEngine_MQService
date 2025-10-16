@@ -932,7 +932,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 	int nRVLen = 0;
 	XCHAR tszRVBuffer[1024] = {};
 
-	if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUSERLOG == pSt_ProtocolHdr->unOperatorCode)
+	if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REPLOGIN == pSt_ProtocolHdr->unOperatorCode)
 	{
 		if (0 == pSt_ProtocolHdr->wReserve)
 		{
