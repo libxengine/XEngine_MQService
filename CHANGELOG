@@ -1,3 +1,21 @@
+XEngine_MQService V3.18.0.1001
+
+ci:增加CentOS和Alma以及debian13系统支持
+ci:更新mac系统版本
+修改:启动参数不区分大小写了
+修改:用户数据缓冲区大小问题
+更新:匹配最新协议模块
+更新:依赖库
+修正:某些时候读取配置文件内存问题
+
+ci:add centos alma linux and debian 13 system support 
+ci:update mac system version
+modify:does not case sensitive for start parameter 
+modify:user data memory size
+update:match last version source module protocol
+update:depend library
+fixed:read configure memory leak
+======================================================================================
 XEngine_MQService V3.17.0.1001
 
 增加:rocky linux 10 支持
