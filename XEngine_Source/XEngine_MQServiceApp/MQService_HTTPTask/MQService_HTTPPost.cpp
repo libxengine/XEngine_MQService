@@ -15,8 +15,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	int nSDLen = 0;
 	XNETHANDLE xhToken = 0;
 	XCHAR tszSDBuffer[1024] = {};
-	XCHAR tszKeyStr[XPATH_MAX] = {};
-	XCHAR tszVluStr[XPATH_MAX] = {};
 	LPCXSTR lpszAPIRegister = _X("register");
 	LPCXSTR lpszAPIGetUser = _X("getuser");
 	LPCXSTR lpszAPIGetTopic = _X("gettopic");
