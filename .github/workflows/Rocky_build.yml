@@ -97,6 +97,6 @@ jobs:
       - name: Upload folder as artifact with CentOS
         uses: actions/upload-artifact@v4
         with:
-          name: XEngine_MQServiceApp-CentOS_${{ matrix.version }}_${{ matrix.artifact }}
+          name: XEngine_MQServiceApp-RockyLinux_${{ matrix.version }}_${{ matrix.artifact }}
           path: XEngine_Release/
           retention-days: 1
