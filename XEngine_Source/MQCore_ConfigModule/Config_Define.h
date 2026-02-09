@@ -91,6 +91,12 @@ typedef struct
 		XCHAR tszAPIUrl[XPATH_MAX];
 		XCHAR tszServiceName[128];
 	}st_XReport;
+    struct  
+    {
+        bool bEnable;
+		int nCryptionType;
+		XCHAR tszPassword[XPATH_MIN];
+    }st_XCryption;
     struct
     {
         list<xstring> *pStl_ListStorage;

@@ -24,6 +24,10 @@ XHTHREAD XCALLBACK MessageQueue_MQTTThread(XPVOID lParam)
 
 				if (MQTTProtocol_Parse_Recv(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, &ptszMSGBuffer, &nMSGLen))
 				{
+					if (st_ServiceCfg.st_XCryption.bEnable)
+					{
+						Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMSGBuffer, &nMSGLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+					}
 					MQService_MQTT_Handle(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, ptszMSGBuffer, nMSGLen);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
 				}

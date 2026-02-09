@@ -25,6 +25,10 @@ XHTHREAD XCALLBACK MessageQueue_TCPThread(XPVOID lParam)
 				XCHAR* ptszMsgBuffer = NULL;
 				if (HelpComponents_Datas_GetMemoryEx(xhTCPPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
 				{
+					if (st_ServiceCfg.st_XCryption.bEnable)
+					{
+						Cryption_Api_CryptDecodec(NULL, (XBYTE *)ptszMsgBuffer, &nMsgLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+					}
 					MessageQueue_TCP_Handle(&st_ProtocolHdr, ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, XENGINE_MQAPP_NETTYPE_TCP);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				}

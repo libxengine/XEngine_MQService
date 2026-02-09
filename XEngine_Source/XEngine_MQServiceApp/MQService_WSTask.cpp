@@ -23,6 +23,10 @@ XHTHREAD XCALLBACK MessageQueue_WebsocketThread(XPVOID lParam)
 				ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
 				if (RfcComponents_WSPacket_GetMemoryEx(xhWSPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &enOPCode))
 				{
+					if (st_ServiceCfg.st_XCryption.bEnable)
+					{
+						Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nMsgLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+					}
 					MessageQueue_Websocket_Handle(ppSst_ListAddr[i]->tszClientAddr, ptszMsgBuffer, nMsgLen, enOPCode);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				}
