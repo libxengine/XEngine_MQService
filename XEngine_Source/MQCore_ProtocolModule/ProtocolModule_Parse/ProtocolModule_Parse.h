@@ -21,7 +21,7 @@ public:
     bool ProtocolModule_Parse_Register(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_USERINFO* pSt_UserInfo);
     bool ProtocolModule_Parse_Token(LPCXSTR lpszMsgBuffer, int nMsgLen, XNETHANDLE* pxhToken);
     bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, int* pInt_Type);
-    bool ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer);
+    bool ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol);
 protected:
 private:
 };

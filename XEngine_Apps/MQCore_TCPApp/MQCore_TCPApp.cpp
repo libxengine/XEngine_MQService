@@ -24,7 +24,7 @@ using namespace std;
 
 //VS2022 Debug x86 Compile
 //g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -lXEngine_BaseLib -lXEngine_Cryption -lXClient_Socket
-#define XENGINE_CRYPTION_DATA_ENABLE 1
+#define XENGINE_CRYPTION_DATA_ENABLE 0
 
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;

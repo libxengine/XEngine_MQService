@@ -102,7 +102,7 @@ extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, in
 {
 	return m_ProtocolParse.ProtocolModule_Parse_Type(lpszMsgBuffer, nMsgLen, pInt_Type);
 }
-extern "C" bool ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer)
+extern "C" bool ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol)
 {
-	return m_ProtocolParse.ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, ptszMSGBuffer);
+	return m_ProtocolParse.ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, pSt_XMQProtocol);
 }

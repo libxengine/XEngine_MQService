@@ -65,7 +65,7 @@
         "tszAPIUrl": "http://app.xyry.org:5501/api?function=machine"
     },
     "XCryption": {
-        "bEnable": true,
+        "bEnable": false,
         "nCryptionType": 1,
         "tszPassword": "123123aa"
     }

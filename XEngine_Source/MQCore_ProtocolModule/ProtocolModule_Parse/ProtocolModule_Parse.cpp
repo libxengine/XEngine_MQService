@@ -421,17 +421,17 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int
   类型：整数型
   可空：N
   意思：要解析的大小
- 参数.三：ptszMSGBuffer
+ 参数.三：pSt_XMQProtocol
   In/Out：Out
-  类型：字符指针
+  类型：数据结构指针
   可空：N
-  意思：输出解析到的名称
+  意思：输出解析的XMQ协议
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Parse::ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer)
+bool CProtocolModule_Parse::ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol)
 {
 	Protocol_IsErrorOccur = false;
 
@@ -453,10 +453,25 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int
 		return false;
 	}
 	Json::Value st_JsonObject = st_JsonRoot["Object"];
-	if (!st_JsonObject["name"].isNull())
+	if (!st_JsonObject["tszMQKey"].isNull())
 	{
-		_tcsxcpy(ptszMSGBuffer, st_JsonObject["name"].asCString());
+		_tcsxcpy(pSt_XMQProtocol->tszMQKey, st_JsonObject["tszMQKey"].asCString());
 	}
-
+	if (!st_JsonObject["tszMQUsr"].isNull())
+	{
+		_tcsxcpy(pSt_XMQProtocol->tszMQUsr, st_JsonObject["tszMQUsr"].asCString());
+	}
+	if (!st_JsonObject["nKeepTime"].isNull())
+	{
+		pSt_XMQProtocol->nKeepTime = st_JsonObject["nKeepTime"].asInt();
+	}
+	if (!st_JsonObject["nPubTime"].isNull())
+	{
+		pSt_XMQProtocol->nPubTime = st_JsonObject["nPubTime"].asInt();
+	}
+	if (!st_JsonObject["nSerial"].isNull())
+	{
+		pSt_XMQProtocol->nSerial = st_JsonObject["nSerial"].asInt();
+	}
 	return true;
 }

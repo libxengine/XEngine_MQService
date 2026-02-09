@@ -521,14 +521,14 @@ extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, in
   类型：整数型
   可空：N
   意思：要解析的大小
- 参数.三：ptszMSGBuffer
+ 参数.三：pSt_XMQProtocol
   In/Out：Out
-  类型：字符指针
+  类型：数据结构指针
   可空：N
-  意思：输出解析到的名称
+  意思：输出解析的XMQ协议
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool ProtocolModule_Parse_Name(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszMSGBuffer);
+extern "C" bool ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol);

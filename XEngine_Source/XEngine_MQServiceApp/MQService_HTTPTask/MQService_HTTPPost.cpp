@@ -23,6 +23,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
 	LPCXSTR lpszAPIDelUser = _X("deleteuser");
+	LPCXSTR lpszAPIDelMsg = _X("deletemsg");
 	//判断请求
 	if (0 == _tcsxncmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
@@ -36,7 +37,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		}
 		if (DBModule_MQUser_UserQuery(&st_UserInfo))
 		{
-			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_EXISTED, _X("user is existed"));
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_EXIST, _X("user is existed"));
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求用户注册失败,用户已经存在,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
 			return false;
@@ -114,10 +115,11 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	{
 		//主题 http://127.0.0.1:5202/api?function=gettopic
 		int nDBCount = 0;
-		XCHAR tszTopicName[XPATH_MAX] = {};
-		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, tszTopicName);
-		DBModule_MQData_GetLeftCount(tszTopicName, 0, &nDBCount);
-		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, tszTopicName, nDBCount);
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+
+		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+		DBModule_MQData_GetLeftCount(st_MQProtocol.tszMQKey, 0, &nDBCount);
+		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, st_MQProtocol.tszMQKey, nDBCount);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else if (0 == _tcsxncmp(lpszAPIGetList, lpszFuncName, _tcsxlen(lpszAPIGetList)))
@@ -134,32 +136,125 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	else if (0 == _tcsxncmp(lpszAPICreateTopic, lpszFuncName, _tcsxlen(lpszAPICreateTopic)))
 	{
 		//http://127.0.0.1:5202/api?function=createtopic
-
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
 
-		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, st_MQProtocol.tszMQKey);
-		APIHelp_MQHelp_JsonToHex(&st_ProtocolHdr);
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("request json parse failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求的创建主题失败,数据不正确:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		int nListCount = 0;
+		XCHAR** ppszTableName;
+		//检查表是否存在
+		DBModule_MQData_ShowTable(&ppszTableName, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			if (0 == _tcsxnicmp(ppszTableName[i], st_MQProtocol.tszMQKey, _tcsxlen(ppszTableName[i])))
+			{
+				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_EXIST, _X("topic name is exist"));
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,创建主题失败,主题名称:%s,主题存在,无法继续"), lpszClientAddr, st_MQProtocol.tszMQKey);
+				return false;
+			}
+		}
+		BaseLib_Memory_Free((XPPPMEM)&ppszTableName, nListCount);
+		//创建表
+		if (!DBModule_MQData_CreateTable(st_MQProtocol.tszMQKey))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("create topic is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,创建主题失败,创建表失败,主题名称:%s,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, DBModule_GetLastError());
+			return false;
+		}
+		//插入所有者
+		XENGINE_DBTOPICOWNER st_DBOwner;
+		memset(&st_DBOwner, '\0', sizeof(XENGINE_DBTOPICOWNER));
 
-		st_ProtocolHdr.xhToken = xhToken;
-		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
+		_tcsxcpy(st_DBOwner.tszUserName, st_MQProtocol.tszMQUsr);
+		_tcsxcpy(st_DBOwner.tszQueueName, st_MQProtocol.tszMQKey);
+
+		if (!DBModule_MQUser_OwnerInsert(&st_DBOwner))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("create topic bind with user is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,创建主题失败,插入所有者失败,主题名称:%s,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, DBModule_GetLastError());
+			return false;
+		}
+		//回复
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,主题:%s,创建主题成功"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
 	else if (0 == _tcsxncmp(lpszAPIDelTopic, lpszFuncName, _tcsxlen(lpszAPIDelTopic)))
 	{
 		//http://127.0.0.1:5202/api?function=deletetopic
-
+		XENGINE_DBTOPICOWNER st_DBOwner = {};
+		XENGINE_DBUSERKEY st_UserKey = {};
+		XENGINE_DBTIMERELEASE st_DBInfo = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
-		
-		ProtocolModule_Parse_Name(lpszMsgBuffer, nMsgLen, st_MQProtocol.tszMQKey);
-		APIHelp_MQHelp_JsonToHex(&st_ProtocolHdr);
 
-		st_ProtocolHdr.xhToken = xhToken;
-		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_HTTP);
+		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+
+		_tcsxcpy(st_DBOwner.tszUserName, st_MQProtocol.tszMQUsr);
+		_tcsxcpy(st_DBOwner.tszQueueName, st_MQProtocol.tszMQKey);
+		_tcsxcpy(st_UserKey.tszKeyName, st_MQProtocol.tszMQKey);
+		_tcsxcpy(st_DBInfo.tszQueueName, st_MQProtocol.tszMQKey);
+
+		if (_tcsxlen(st_DBOwner.tszUserName) <= 0)
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_MISS, _X("user name missing"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,删除主题失败,删除所有者失败,主题名称:%s,用户名为空"), lpszClientAddr, st_MQProtocol.tszMQKey, st_DBOwner.tszUserName);
+			return false;
+		}
+		if (!DBModule_MQUser_OwnerDelete(&st_DBOwner))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("delete owner db failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,删除主题失败,删除所有者失败,主题名称:%s,无法继续,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, DBModule_GetLastError());
+			return false;
+		}
+		//清楚数据库
+		APIHelp_Counter_SerialDel(st_MQProtocol.tszMQKey);
+		DBModule_MQData_DeleteTable(st_MQProtocol.tszMQKey);
+		DBModule_MQUser_KeyDelete(&st_UserKey);
+		DBModule_MQUser_TimeDelete(&st_DBInfo);
+
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求主题删除成功,主题名:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
+	}
+	else if (0 == _tcsxncmp(lpszAPIDelMsg, lpszFuncName, _tcsxlen(lpszAPIDelMsg)))
+	{
+		//http://127.0.0.1:5202/api?function=deletemsg
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		XENGINE_DBMESSAGEQUEUE st_MessageQueue = {};
+
+		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+
+		if (st_MQProtocol.nSerial <= 0)
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_MISS, _X("message serial not set"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,主题:%s,删除消息数据失败,删除指定消息序列:%lld 失败"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
+			return false;
+		}
+		st_MessageQueue.nQueueSerial = st_MQProtocol.nSerial;
+		_tcsxcpy(st_MessageQueue.tszQueueName, st_MQProtocol.tszMQKey);
+		if (!DBModule_MQData_Delete(&st_MessageQueue))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("message delete failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,主题:%s,删除消息数据失败,删除指定消息序列:%lld 失败,错误码:%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
+			return false;
+		}
+
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,删除消息数据成功主题:%s,序列:%lld,"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MessageQueue.nQueueSerial);
 	}
 	else if (0 == _tcsxncmp(lpszAPIDelUser, lpszFuncName, _tcsxlen(lpszAPIDelUser)))
 	{
