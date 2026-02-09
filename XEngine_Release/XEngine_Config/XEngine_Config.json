@@ -23,10 +23,10 @@
         "LogType": 17
     },
     "XSql": {
-        "SQLAddr": "127.0.0.1",
+        "SQLAddr": "118.25.14.242",
         "SQLPort": 3306,
         "SQLUser": "root",
-        "SQLPass": "123123"
+        "SQLPass": "123123Qyt!"
     },
     "XPass": {
         "nTimeout": 2,
@@ -53,7 +53,7 @@
             "tszEMailSubject": "XEngine MessageQueue Notify",
             "tszServiceAddr": "smtp://smtp.163.com",
             "tszUser": "ggqytgodlove@163.com",
-            "tszPass": "1"
+            "tszPass": "STZsBi3uuJvWsWL3"
         },
         "SMSNotify": {
             "bEnable": false
@@ -63,5 +63,10 @@
         "bEnable": true,
         "tszServiceName": "XEngine_MQService",
         "tszAPIUrl": "http://app.xyry.org:5501/api?function=machine"
+    },
+    "XCryption": {
+        "bEnable": true,
+        "nCryptionType": 1,
+        "tszPassword": "123123aa"
     }
 }
