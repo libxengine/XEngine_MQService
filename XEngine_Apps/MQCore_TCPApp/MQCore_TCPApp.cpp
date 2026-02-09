@@ -3,6 +3,7 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
 #pragma comment(lib,"XEngine_Client/XClient_Socket.lib")
 #endif
 #include <stdio.h>
@@ -15,18 +16,22 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/Algorithm_Error.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Define.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Error.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
 //VS2022 Debug x86 Compile
-//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -lXEngine_BaseLib -lXClient_Socket
+//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -lXEngine_BaseLib -lXEngine_Cryption -lXClient_Socket
+#define XENGINE_CRYPTION_DATA_ENABLE 1
 
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;
 LPCXSTR lpszKey = _X("XEngine_CommKey");  //主题
 LPCXSTR lpszUser = _X("123123aa");
 LPCXSTR lpszPass = _X("123123");
+LPCXSTR lpszCryptKey = _X("123123aa"); //加解密密钥
 
 void MQ_Authorize()
 {
@@ -55,6 +60,10 @@ void MQ_Authorize()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
+	
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -98,6 +107,10 @@ void MQ_GetUNRead(int nType = 0)
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
+
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -112,6 +125,9 @@ void MQ_GetUNRead(int nType = 0)
 		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 		if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 		{
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+			Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 			if (0 == st_ProtocolHdr.wReserve)
 			{
 				_xtprintf("接受到数据,长度：%d，内容：%s\n", st_ProtocolHdr.unPacketSize, ptszMsgBuffer);
@@ -153,6 +169,9 @@ void MQ_Create()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -229,6 +248,9 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 		memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 	}
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -243,6 +265,10 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 		_xtprintf("接受数据失败！\n");
 		return;
 	}
+
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
@@ -279,6 +305,9 @@ void MQ_PostEMail(LPCXSTR lpszMsgBuffer)
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -293,6 +322,9 @@ void MQ_PostEMail(LPCXSTR lpszMsgBuffer)
 		_xtprintf("接受数据失败！\n");
 		return;
 	}
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
@@ -323,6 +355,9 @@ void MQ_Get(int nType = 0)
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -338,6 +373,9 @@ void MQ_Get(int nType = 0)
 		memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 		if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 		{
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+			Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 			memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 
 			if (0 == st_ProtocolHdr.wReserve)
@@ -395,6 +433,9 @@ void MQ_TimePublish()
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, _tcsxlen(lpszMsgBuffer));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -416,6 +457,10 @@ void MQ_TimePublish()
 	}
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
+
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(st_XMQProtocol));
 
@@ -448,22 +493,27 @@ void MQ_GetNumber()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
 		return;
 	}
 
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		XENGINE_MQNUMBER st_MQNumber;
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(&st_MQNumber, '\0', sizeof(XENGINE_MQNUMBER));
+	nLen = 0;
+	XCHAR* ptszMsgBuffer = NULL;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-		memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(&st_MQNumber, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_MQNUMBER));
+	if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
+	{
+		XENGINE_MQNUMBER st_MQNumber = {};
+
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+		Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
+		memcpy(&st_MQNumber, ptszMsgBuffer, sizeof(XENGINE_MQNUMBER));
 
 		if (0 == st_ProtocolHdr.wReserve)
 		{
@@ -503,21 +553,26 @@ void MQ_BindTopic()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
 		return;
 	}
 
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
+	nLen = 0;
+	XCHAR* ptszMsgBuffer = NULL;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 	{
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 		memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 
-		memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+		Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
+		memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 
 		if (0 == st_ProtocolHdr.wReserve)
 		{
@@ -556,6 +611,9 @@ void MQ_DeleteTopic()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
