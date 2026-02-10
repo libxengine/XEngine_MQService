@@ -110,11 +110,18 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		int nListCount = 0;
 		XCHAR** pptszListAddr;
 
-		ProtocolModule_Parse_Type(lpszMsgBuffer, nMsgLen, &nType);
+		if (!ProtocolModule_Parse_Type(lpszMsgBuffer, nMsgLen, &nType))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求获取在线用户失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
 		SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, nType);
 		ProtocolModule_Packet_OnlineList(tszSDBuffer, &nSDLen, &pptszListAddr, nListCount);
 		BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,获取在线列表信息成功,在线用户数:%d"), lpszClientAddr, nListCount);
 	}
 	else if (0 == _tcsxncmp(lpszAPIGetNumber, lpszFuncName, _tcsxlen(lpszAPIGetNumber)))
 	{
@@ -145,8 +152,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		ProtocolModule_Packet_MQNumber(tszSDBuffer, &nSDLen, &st_MQNumber);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,获取主题序列编号成功,主题名称:%s,队列个数:%lld,开始编号:%lld,结尾编号:%lld"), lpszClientAddr, st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
-
-		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else if (0 == _tcsxncmp(lpszAPIGetTopic, lpszFuncName, _tcsxlen(lpszAPIGetTopic)))
 	{
@@ -154,10 +159,17 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		int nDBCount = 0;
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 
-		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求获取主题信息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
 		DBModule_MQData_GetLeftCount(st_MQProtocol.tszMQKey, 0, &nDBCount);
 		ProtocolModule_Packet_TopicName(tszSDBuffer, &nSDLen, st_MQProtocol.tszMQKey, nDBCount);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,获取主题信息成功,主题名称:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
 	else if (0 == _tcsxncmp(lpszAPIGetList, lpszFuncName, _tcsxlen(lpszAPIGetList)))
 	{
@@ -233,7 +245,13 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XENGINE_DBTIMERELEASE st_DBInfo = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 
-		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求删除主题失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
 
 		_tcsxcpy(st_DBOwner.tszUserName, st_MQProtocol.tszMQUsr);
 		_tcsxcpy(st_DBOwner.tszQueueName, st_MQProtocol.tszMQKey);
@@ -270,7 +288,13 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		XENGINE_DBMESSAGEQUEUE st_MessageQueue = {};
 
-		ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol);
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求删除消息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
 
 		if (st_MQProtocol.nSerial <= 0)
 		{
