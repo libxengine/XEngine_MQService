@@ -624,7 +624,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadMsg(XCHAR* ptszMsgBuffe
 	{
 		Json::Value st_JsonObject;
 		st_JsonObject["tszUserName"] = (*pppSt_UserKey)[i]->tszUserName;
-		st_JsonObject["nKeySerial"] = (*pppSt_UserKey)[i]->nKeySerial;
+		st_JsonObject["nKeySerial"] = (Json::Value::Int64)(*pppSt_UserKey)[i]->nKeySerial;
 		st_JsonObject["tszCreateTime"] = (*pppSt_UserKey)[i]->tszCreateTime;
 		st_JsonObject["tszKeyName"] = (*pppSt_UserKey)[i]->tszKeyName;
 		st_JsonObject["tszUPTime"] = (*pppSt_UserKey)[i]->tszUPTime;
