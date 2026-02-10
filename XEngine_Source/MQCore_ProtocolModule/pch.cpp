@@ -71,17 +71,9 @@ extern "C" bool ProtocolModule_Packet_TopicName(XCHAR * ptszMsgBuffer, int* pInt
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_TopicName(ptszMsgBuffer, pInt_MsgLen, lpszTopicName, nTopicCount);
 }
-extern "C" XHANDLE ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
+extern "C" bool ProtocolModule_Packet_UNReadMsg(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_DBUSERKEY*** pppSt_UserKey, int nListCount)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_UNReadCreate(pSt_ProtocolHdr, enPayType);
-}
-extern "C" bool ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, LPCXSTR lpszKeyName, int nListCount)
-{
-	return m_ProtocolPacket.ProtocolModule_Packet_UNReadInsert(xhToken, lpszKeyName, nListCount);
-}
-extern "C" bool ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR * ptszMsgBuffer, int* pInt_MsgLen)
-{
-	return m_ProtocolPacket.ProtocolModule_Packet_UNReadDelete(xhToken, ptszMsgBuffer, pInt_MsgLen);
+	return m_ProtocolPacket.ProtocolModule_Packet_UNReadMsg(ptszMsgBuffer, pInt_MsgLen, pppSt_UserKey, nListCount);
 }
 /************************************************************************/
 /*                        解析类函数                                    */

@@ -13,9 +13,7 @@ EXPORTS
 	ProtocolModule_Packet_TopicList
 	ProtocolModule_Packet_OnlineList
 	ProtocolModule_Packet_TopicName
-	ProtocolModule_Packet_UNReadCreate
-	ProtocolModule_Packet_UNReadInsert
-	ProtocolModule_Packet_UNReadDelete
+	ProtocolModule_Packet_UNReadMsg
 
 	ProtocolModule_Parse_Websocket
 	ProtocolModule_Parse_Register

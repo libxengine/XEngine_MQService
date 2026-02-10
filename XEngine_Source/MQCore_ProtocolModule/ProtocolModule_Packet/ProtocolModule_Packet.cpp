@@ -576,159 +576,66 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_TopicName(XCHAR* ptszMsgBuffe
 	return true;
 }
 /********************************************************************
-函数名称：ProtocolModule_Packet_UNReadCreate
-函数功能：未读消息打包创建函数
- 参数.一：pSt_ProtocolHdr
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入要打包的协议头
- 参数.二：enPayType
-  In/Out：In
-  类型：枚举型
-  可空：N
-  意思：输入打包的负载类型
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-XHANDLE CProtocolModule_Packet::ProtocolModule_Packet_UNReadCreate(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE enPayType)
-{
-	Protocol_IsErrorOccur = false;
-
-	if (NULL == pSt_ProtocolHdr)
-	{
-		Protocol_IsErrorOccur = true;
-		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
-		return NULL;
-	}
-	//申请内存
-	PROTOCOL_PACKETUNREAD* pSt_UNRead = new PROTOCOL_PACKETUNREAD;
-	if (NULL == pSt_UNRead)
-	{
-		Protocol_IsErrorOccur = true;
-		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_MALLOC;
-		return NULL;
-	}
-	memset(&pSt_UNRead->st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-
-	pSt_UNRead->nType = enPayType;
-	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
-	{
-		pSt_UNRead->st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-		pSt_UNRead->st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-		pSt_UNRead->st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-		pSt_UNRead->st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUNREAD;
-		pSt_UNRead->st_ProtocolHdr.byVersion = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	}
-	else
-	{
-		pSt_UNRead->st_JsonRoot["wHeader"] = pSt_ProtocolHdr->wHeader;
-		pSt_UNRead->st_JsonRoot["wTail"] = pSt_ProtocolHdr->wTail;
-		pSt_UNRead->st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
-		pSt_UNRead->st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
-		pSt_UNRead->st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-		pSt_UNRead->st_JsonRoot["wReserve"] = 0;
-	}
-	return pSt_UNRead;
-}
-/********************************************************************
-函数名称：ProtocolModule_Packet_UNReadInsert
-函数功能：消息打包数据插入
- 参数.一：xhToken
-  In/Out：In
-  类型：句柄
-  可空：N
-  意思：输入要操作的句柄
- 参数.二：lpszKeyName
-  In/Out：In
-  类型：三级指针
-  可空：N
-  意思：输入队列名称
- 参数.三：nListCount
-  In/Out：In
-  类型：整数型
-  可空：N
-  意思：输入队列个数
-返回值
-  类型：逻辑型
-  意思：是否成功
-备注：
-*********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadInsert(XHANDLE xhToken, LPCXSTR lpszKeyName, int nListCount)
-{
-	Protocol_IsErrorOccur = false;
-
-	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
-	if (NULL == pSt_UNRead)
-	{
-		Protocol_IsErrorOccur = true;
-		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
-		return false;
-	}
-	Json::Value st_JsonSubArray;
-
-	st_JsonSubArray["Name"] = lpszKeyName;
-	st_JsonSubArray["Count"] = nListCount;
-	pSt_UNRead->st_JsonArray.append(st_JsonSubArray);
-	return true;
-}
-/********************************************************************
-函数名称：ProtocolModule_Packet_UNReadDelete
-函数功能：删除数据并且导出
- 参数.一：xhToken
-  In/Out：In
-  类型：句柄
-  可空：N
-  意思：输入要操作的句柄
- 参数.二：ptszMsgBuffer
+函数名称：ProtocolModule_Packet_UNReadMsg
+函数功能：获取未读消息打包函数
+ 参数.一：ptszMsgBuffer
   In/Out：Out
   类型：字符指针
   可空：N
-  意思：输出打好包的数据
- 参数.三：pInt_MsgLen
+  意思：输出打包的内容
+ 参数.二：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
   可空：N
-  意思：输出数据大小
+  意思：输出打包大小
+ 参数.三：pppSt_UserKey
+  In/Out：In
+  类型：三级指针
+  可空：N
+  意思：输入要打包的数据
+ 参数.四：nListCount
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：输入要打包的数据的个数
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadDelete(XHANDLE xhToken, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
+bool CProtocolModule_Packet::ProtocolModule_Packet_UNReadMsg(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_DBUSERKEY*** pppSt_UserKey, int nListCount)
 {
 	Protocol_IsErrorOccur = false;
 
-	PROTOCOL_PACKETUNREAD* pSt_UNRead = (PROTOCOL_PACKETUNREAD*)xhToken;
-	if (NULL == pSt_UNRead)
+	if (NULL == ptszMsgBuffer || NULL == pInt_MsgLen)
 	{
 		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_NOTFOUND;
 		return false;
 	}
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonArray;
 	Json::StreamWriterBuilder st_JsonBuilder;
+
+	st_JsonRoot["code"] = 0;
+	st_JsonRoot["msg"] = "success";
+
+	for (int i = 0; i < nListCount; i++)
+	{
+		Json::Value st_JsonObject;
+		st_JsonObject["tszUserName"] = (*pppSt_UserKey)[i]->tszUserName;
+		st_JsonObject["nKeySerial"] = (*pppSt_UserKey)[i]->nKeySerial;
+		st_JsonObject["tszCreateTime"] = (*pppSt_UserKey)[i]->tszCreateTime;
+		st_JsonObject["tszKeyName"] = (*pppSt_UserKey)[i]->tszKeyName;
+		st_JsonObject["tszUPTime"] = (*pppSt_UserKey)[i]->tszUPTime;
+		st_JsonArray.append(st_JsonObject);
+	}
+	st_JsonRoot["Array"] = st_JsonArray;
+	st_JsonRoot["Count"] = nListCount;
+
 	st_JsonBuilder["emitUTF8"] = true;
-
-	pSt_UNRead->st_JsonRoot["Array"] = pSt_UNRead->st_JsonArray;
-	pSt_UNRead->st_JsonRoot["Count"] = pSt_UNRead->st_JsonArray.size();
-
-	if (pSt_UNRead->nType == ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN)
-	{
-		pSt_UNRead->st_ProtocolHdr.unPacketSize = Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).length();
-		memcpy(ptszMsgBuffer, &pSt_UNRead->st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).c_str(), pSt_UNRead->st_ProtocolHdr.unPacketSize);
-		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + pSt_UNRead->st_ProtocolHdr.unPacketSize;
-	}
-	else
-	{
-		*pInt_MsgLen = Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).length();
-		memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, pSt_UNRead->st_JsonRoot).c_str(), *pInt_MsgLen);
-	}
-
-	delete pSt_UNRead;
-	pSt_UNRead = NULL;
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	return true;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -964,23 +871,6 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 		{
 
 		}
-	}
-	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICBIND == pSt_ProtocolHdr->unOperatorCode)
-	{
-		if (0 == pSt_ProtocolHdr->wReserve)
-		{
-			MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-		}
-		else
-		{
-			MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_TOPICNAME);
-		}
-		MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBACK, tszRVBuffer, nRVLen);
-	}
-	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICUNBIND == pSt_ProtocolHdr->unOperatorCode)
-	{
-		MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-		MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBACK, tszRVBuffer, nRVLen);
 	}
 	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY == pSt_ProtocolHdr->unOperatorCode)
 	{

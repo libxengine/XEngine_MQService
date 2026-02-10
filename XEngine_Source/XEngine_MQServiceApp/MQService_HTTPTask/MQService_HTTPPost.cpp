@@ -29,6 +29,9 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIModifyMsg = _X("modifymsg");
 	LPCXSTR lpszAPIModifyTopic = _X("modifytopic");
 
+	LPCXSTR lpszAPIBindMsg = _X("bindmsg");
+	LPCXSTR lpszAPIUMBindMsg = _X("unbindmsg");
+	LPCXSTR lpszAPIUNReadMsg = _X("unreadmsg");
 	//判断请求
 	if (0 == _tcsxncmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
@@ -429,6 +432,92 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,修改主题名称成功,原名称:%s,目标名:%s"), lpszClientAddr, tszSrcTopic, tszDstTopic);
+	}
+	else if (0 == _tcsxncmp(lpszAPIBindMsg, lpszFuncName, _tcsxlen(lpszAPIBindMsg)))
+	{
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求绑定主题失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		XENGINE_DBUSERKEY st_Userkey = {};
+
+		_tcsxcpy(st_Userkey.tszUserName, st_MQProtocol.tszMQUsr);
+		_tcsxcpy(st_Userkey.tszKeyName, st_MQProtocol.tszMQKey);
+		//先查询有没有
+		if (DBModule_MQUser_KeyQuery(&st_Userkey))
+		{
+			//有就更新
+			st_Userkey.nKeySerial = st_MQProtocol.nSerial;
+			if (!DBModule_MQUser_KeyUPDate(&st_Userkey))
+			{
+				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("update bind topic is failure"));
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,设置消息队列主题更新失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
+				return false;
+			}
+		}
+		else
+		{
+			//没有就创建
+			st_Userkey.nKeySerial = st_MQProtocol.nSerial;
+			if (!DBModule_MQUser_KeyInsert(&st_Userkey))
+			{
+				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("insert bind topic is failure"));
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,设置消息队列主题创建失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial, DBModule_GetLastError());
+				return false;
+			}
+		}
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,请求设置序列号成功,主题名称:%s,序列号:%lld"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
+	}
+	else if (0 == _tcsxncmp(lpszAPIUMBindMsg, lpszFuncName, _tcsxlen(lpszAPIUMBindMsg)))
+	{
+		XENGINE_DBUSERKEY st_Userkey = {};
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求解绑主题失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		_tcsxcpy(st_Userkey.tszUserName, st_MQProtocol.tszMQUsr);
+		_tcsxcpy(st_Userkey.tszKeyName, st_MQProtocol.tszMQKey);
+
+		if (!DBModule_MQUser_KeyDelete(&st_Userkey))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("unbind topic is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,解除消息绑定订阅失败,可能没有找到主题用户,主题名称:%s,用户名称:%s,错误：%lX"),lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.tszMQUsr, DBModule_GetLastError());
+			return false;
+		}
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,解除消息绑定成功,主题名称:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
+	}
+	else if (0 == _tcsxncmp(lpszAPIUMBindMsg, lpszFuncName, _tcsxlen(lpszAPIUMBindMsg)))
+	{
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求未读消息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		int nListCount = 0;
+		XENGINE_DBUSERKEY** ppSt_UserKey;
+		DBModule_MQUser_KeyList(st_MQProtocol.tszMQUsr, _X(""), &ppSt_UserKey, &nListCount);
+		ProtocolModule_Packet_UNReadMsg(tszSDBuffer, &nSDLen, &ppSt_UserKey, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_UserKey, nListCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,请求未读消息成功,用户名:%s,发送未读消息成功,发送的主题个数:%d"), lpszClientAddr, st_MQProtocol.tszMQUsr, nListCount);
 	}
 	else
 	{
