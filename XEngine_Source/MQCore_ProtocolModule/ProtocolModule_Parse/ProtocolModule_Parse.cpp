@@ -475,3 +475,158 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int 
 	}
 	return true;
 }
+/********************************************************************
+函数名称：ProtocolModule_Parse_MessageQueue
+函数功能：解析消息数据协议
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：pSt_MQMessage
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出解析的消息协议
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_MessageQueue(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_DBMESSAGEQUEUE* pSt_MQMessage)
+{
+	Protocol_IsErrorOccur = false;
+	if ((NULL == lpszMsgBuffer))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	Json::Value st_JsonObject = st_JsonRoot["Object"];
+
+	if (!st_JsonObject["byMsgType"].isNull())
+	{
+		pSt_MQMessage->byMsgType = st_JsonObject["byMsgType"].asInt();
+	}
+	if (!st_JsonObject["nMsgAttr"].isNull())
+	{
+		XSHOT nMsgAttr = st_JsonObject["nMsgAttr"].asUInt();
+		memcpy(&pSt_MQMessage->nMsgAttr, &nMsgAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+	}
+	if (!st_JsonObject["nQueueSerial"].isNull())
+	{
+		pSt_MQMessage->nQueueSerial = st_JsonObject["nQueueSerial"].asInt64();
+	}
+	if (!st_JsonObject["nMsgLen"].isNull())
+	{
+		pSt_MQMessage->nMsgLen = st_JsonObject["nMsgLen"].asInt();
+	}
+	if (!st_JsonObject["tszMsgBuffer"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszMsgBuffer, st_JsonObject["tszMsgBuffer"].asCString());
+	}
+	if (!st_JsonObject["tszUserName"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszUserName, st_JsonObject["tszUserName"].asCString());
+	}
+	if (!st_JsonObject["tszUserBelong"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszUserBelong, st_JsonObject["tszUserBelong"].asCString());
+	}
+	if (!st_JsonObject["tszQueueName"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszQueueName, st_JsonObject["tszQueueName"].asCString());
+	}
+	if (!st_JsonObject["tszQueueLeftTime"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszQueueLeftTime, st_JsonObject["tszQueueLeftTime"].asCString());
+	}
+	if (!st_JsonObject["tszQueuePublishTime"].isNull())
+	{
+		_tcsxcpy(pSt_MQMessage->tszQueuePublishTime, st_JsonObject["tszQueuePublishTime"].asCString());
+	}
+	return true;
+}
+/********************************************************************
+函数名称：ProtocolModule_Parse_ModifyTopic
+函数功能：解析修改主题协议
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：ptszSrcTopic
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出原始主题名称
+ 参数.四：ptszDstTopic
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出目标主题名称
+ 参数.五：ptszUser
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出所属用户
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+bool CProtocolModule_Parse::ProtocolModule_Parse_ModifyTopic(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszSrcTopic, XCHAR* ptszDstTopic, XCHAR* ptszUser)
+{
+	Protocol_IsErrorOccur = false;
+
+	if (NULL == lpszMsgBuffer)
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
+		return false;
+	}
+	Json::Value st_JsonRoot;
+	JSONCPP_STRING st_JsonError;
+	Json::CharReaderBuilder st_ReaderBuilder;
+	std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_ReaderBuilder.newCharReader());
+	if (!pSt_JsonReader->parse(lpszMsgBuffer, lpszMsgBuffer + nMsgLen, &st_JsonRoot, &st_JsonError))
+	{
+		Protocol_IsErrorOccur = true;
+		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARSE;
+		return false;
+	}
+	Json::Value st_JsonObject = st_JsonRoot["Object"];
+	if (!st_JsonObject["tszSrcTopic"].isNull())
+	{
+		_tcsxcpy(ptszSrcTopic, st_JsonObject["tszSrcTopic"].asCString());
+	}
+	if (!st_JsonObject["tszDstTopic"].isNull())
+	{
+		_tcsxcpy(ptszDstTopic, st_JsonObject["tszDstTopic"].asCString());
+	}
+	if (!st_JsonObject["tszUser"].isNull())
+	{
+		_tcsxcpy(ptszUser, st_JsonObject["tszUser"].asCString());
+	}
+	return true;
+}

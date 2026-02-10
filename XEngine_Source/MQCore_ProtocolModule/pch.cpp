@@ -35,9 +35,9 @@ extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR *
 {
 	return m_ProtocolPacket.ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, pSt_MQProtocol, ptszMsgBuffer, pInt_MsgLen, lpszMsgBuffer, nMsgLen);
 }
-extern "C" bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR * pSt_ProtocolHdr, XENGINE_MQNUMBER * pSt_MQNumber, XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
+extern "C" bool ProtocolModule_Packet_MQNumber(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_MQNUMBER* pSt_MQNumber)
 {
-	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(pSt_ProtocolHdr, pSt_MQNumber, ptszMsgBuffer, pInt_MsgLen, nNetType);
+	return m_ProtocolPacket.ProtocolModule_Packet_MQNumber(ptszMsgBuffer, pInt_MsgLen, pSt_MQNumber);
 }
 extern "C" bool ProtocolModule_Packet_PassAuth(XENGINE_PROTOCOL_USERAUTH * pSt_ProtocolAuth, XCHAR * ptszMsgBuffer, int* pInt_MsgLen, int nCode)
 {
@@ -105,4 +105,12 @@ extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, in
 extern "C" bool ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol)
 {
 	return m_ProtocolParse.ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, pSt_XMQProtocol);
+}
+extern "C" bool ProtocolModule_Parse_MessageQueue(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_DBMESSAGEQUEUE* pSt_MQMessage)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_MessageQueue(lpszMsgBuffer, nMsgLen, pSt_MQMessage);
+}
+extern "C" bool ProtocolModule_Parse_ModifyTopic(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszSrcTopic, XCHAR* ptszDstTopic, XCHAR* ptszUser)
+{
+	return m_ProtocolParse.ProtocolModule_Parse_ModifyTopic(lpszMsgBuffer, nMsgLen, ptszSrcTopic, ptszDstTopic, ptszUser);
 }

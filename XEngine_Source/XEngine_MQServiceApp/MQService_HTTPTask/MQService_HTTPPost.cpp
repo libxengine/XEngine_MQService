@@ -20,10 +20,15 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIGetTopic = _X("gettopic");
 	LPCXSTR lpszAPIGetList = _X("getlist");
 	LPCXSTR lpszAPIGetOnline = _X("getonline");
+	LPCXSTR lpszAPIGetNumber = _X("getnumber");      //请求消息队列编号信息
+
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
 	LPCXSTR lpszAPIDelUser = _X("deleteuser");
 	LPCXSTR lpszAPIDelMsg = _X("deletemsg");
+	LPCXSTR lpszAPIModifyMsg = _X("modifymsg");
+	LPCXSTR lpszAPIModifyTopic = _X("modifytopic");
+
 	//判断请求
 	if (0 == _tcsxncmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
@@ -109,6 +114,38 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		SessionModule_Client_GetListAddr(&pptszListAddr, &nListCount, nType);
 		ProtocolModule_Packet_OnlineList(tszSDBuffer, &nSDLen, &pptszListAddr, nListCount);
 		BaseLib_Memory_Free((XPPPMEM)&pptszListAddr, nListCount);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+	}
+	else if (0 == _tcsxncmp(lpszAPIGetNumber, lpszFuncName, _tcsxlen(lpszAPIGetNumber)))
+	{
+		//获取消息队列编号 http://127.0.0.1:5202/api?function=getnumber
+		XENGINE_DBMESSAGEQUEUE st_DBStart = {};
+		XENGINE_DBMESSAGEQUEUE st_DBEnd = {};
+		XENGINE_MQNUMBER st_MQNumber = {};
+		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
+
+		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("request json parse failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求的获取消息队列编号失败,数据不正确:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		if (!DBModule_MQData_GetSerial(st_MQProtocol.tszMQKey, &st_MQNumber.nCount, &st_DBStart, &st_DBEnd))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, _X("not found topic message"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,获取消息队列序列属性失败,主题名称:%s,序列号:%lld,错误：%lX"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nKeepTime == 1 ? "顺序" : "倒序", st_MQProtocol.nSerial, DBModule_GetLastError());
+			return false;
+		}
+
+		st_MQNumber.nFirstNumber = st_DBStart.nQueueSerial;
+		st_MQNumber.nLastNumber = st_DBEnd.nQueueSerial;
+		_tcsxcpy(st_MQNumber.tszMQKey, st_MQProtocol.tszMQKey);
+		ProtocolModule_Packet_MQNumber(tszSDBuffer, &nSDLen, &st_MQNumber);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,获取主题序列编号成功,主题名称:%s,队列个数:%lld,开始编号:%lld,结尾编号:%lld"), lpszClientAddr, st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
+
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else if (0 == _tcsxncmp(lpszAPIGetTopic, lpszFuncName, _tcsxlen(lpszAPIGetTopic)))
@@ -304,6 +341,70 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求用户删除成功,用户名:%s"), lpszClientAddr, st_UserInfo.tszUserName);
+	}
+	else if (0 == _tcsxncmp(lpszAPIModifyMsg, lpszFuncName, _tcsxlen(lpszAPIModifyMsg)))
+	{
+		XENGINE_DBMESSAGEQUEUE st_DBQueue = {};
+
+		if (!ProtocolModule_Parse_MessageQueue(lpszMsgBuffer, nMsgLen, &st_DBQueue))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求修改消息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		if (!DBModule_MQData_Modify(&st_DBQueue))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("modify message failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,修改消息:%s,序列号:%lld,失败,错误：%lX"), lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial, DBModule_GetLastError());
+			return false;
+		}
+
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求修改消息成功,消息名:%s,序列号:%d"), lpszClientAddr, st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial);
+	}
+	else if (0 == _tcsxncmp(lpszAPIModifyTopic, lpszFuncName, _tcsxlen(lpszAPIModifyTopic)))
+	{
+		XCHAR tszSrcTopic[XPATH_MIN] = {};
+		XCHAR tszDstTopic[XPATH_MIN] = {};
+		XCHAR tszUserName[XPATH_MIN] = {};
+
+		if (!ProtocolModule_Parse_ModifyTopic(lpszMsgBuffer, nMsgLen, tszSrcTopic, tszDstTopic, tszUserName))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求修改主题失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
+			return false;
+		}
+		XENGINE_DBTOPICOWNER st_DBOwner = {};
+		//验证所有者
+		_tcsxcpy(st_DBOwner.tszUserName, tszUserName);
+		_tcsxcpy(st_DBOwner.tszQueueName, tszSrcTopic);
+
+		if (!DBModule_MQUser_OwnerQuery(&st_DBOwner))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("query topic owner failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,修改主题失败,可能用户不拥有主题,主题名称:%s,无法继续,错误：%lX"), lpszClientAddr, tszSrcTopic, DBModule_GetLastError());
+			return false;
+		}
+		//修改主题
+		if (!DBModule_MQData_ModifyTable(tszSrcTopic, tszDstTopic))
+		{
+			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("modify topic failure"));
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,修改主题名称失败,原名称:%s,目标名:%s,错误：%lX"), lpszClientAddr, tszSrcTopic, tszDstTopic, DBModule_GetLastError());
+			return false;
+		}
+		DBModule_MQUser_KeyTopicUPDate(tszSrcTopic, tszDstTopic);
+		DBModule_MQUser_TimeTopicUPDate(tszSrcTopic, tszDstTopic);
+		DBModule_MQUser_OwnerTopicUPDate(tszSrcTopic, tszDstTopic);
+
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,修改主题名称成功,原名称:%s,目标名:%s"), lpszClientAddr, tszSrcTopic, tszDstTopic);
 	}
 	else
 	{

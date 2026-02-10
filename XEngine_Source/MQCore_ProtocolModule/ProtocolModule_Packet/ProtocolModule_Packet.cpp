@@ -88,76 +88,51 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_Common(int nNetType, XENGINE_
 /********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
 函数功能：获取序列打包函数
- 参数.一：pSt_ProtocolHdr
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入协议头
- 参数.二：pSt_MQNumber
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入要打包的序列号信息
- 参数.三：ptszMsgBuffer
+ 参数.一：ptszMsgBuffer
   In/Out：Out
   类型：字符指针
   可空：N
   意思：输出打好包的缓冲区
- 参数.四：pInt_MsgLen
+ 参数.二：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
   可空：N
   意思：输出缓冲区大小
- 参数.五：nNetType
-  In/Out：Out
-  类型：整数型
+ 参数.三：pSt_MQNumber
+  In/Out：In
+  类型：数据结构指针
   可空：N
-  意思：输入网络类型
+  意思：输入要打包的序列号信息
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-bool CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType)
+bool CProtocolModule_Packet::ProtocolModule_Packet_MQNumber(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_MQNUMBER* pSt_MQNumber)
 {
 	Protocol_IsErrorOccur = false;
 
-	if ((NULL == pSt_ProtocolHdr) || (NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
+	if ((NULL == ptszMsgBuffer) || (NULL == pInt_MsgLen))
 	{
 		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
 		return false;
 	}
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonObject;
+	Json::StreamWriterBuilder st_JsonBuilder;
 
-	if (XENGINE_MQAPP_NETTYPE_TCP == nNetType)
-	{
-		pSt_ProtocolHdr->unPacketSize = sizeof(XENGINE_MQNUMBER);
-		memcpy(ptszMsgBuffer, pSt_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), pSt_MQNumber, sizeof(XENGINE_MQNUMBER));
-		*pInt_MsgLen = sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_MQNUMBER);
-	}
-	else
-	{
-		Json::Value st_JsonRoot;
-		Json::Value st_JsonObject;
-		Json::StreamWriterBuilder st_JsonBuilder;
+	st_JsonObject["tszMQKey"] = pSt_MQNumber->tszMQKey;
+	st_JsonObject["nCount"] = (Json::Value::Int64)pSt_MQNumber->nCount;
+	st_JsonObject["nFirstNumber"] = (Json::Value::Int64)pSt_MQNumber->nFirstNumber;
+	st_JsonObject["nLastNumber"] = (Json::Value::Int64)pSt_MQNumber->nLastNumber;
 
-		st_JsonRoot["unOperatorType"] = pSt_ProtocolHdr->unOperatorType;
-		st_JsonRoot["unOperatorCode"] = pSt_ProtocolHdr->unOperatorCode;
-		st_JsonRoot["wReserve"] = pSt_ProtocolHdr->wReserve;
+	st_JsonRoot["st_MQNumber"] = st_JsonObject;
 
-		st_JsonObject["tszMQKey"] = pSt_MQNumber->tszMQKey;
-		st_JsonObject["nCount"] = (Json::Value::Int64)pSt_MQNumber->nCount;
-		st_JsonObject["nFirstNumber"] = (Json::Value::Int64)pSt_MQNumber->nFirstNumber;
-		st_JsonObject["nLastNumber"] = (Json::Value::Int64)pSt_MQNumber->nLastNumber;
-		
-		st_JsonRoot["st_MQNumber"] = st_JsonObject;
+	st_JsonBuilder["emitUTF8"] = true;
 
-		st_JsonBuilder["emitUTF8"] = true;
-
-		*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
-		memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
-	}
+	*pInt_MsgLen = Json::writeString(st_JsonBuilder, st_JsonRoot).length();
+	memcpy(ptszMsgBuffer, Json::writeString(st_JsonBuilder, st_JsonRoot).c_str(), *pInt_MsgLen);
 	return true;
 }
 /********************************************************************

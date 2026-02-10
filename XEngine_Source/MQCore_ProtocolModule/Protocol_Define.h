@@ -64,37 +64,27 @@ extern "C" bool ProtocolModule_Packet_Common(int nNetType, XENGINE_PROTOCOLHDR* 
 /********************************************************************
 函数名称：ProtocolModule_Packet_MQNumber
 函数功能：获取序列打包函数
- 参数.一：pSt_ProtocolHdr
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入协议头
- 参数.二：pSt_MQNumber
-  In/Out：In
-  类型：数据结构指针
-  可空：N
-  意思：输入要打包的序列号信息
- 参数.三：ptszMsgBuffer
+ 参数.一：ptszMsgBuffer
   In/Out：Out
   类型：字符指针
   可空：N
   意思：输出打好包的缓冲区
- 参数.四：pInt_MsgLen
+ 参数.二：pInt_MsgLen
   In/Out：Out
   类型：整数型指针
   可空：N
   意思：输出缓冲区大小
- 参数.五：nNetType
-  In/Out：Out
-  类型：整数型
+ 参数.三：pSt_MQNumber
+  In/Out：In
+  类型：数据结构指针
   可空：N
-  意思：输入网络类型
+  意思：输入要打包的序列号信息
 返回值
   类型：逻辑型
   意思：是否成功
 备注：
 *********************************************************************/
-extern "C" bool ProtocolModule_Packet_MQNumber(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XENGINE_MQNUMBER* pSt_MQNumber, XCHAR* ptszMsgBuffer, int* pInt_MsgLen, int nNetType);
+extern "C" bool ProtocolModule_Packet_MQNumber(XCHAR* ptszMsgBuffer, int* pInt_MsgLen, XENGINE_MQNUMBER* pSt_MQNumber);
 /********************************************************************
 函数名称：ProtocolModule_Packet_PassAuth
 函数功能：HTTP代理打包函数
@@ -532,3 +522,61 @@ extern "C" bool ProtocolModule_Parse_Type(LPCXSTR lpszMsgBuffer, int nMsgLen, in
 备注：
 *********************************************************************/
 extern "C" bool ProtocolModule_Parse_XMQ(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOL_XMQ* pSt_XMQProtocol);
+/********************************************************************
+函数名称：ProtocolModule_Parse_MessageQueue
+函数功能：解析消息数据协议
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：pSt_MQMessage
+  In/Out：Out
+  类型：数据结构指针
+  可空：N
+  意思：输出解析的消息协议
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Parse_MessageQueue(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_DBMESSAGEQUEUE* pSt_MQMessage);
+/********************************************************************
+函数名称：ProtocolModule_Parse_ModifyTopic
+函数功能：解析修改主题协议
+ 参数.一：lpszMsgBuffer
+  In/Out：In
+  类型：常量字符指针
+  可空：N
+  意思：要解析的数据
+ 参数.二：nMsgLen
+  In/Out：In
+  类型：整数型
+  可空：N
+  意思：要解析的大小
+ 参数.三：ptszSrcTopic
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出原始主题名称
+ 参数.四：ptszDstTopic
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出目标主题名称
+ 参数.五：ptszUser
+  In/Out：Out
+  类型：字符指针
+  可空：N
+  意思：输出所属用户
+返回值
+  类型：逻辑型
+  意思：是否成功
+备注：
+*********************************************************************/
+extern "C" bool ProtocolModule_Parse_ModifyTopic(LPCXSTR lpszMsgBuffer, int nMsgLen, XCHAR* ptszSrcTopic, XCHAR* ptszDstTopic, XCHAR* ptszUser);

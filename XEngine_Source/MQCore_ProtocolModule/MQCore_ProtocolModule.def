@@ -22,3 +22,5 @@ EXPORTS
 	ProtocolModule_Parse_Token
 	ProtocolModule_Parse_Type
 	ProtocolModule_Parse_XMQ
+	ProtocolModule_Parse_MessageQueue
+	ProtocolModule_Parse_ModifyTopic
