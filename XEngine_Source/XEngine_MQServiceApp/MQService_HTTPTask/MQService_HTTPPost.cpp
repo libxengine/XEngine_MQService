@@ -29,8 +29,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIModifyMsg = _X("modifymsg");
 	LPCXSTR lpszAPIModifyTopic = _X("modifytopic");
 
-	LPCXSTR lpszAPIBindMsg = _X("bindmsg");
-	LPCXSTR lpszAPIUMBindMsg = _X("unbindmsg");
+	LPCXSTR lpszAPIBind = _X("bind");
+	LPCXSTR lpszAPIUMBind = _X("unbind");
 	LPCXSTR lpszAPIUNReadMsg = _X("unreadmsg");
 	//判断请求
 	if (0 == _tcsxncmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
@@ -433,7 +433,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,修改主题名称成功,原名称:%s,目标名:%s"), lpszClientAddr, tszSrcTopic, tszDstTopic);
 	}
-	else if (0 == _tcsxncmp(lpszAPIBindMsg, lpszFuncName, _tcsxlen(lpszAPIBindMsg)))
+	else if (0 == _tcsxncmp(lpszAPIBind, lpszFuncName, _tcsxlen(lpszAPIBind)))
 	{
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
@@ -476,7 +476,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,请求设置序列号成功,主题名称:%s,序列号:%lld"), lpszClientAddr, st_MQProtocol.tszMQKey, st_MQProtocol.nSerial);
 	}
-	else if (0 == _tcsxncmp(lpszAPIUMBindMsg, lpszFuncName, _tcsxlen(lpszAPIUMBindMsg)))
+	else if (0 == _tcsxncmp(lpszAPIUMBind, lpszFuncName, _tcsxlen(lpszAPIUMBind)))
 	{
 		XENGINE_DBUSERKEY st_Userkey = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
@@ -501,7 +501,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,解除消息绑定成功,主题名称:%s"), lpszClientAddr, st_MQProtocol.tszMQKey);
 	}
-	else if (0 == _tcsxncmp(lpszAPIUMBindMsg, lpszFuncName, _tcsxlen(lpszAPIUMBindMsg)))
+	else if (0 == _tcsxncmp(lpszAPIUNReadMsg, lpszFuncName, _tcsxlen(lpszAPIUNReadMsg)))
 	{
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
@@ -521,6 +521,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	}
 	else
 	{
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, _X("protocol not support"));
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("HTTP客户端:%s,协议错误"), lpszClientAddr);
 	}
 	return true;
