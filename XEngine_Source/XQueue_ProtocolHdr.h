@@ -41,16 +41,6 @@
 #define ERROR_XENGINE_MESSAGE_XMQ_TIMEOUT 0x105                           //消息超时,无权使用
 #define ERROR_XENGINE_MESSAGE_XMQ_PUBTIME 0x106                           //定时消息,无权使用
 #define ERROR_XENGINE_MESSAGE_XMQ_KEYQUERY 0x107                          //查询绑定消息失败
-#define ERROR_XENGINE_MESSAGE_XMQ_SERIAL 0x108                            //消息序号错误
-#define ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY 0x109                         //创建消息KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDOWNER 0x110                         //绑定所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELOWNER 0x111                          //删除所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_KEYUP 0x112                             //更新KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDKEY 0x113                           //绑定KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELKEY 0x114                            //删除KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_QUERYOWNER 0x115                        //查询所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYTOPIC 0x116                       //修改主题失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x117                         //修改消息失败
 
 #define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
 #define ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE 0x202                        //验证失败没有权限
