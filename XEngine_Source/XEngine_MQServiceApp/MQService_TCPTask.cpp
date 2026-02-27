@@ -145,6 +145,14 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				st_UserInfo.nUserState = 1;
 				DBModule_MQUser_UserUPDate(&st_UserInfo);
 			}
+			//权限是否正确
+			if (ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_BAN == st_UserInfo.nUserLevel)
+			{
+				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "permission error");
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端：%s，用户名：%s，登录失败，客户端权限不足够"), lpszClientAddr, st_UserInfo.tszUserName);
+				return false;
+			}
 			pSt_ProtocolHdr->wReserve = 0;
 			SessionModule_Client_Create(lpszClientAddr, &st_UserInfo, nNetType);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);

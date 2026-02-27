@@ -26,9 +26,9 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIBind = _X("bind");
 	LPCXSTR lpszAPIUMBind = _X("unbind");
 	LPCXSTR lpszAPIUNReadMsg = _X("unreadmsg");
+
 	LPCXSTR lpszAPICreateTopic = _X("createtopic");
 	LPCXSTR lpszAPIDelTopic = _X("deletetopic");
-	
 	LPCXSTR lpszAPIDelMsg = _X("deletemsg");
 	LPCXSTR lpszAPIModifyMsg = _X("modifymsg");
 	LPCXSTR lpszAPIModifyTopic = _X("modifytopic");
@@ -340,7 +340,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	{
 		//http://127.0.0.1:5202/api?function=createtopic
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-
+#if (1 == __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__)
 		if ((st_UserInfo.nUserLevel < ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_ROOT) || (st_UserInfo.nUserLevel >= ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_SVIP))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PERMISSION, _X("permission Error,user accesss Denied"));
@@ -348,6 +348,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求创建主题失败,权限错误,权限级别:%d"), lpszClientAddr, st_UserInfo.nUserLevel);
 			return false;
 		}
+#endif
 		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("request json parse failure"));
@@ -405,7 +406,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XENGINE_DBUSERKEY st_UserKey = {};
 		XENGINE_DBTIMERELEASE st_DBInfo = {};
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-
+#if (1 == __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__)
 		if ((st_UserInfo.nUserLevel < ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_ROOT) || (st_UserInfo.nUserLevel >= ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_SVIP))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PERMISSION, _X("permission Error,user accesss Denied"));
@@ -413,6 +414,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求删除主题失败,权限错误,权限级别:%d"), lpszClientAddr, st_UserInfo.nUserLevel);
 			return false;
 		}
+#endif
 		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
@@ -456,6 +458,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
 		XENGINE_DBMESSAGEQUEUE st_MessageQueue = {};
 
+#if (1 == __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__)
 		if ((st_UserInfo.nUserLevel < ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_ROOT) || (st_UserInfo.nUserLevel >= ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_SVIP))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PERMISSION, _X("permission Error,user accesss Denied"));
@@ -463,6 +466,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求删除消息失败,权限错误,权限级别:%d"), lpszClientAddr, st_UserInfo.nUserLevel);
 			return false;
 		}
+#endif
+
 		if (!ProtocolModule_Parse_XMQ(lpszMsgBuffer, nMsgLen, &st_MQProtocol))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
@@ -496,6 +501,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	{
 		XENGINE_DBMESSAGEQUEUE st_DBQueue = {};
 
+#if (1 == __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__)
 		if ((st_UserInfo.nUserLevel < ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_ROOT) || (st_UserInfo.nUserLevel >= ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_SVIP))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PERMISSION, _X("permission Error,user accesss Denied"));
@@ -503,6 +509,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求修改消息失败,权限错误,权限级别:%d"), lpszClientAddr, st_UserInfo.nUserLevel);
 			return false;
 		}
+#endif
+
 		if (!ProtocolModule_Parse_MessageQueue(lpszMsgBuffer, nMsgLen, &st_DBQueue))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
@@ -528,6 +536,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		XCHAR tszDstTopic[XPATH_MIN] = {};
 		XCHAR tszUserName[XPATH_MIN] = {};
 
+#if (1 == __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__)
 		if ((st_UserInfo.nUserLevel < ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_ROOT) || (st_UserInfo.nUserLevel >= ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_SVIP))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PERMISSION, _X("permission Error,user accesss Denied"));
@@ -535,6 +544,8 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP消息端:%s,请求修改主题失败,权限错误,权限级别:%d"), lpszClientAddr, st_UserInfo.nUserLevel);
 			return false;
 		}
+#endif
+
 		if (!ProtocolModule_Parse_ModifyTopic(lpszMsgBuffer, nMsgLen, tszSrcTopic, tszDstTopic, tszUserName))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));

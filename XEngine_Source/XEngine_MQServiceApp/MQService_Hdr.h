@@ -56,6 +56,7 @@ using namespace std;
 #include "../XEngine_DependLibrary/XEngine_Module/XEngine_MSGNotify/MSGNotify_Define.h"
 #include "../XEngine_DependLibrary/XEngine_Module/XEngine_MSGNotify/MSGNotify_Error.h"
 #include "../XQueue_ProtocolHdr.h"
+#include "../XQueue_BuildSwtich.h"
 #include "../MQCore_ConfigModule/Config_Define.h"
 #include "../MQCore_ConfigModule/Config_Error.h"
 #include "../MQCore_SessionModule/Session_Define.h"
