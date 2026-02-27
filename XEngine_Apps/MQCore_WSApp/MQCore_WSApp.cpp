@@ -102,44 +102,6 @@ void MQ_Authorize()
 	_xtprintf("MQ_Authorize:%s\n", tszMsgBuffer);
 }
 
-void MQ_Create()
-{
-	int nLen = 0;
-	XCHAR tszMsgBuffer[2048];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	Json::Value st_JsonRoot;
-	Json::Value st_JsonMQProtocol;
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["byIsReply"] = 1;
-
-	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 0;
-	st_JsonMQProtocol["nKeepTime"] = 0;
-	st_JsonMQProtocol["nGetTimer"] = 0;
-
-	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-
-	nLen = st_JsonRoot.toStyledString().length();
-	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
-
-	if (!MQ_SendPacket(tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	_xtprintf("MQ_Create:%s\n", tszMsgBuffer);
-}
-
 void MQ_Post(LPCXSTR lpszMsgBuffer)
 {
 	int nLen = 0;
@@ -192,79 +154,6 @@ void MQ_Post(LPCXSTR lpszMsgBuffer)
 	_xtprintf("MQ_Post:%s\n", tszMsgBuffer);
 }
 
-
-void MQ_BindTopic()
-{
-	int nLen = 0;
-	XCHAR tszMsgBuffer[2048];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	Json::Value st_JsonRoot;
-	Json::Value st_JsonMQProtocol;
-	Json::Value st_JsonPayload;
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["byIsReply"] = 1;
-
-	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-	st_JsonMQProtocol["nSerial"] = 1;
-
-	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-
-	nLen = st_JsonRoot.toStyledString().length();
-	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
-
-	if (!MQ_SendPacket(tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	_xtprintf("MQ_GetOrder:%s\n", tszMsgBuffer);
-}
-
-void MQ_GetNumber()
-{
-	int nLen = 0;
-	XCHAR tszMsgBuffer[2048];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	Json::Value st_JsonRoot;
-	Json::Value st_JsonMQProtocol;
-	Json::Value st_JsonPayload;
-	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
-	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
-	st_JsonRoot["byIsReply"] = 1;
-
-	st_JsonMQProtocol["tszMQKey"] = lpszKey;
-
-	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
-
-	nLen = st_JsonRoot.toStyledString().length();
-	memcpy(tszMsgBuffer, st_JsonRoot.toStyledString().c_str(), nLen);
-
-	if (!MQ_SendPacket(tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!MQ_RecvPacket(tszMsgBuffer, &nLen))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	_xtprintf("MQ_GetSerial:%s\n", tszMsgBuffer);
-}
 void MQ_Get()
 {
 	int nLen = 0;
@@ -351,10 +240,7 @@ int main()
 		_xtprintf("%s\n", tszMsgBuffer + nPos);
 	}
 	MQ_Authorize();
-	MQ_Create();
 	MQ_Post("MTIzMTIz");
-	MQ_GetNumber();
-	MQ_BindTopic();
 	MQ_Get();
 
 #ifdef _MSC_BUILD
