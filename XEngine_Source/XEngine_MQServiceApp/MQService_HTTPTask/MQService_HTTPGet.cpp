@@ -47,7 +47,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 			return true;
 		}
 		//权限是否正确
-		if (0 != st_UserInfo.nUserLevel)
+		if (ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_BAN == st_UserInfo.nUserLevel)
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "permission error");
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);

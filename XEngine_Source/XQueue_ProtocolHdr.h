@@ -54,6 +54,7 @@
 #define ERROR_XENGINE_MESSAGE_HTTP_MISS 0x211                             //缺少关键数据
 #define ERROR_XENGINE_MESSAGE_HTTP_EXIST 0x212                            //数据已存在
 #define ERROR_XENGINE_MESSAGE_HTTP_FAILURE 0x213                          //操作失败
+#define ERROR_XENGINE_MESSAGE_HTTP_PERMISSION 0x214                       //权限错误
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////

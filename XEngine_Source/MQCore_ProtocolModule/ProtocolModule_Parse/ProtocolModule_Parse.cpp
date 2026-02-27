@@ -624,9 +624,9 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_ModifyTopic(LPCXSTR lpszMsgBuff
 	{
 		_tcsxcpy(ptszDstTopic, st_JsonObject["tszDstTopic"].asCString());
 	}
-	if (!st_JsonObject["tszUser"].isNull())
+	if (!st_JsonObject["tszMQUsr"].isNull())
 	{
-		_tcsxcpy(ptszUser, st_JsonObject["tszUser"].asCString());
+		_tcsxcpy(ptszUser, st_JsonObject["tszMQUsr"].asCString());
 	}
 	return true;
 }
