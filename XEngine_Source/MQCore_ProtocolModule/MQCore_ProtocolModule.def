@@ -13,12 +13,12 @@ EXPORTS
 	ProtocolModule_Packet_TopicList
 	ProtocolModule_Packet_OnlineList
 	ProtocolModule_Packet_TopicName
-	ProtocolModule_Packet_UNReadCreate
-	ProtocolModule_Packet_UNReadInsert
-	ProtocolModule_Packet_UNReadDelete
+	ProtocolModule_Packet_UNReadMsg
 
 	ProtocolModule_Parse_Websocket
 	ProtocolModule_Parse_Register
 	ProtocolModule_Parse_Token
 	ProtocolModule_Parse_Type
-	ProtocolModule_Parse_Name
+	ProtocolModule_Parse_XMQ
+	ProtocolModule_Parse_MessageQueue
+	ProtocolModule_Parse_ModifyTopic

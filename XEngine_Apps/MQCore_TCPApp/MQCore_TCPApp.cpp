@@ -3,6 +3,7 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
 #pragma comment(lib,"XEngine_Client/XClient_Socket.lib")
 #endif
 #include <stdio.h>
@@ -15,18 +16,22 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/Algorithm_Error.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Define.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Error.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include "../../XEngine_Source/XQueue_ProtocolHdr.h"
 
 //VS2022 Debug x86 Compile
-//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -lXEngine_BaseLib -lXClient_Socket
+//g++ -std=c++17 -Wall -g MQCore_TCPApp.cpp -o MQCore_TCPApp.exe -lXEngine_BaseLib -lXEngine_Cryption -lXClient_Socket
+#define XENGINE_CRYPTION_DATA_ENABLE 0
 
 XSOCKET m_Socket;
 __int64x nLastNumber = 0;
 LPCXSTR lpszKey = _X("XEngine_CommKey");  //主题
 LPCXSTR lpszUser = _X("123123aa");
 LPCXSTR lpszPass = _X("123123");
+LPCXSTR lpszCryptKey = _X("123123aa"); //加解密密钥
 
 void MQ_Authorize()
 {
@@ -55,6 +60,10 @@ void MQ_Authorize()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
+	
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -73,103 +82,6 @@ void MQ_Authorize()
 	{
 		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
-}
-//获取未读消息
-void MQ_GetUNRead(int nType = 0)
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUNREAD;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;                  //必须为真
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-
-	while (true)
-	{
-		nLen = 0;
-		XCHAR* ptszMsgBuffer;
-
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
-		{
-			if (0 == st_ProtocolHdr.wReserve)
-			{
-				_xtprintf("接受到数据,长度：%d，内容：%s\n", st_ProtocolHdr.unPacketSize, ptszMsgBuffer);
-			}
-			else
-			{
-				_xtprintf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-			}
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-			break;
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
-}
-
-void MQ_Create()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;           //获得处理返回结果
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		_xtprintf("接受数据失败！\n");
-		return;
-	}
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
 }
 
 typedef struct
@@ -229,6 +141,9 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 		memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 	}
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -243,6 +158,10 @@ void MQ_Post(LPCXSTR lpszMsgBuffer, int nType = 0, int nPubTime = -1, bool bSelf
 		_xtprintf("接受数据失败！\n");
 		return;
 	}
+
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
@@ -279,6 +198,9 @@ void MQ_PostEMail(LPCXSTR lpszMsgBuffer)
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -293,6 +215,9 @@ void MQ_PostEMail(LPCXSTR lpszMsgBuffer)
 		_xtprintf("接受数据失败！\n");
 		return;
 	}
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
@@ -323,6 +248,9 @@ void MQ_Get(int nType = 0)
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -338,6 +266,9 @@ void MQ_Get(int nType = 0)
 		memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 		if (XClient_TCPSelect_RecvPkt(m_Socket, &ptszMsgBuffer, &nLen, &st_ProtocolHdr))
 		{
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+			Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
 			memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(XENGINE_PROTOCOL_XMQ));
 
 			if (0 == st_ProtocolHdr.wReserve)
@@ -395,6 +326,9 @@ void MQ_TimePublish()
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, _tcsxlen(lpszMsgBuffer));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptEncodec(NULL, (XBYTE*)(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR)), (int*)&st_ProtocolHdr.unPacketSize, lpszCryptKey);
+#endif
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
 	{
 		_xtprintf("发送投递失败！\n");
@@ -417,151 +351,16 @@ void MQ_TimePublish()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 
+#if 1 == XENGINE_CRYPTION_DATA_ENABLE
+	Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMsgBuffer, &nLen, lpszCryptKey);
+#endif
+
 	memcpy(&st_XMQProtocol, ptszMsgBuffer, sizeof(st_XMQProtocol));
 
 	_xtprintf("接受到通知消息,主题:%s,序列:%lld,长度：%d，内容：%s\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial, st_ProtocolHdr.unPacketSize - sizeof(XENGINE_PROTOCOL_XMQ), ptszMsgBuffer + sizeof(XENGINE_PROTOCOL_XMQ));
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 }
 
-void MQ_GetNumber()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;            
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		XENGINE_MQNUMBER st_MQNumber;
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(&st_MQNumber, '\0', sizeof(XENGINE_MQNUMBER));
-
-		memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(&st_MQNumber, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_MQNUMBER));
-
-		if (0 == st_ProtocolHdr.wReserve)
-		{
-			nLastNumber = st_MQNumber.nLastNumber;
-			_xtprintf("接受到消息信息,主题:%s,个数:%lld,起始编号:%lld,结束编号:%lld\n", st_MQNumber.tszMQKey, st_MQNumber.nCount, st_MQNumber.nFirstNumber, st_MQNumber.nLastNumber);
-		}
-		else
-		{
-			_xtprintf("接受到消息信息失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-		}
-	}
-}
-void MQ_BindTopic()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-
-	st_XMQProtocol.nSerial = 1; //设置为1开始读取
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-
-	nLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nLen))
-	{
-		memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-		memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-		memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-		memcpy(&st_XMQProtocol, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), sizeof(XENGINE_PROTOCOL_XMQ));
-
-		if (0 == st_ProtocolHdr.wReserve)
-		{
-			_xtprintf("请求某个位置开始获取消息成功,主题:%s,序列号:%lld\n", st_XMQProtocol.tszMQKey, st_XMQProtocol.nSerial);
-		}
-		else
-		{
-			_xtprintf("请求某个位置开始获取消息失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-		}
-	}
-}
-
-//删除主题
-void MQ_DeleteTopic()
-{
-	int nLen = 0;
-	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_XMQProtocol;
-	XCHAR tszMsgBuffer[2048];
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_XMQProtocol, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
-
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE;
-	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = true;       //不获取结果
-	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-	strcpy(st_XMQProtocol.tszMQKey, lpszKey);
-
-	nLen = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_XMQProtocol, sizeof(XENGINE_PROTOCOL_XMQ));
-
-	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nLen))
-	{
-		_xtprintf("发送投递失败！\n");
-		return;
-	}
-}
 
 int main(int argc, char** argv)
 {
@@ -580,10 +379,7 @@ int main(int argc, char** argv)
 
 	MQ_Authorize();
 	//MQ_PostEMail("test for email");
-	MQ_GetUNRead();
-	MQ_Create();
 	MQ_Post(NULL, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN, -1, true);
-	MQ_BindTopic();
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_BIN);
 
 	MQ_Post(lpszMsgBuffer, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING, 0);
@@ -591,12 +387,10 @@ int main(int argc, char** argv)
 	{
 		MQ_Post(lpszMsgBuffer, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING, -1, true);
 	}
-	MQ_GetNumber();
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
 	MQ_Get(ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING);
 	MQ_TimePublish();
-	MQ_DeleteTopic();
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	XClient_TCPSelect_Close(m_Socket);

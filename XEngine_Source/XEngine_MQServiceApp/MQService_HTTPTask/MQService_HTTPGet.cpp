@@ -20,7 +20,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 	LPCXSTR lpszAPIUPDate = _X("update");
 	LPCXSTR lpszAPIClose = _X("close");
 
-	if (0 == _tcsxnicmp(lpszAPILogin, lpszFuncName, _tcsxlen(lpszAPILogin)))
+	if (0 == _tcsxncmp(lpszAPILogin, lpszFuncName, _tcsxlen(lpszAPILogin)))
 	{
 		//http://app.xyry.org:5202/api?function=login&user=123123aa&pass=123123
 		XNETHANDLE xhToken = 0;
@@ -47,7 +47,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 			return true;
 		}
 		//权限是否正确
-		if (0 != st_UserInfo.nUserLevel)
+		if (ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_BAN == st_UserInfo.nUserLevel)
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE, "permission error");
 			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
@@ -66,7 +66,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求登录获得TOKEN:%lld 成功,用户级别:%d"), lpszClientAddr, xhToken, st_UserInfo.nUserLevel);
 	}
-	else if (0 == _tcsxnicmp(lpszAPIUPDate, lpszFuncName, _tcsxlen(lpszAPIUPDate)))
+	else if (0 == _tcsxncmp(lpszAPIUPDate, lpszFuncName, _tcsxlen(lpszAPIUPDate)))
 	{
 		//http://app.xyry.org:5202/api?function=update&token=1000112345
 		XCHAR tszUserToken[128];
@@ -85,7 +85,7 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求更新TOKEN:%s 成功"), lpszClientAddr, tszUserToken);
 	}
-	else if (0 == _tcsxnicmp(lpszAPIClose, lpszFuncName, _tcsxlen(lpszAPIClose)))
+	else if (0 == _tcsxncmp(lpszAPIClose, lpszFuncName, _tcsxlen(lpszAPIClose)))
 	{
 		//http://app.xyry.org:5202/api?function=close&token=1000112345
 		XCHAR tszUserToken[128];
@@ -97,6 +97,12 @@ bool MessageQueue_HttpTask_Get(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, XCH
 		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, 0, tszUserToken);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端:%s,请求关闭TOKEN:%s 成功"), lpszClientAddr, tszUserToken);
+	}
+	else
+	{
+		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_NOTFOUND, _X("protocol not support"));
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,协议错误"), lpszClientAddr);
 	}
 	
 	return true;

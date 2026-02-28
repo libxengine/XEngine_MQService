@@ -24,24 +24,6 @@
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPPOST 0x7001           //投递包回复
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET 0x7002            //获取包请求
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPGET 0x7003            //获取包回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDELETE 0x7004         //消息删除请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPDELETE 0x7005         //消息删除回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQMODIFY 0x7006         //消息修改请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPMODIFY 0x7007         //消息修改回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQNUMBER 0x7008         //请求消息队列编号信息
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPNUMBER 0x7009         //回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQUNREAD 0x7010         //请求未读消息
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPUNREAD 0x7011         //响应未读消息
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICCREATE 0x7100    //主题创建请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICCREATE 0x7101    //主题创建回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICDELETE 0x7102    //主题删除请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICDELETE 0x7103    //主题删除回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICMODIFY 0x7104    //主题名修改请求
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICMODIFY 0x7105    //主题名修改回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND 0x7106      //请求主题绑定操作
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICBIND 0x7107      //回复
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICUNBIND 0x7108    //请求主题解绑操作
-#define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REPTOPICUNBIND 0x7109    //回复
 //Only TCP and WEBSOCKET
 #define XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY 0x70A0         //消息通知
 ///////////////////////////////////////////////////////////////////////////
@@ -59,16 +41,6 @@
 #define ERROR_XENGINE_MESSAGE_XMQ_TIMEOUT 0x105                           //消息超时,无权使用
 #define ERROR_XENGINE_MESSAGE_XMQ_PUBTIME 0x106                           //定时消息,无权使用
 #define ERROR_XENGINE_MESSAGE_XMQ_KEYQUERY 0x107                          //查询绑定消息失败
-#define ERROR_XENGINE_MESSAGE_XMQ_SERIAL 0x108                            //消息序号错误
-#define ERROR_XENGINE_MESSAGE_XMQ_CREATEKEY 0x109                         //创建消息KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDOWNER 0x110                         //绑定所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELOWNER 0x111                          //删除所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_KEYUP 0x112                             //更新KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_BINDKEY 0x113                           //绑定KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_DELKEY 0x114                            //删除KEY失败
-#define ERROR_XENGINE_MESSAGE_XMQ_QUERYOWNER 0x115                        //查询所有者失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYTOPIC 0x116                       //修改主题失败
-#define ERROR_XENGINE_MESSAGE_XMQ_MODIFYMSG 0x117                         //修改消息失败
 
 #define ERROR_XENGINE_MESSAGE_HTTP_PARAMENT 0x201                         //HTTP请求参数错误
 #define ERROR_XENGINE_MESSAGE_HTTP_AUTHORIZE 0x202                        //验证失败没有权限
@@ -76,10 +48,13 @@
 #define ERROR_XENGINE_MESSAGE_HTTP_PARSE 0x204                            //解析失败,负载协议错误
 #define ERROR_XENGINE_MESSAGE_HTTP_SERVICE 0x205                          //服务器错误
 #define ERROR_XENGINE_MESSAGE_HTTP_APIREG 0x206                           //HTTP 远程注册失败
-#define ERROR_XENGINE_MESSAGE_HTTP_EXISTED 0x207                          //用户已经存在
 #define ERROR_XENGINE_MESSAGE_HTTP_REGISTER 0x208                         //用户注册失败,数据错误
 #define ERROR_XENGINE_MESSAGE_HTTP_APIDEL 0x209                           //HTTP API删除失败
 #define ERROR_XENGINE_MESSAGE_HTTP_DELETE 0x210                           //本地删除失败
+#define ERROR_XENGINE_MESSAGE_HTTP_MISS 0x211                             //缺少关键数据
+#define ERROR_XENGINE_MESSAGE_HTTP_EXIST 0x212                            //数据已存在
+#define ERROR_XENGINE_MESSAGE_HTTP_FAILURE 0x213                          //操作失败
+#define ERROR_XENGINE_MESSAGE_HTTP_PERMISSION 0x214                       //权限错误
 ///////////////////////////////////////////////////////////////////////////
 //                          导出的数据结构
 ///////////////////////////////////////////////////////////////////////////

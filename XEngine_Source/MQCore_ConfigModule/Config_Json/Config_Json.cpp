@@ -168,6 +168,17 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	pSt_ServerConfig->st_XReport.bEnable = st_JsonXReport["bEnable"].asBool();
 	_tcsxcpy(pSt_ServerConfig->st_XReport.tszAPIUrl, st_JsonXReport["tszAPIUrl"].asCString());
 	_tcsxcpy(pSt_ServerConfig->st_XReport.tszServiceName, st_JsonXReport["tszServiceName"].asCString());
+
+	if (st_JsonRoot["XCryption"].empty() || (3 != st_JsonRoot["XCryption"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XREPORT;
+		return false;
+	}
+	Json::Value st_JsonXCryption = st_JsonRoot["XCryption"];
+	pSt_ServerConfig->st_XCryption.bEnable = st_JsonXCryption["bEnable"].asBool();
+	pSt_ServerConfig->st_XCryption.nCryptionType = st_JsonXCryption["nCryptionType"].asInt();
+	_tcsxcpy(pSt_ServerConfig->st_XCryption.tszPassword, st_JsonXCryption["tszPassword"].asCString());
     return true;
 }
 bool CConfig_Json::Config_Json_VersionFile(LPCXSTR lpszConfigFile, XENGINE_SERVERCONFIG* pSt_ServerConfig)

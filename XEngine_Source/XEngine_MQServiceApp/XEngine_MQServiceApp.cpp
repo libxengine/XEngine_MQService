@@ -400,6 +400,15 @@ int main(int argc, char** argv)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，MQTT消息服务没有被启用"));
 	}
+
+	if (st_ServiceCfg.st_XCryption.bEnable)
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，数据加密服务已被启用,加密类型:%d"), st_ServiceCfg.st_XCryption.nCryptionType);
+	}
+	else
+	{
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，数据加密服务没有被启用"));
+	}
 #ifndef _DEBUG
 	//发送信息报告
 	if (st_ServiceCfg.st_XReport.bEnable && !bIsTest)

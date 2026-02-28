@@ -21,7 +21,7 @@ c c++Message Service
 3. 消息超时  
 4. 主题分区  
 5. 消息回溯
-6. 加密通信(planning)  
+6. 加密通信  
 7. 负载均衡(planning)  
 8. 消息次数  
 9. 消息订阅  
@@ -40,6 +40,7 @@ c c++Message Service
 22. http验证
 23. 电子邮件通知
 24. 短信通知(plan)
+25. 权限控制
 
 ## 安装教程
 
@@ -117,6 +118,9 @@ make FLAGS=CleanAll 清理编译
 
 ## 其他问题  
 你可以参考docment目录下的文档.里面包含了API协议和服务说明.
+
+#### 编译选项
+__XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__ == 1 可以开启权限控制,只有管理员权限才可以操作关键权限,主要用于HTTP接口
 
 ## 测试服务器
 地址:app.xyry.org 端口:TCP 5200,WEBSOCKET 5201,管理接口HTTP 5202  

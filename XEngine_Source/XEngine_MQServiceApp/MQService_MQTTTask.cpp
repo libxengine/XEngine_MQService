@@ -24,6 +24,10 @@ XHTHREAD XCALLBACK MessageQueue_MQTTThread(XPVOID lParam)
 
 				if (MQTTProtocol_Parse_Recv(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, &ptszMSGBuffer, &nMSGLen))
 				{
+					if (st_ServiceCfg.st_XCryption.bEnable)
+					{
+						Cryption_Api_CryptDecodec(NULL, (XBYTE*)ptszMSGBuffer, &nMSGLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+					}
 					MQService_MQTT_Handle(ppSst_ListAddr[i]->tszClientAddr, &st_MQTTHdr, ptszMSGBuffer, nMSGLen);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
 				}
@@ -104,8 +108,19 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 
 		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH), XENGINE_MQAPP_NETTYPE_MQTT);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求链接成功,客户端ID:%s,用户名:%s"), lpszClientAddr, st_USerInfo.tszClientID, st_USerInfo.tszClientUser);
+		return true;
 	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == pSt_MQTTHdr->byMsgType)
+
+	XCHAR tszUserName[XPATH_MIN] = {};
+	if (!SessionModule_Client_GetUser(lpszClientAddr, tszUserName))
+	{
+		MQTTProtocol_Packet_DisConnect(tszRVBuffer, &nRVLen);
+		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_DISCONN, tszRVBuffer, nRVLen);
+		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求指定消息:%d 失败,用户未登录,错误码:%lX"), lpszClientAddr, pSt_MQTTHdr->byMsgType, MQTTProtocol_GetLastError());
+		return false;
+	}
+	if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == pSt_MQTTHdr->byMsgType)
 	{
 		XSHOT wMsgID = 0;
 		XCHAR tszTopicName[XPATH_MAX] = {};
@@ -121,17 +136,36 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求订阅失败,错误码:%lX"), lpszClientAddr, MQTTProtocol_GetLastError());
 			return false;
 		}
-		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
-		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-		st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-		st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICBIND;
-		st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-		st_ProtocolHdr.wPacketSerial = wMsgID;
-		st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
-
-		_tcsxcpy(st_MQProtocol.tszMQKey, tszTopicName);
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_MQTT);
+		XENGINE_DBUSERKEY st_Userkey = {};
+		
+		_tcsxcpy(st_Userkey.tszUserName, tszUserName);
+		_tcsxcpy(st_Userkey.tszKeyName, tszTopicName);
+		//先查询有没有
+		if (DBModule_MQUser_KeyQuery(&st_Userkey))
+		{
+			//有就更新
+			st_Userkey.nKeySerial = wMsgID;
+			if (!DBModule_MQUser_KeyUPDate(&st_Userkey))
+			{
+				MQTTProtocol_Packet_DisConnect(tszRVBuffer, &nRVLen);
+				MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_DISCONN, tszRVBuffer, nRVLen);
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("MQTT消息端:%s,设置消息队列主题更新失败,主题名称:%s,序列号:%d,错误：%lX"), lpszClientAddr, tszTopicName, wMsgID, DBModule_GetLastError());
+				return false;
+			}
+		}
+		else
+		{
+			//没有就创建
+			st_Userkey.nKeySerial = wMsgID;
+			if (!DBModule_MQUser_KeyInsert(&st_Userkey))
+			{
+				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("insert bind topic is failure"));
+				XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("MQTT消息端:%s,设置消息队列主题创建失败,主题名称:%s,序列号:%d,错误：%lX"), lpszClientAddr, tszTopicName, wMsgID, DBModule_GetLastError());
+				return false;
+			}
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求订阅成功,主题名称:%s"), lpszClientAddr, tszTopicName);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE == pSt_MQTTHdr->byMsgType)
@@ -149,17 +183,19 @@ bool MQService_MQTT_Handle(LPCXSTR lpszClientAddr, MQTTPROTOCOL_FIXEDHEADER* pSt
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求取消订阅失败,错误码:%lX"), lpszClientAddr, MQTTProtocol_GetLastError());
 			return false;
 		}
-		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
-		XENGINE_PROTOCOL_XMQ st_MQProtocol = {};
-		st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-		st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-		st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQTOPICUNBIND;
-		st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-		st_ProtocolHdr.wPacketSerial = wMsgID;
-		st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+		XENGINE_DBUSERKEY st_Userkey = {};
 
-		_tcsxcpy(st_MQProtocol.tszMQKey, tszTopicName);
-		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, (LPCXSTR)&st_MQProtocol, sizeof(XENGINE_PROTOCOL_XMQ), XENGINE_MQAPP_NETTYPE_MQTT);
+		_tcsxcpy(st_Userkey.tszUserName, tszUserName);
+		_tcsxcpy(st_Userkey.tszKeyName, tszTopicName);
+
+		if (!DBModule_MQUser_KeyDelete(&st_Userkey))
+		{
+			MQTTProtocol_Packet_DisConnect(tszRVBuffer, &nRVLen);
+			MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_DISCONN, tszRVBuffer, nRVLen);
+			XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_MQTT);
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("MQTT消息端:%s,解除消息绑定订阅失败,可能没有找到主题用户,主题名称:%s,用户名称:%s,错误：%lX"), lpszClientAddr, tszTopicName, tszUserName, DBModule_GetLastError());
+			return false;
+		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端:%s,请求取消订阅,主题名称:%s"), lpszClientAddr, tszTopicName);
 	}
 	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH == pSt_MQTTHdr->byMsgType)
