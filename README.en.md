@@ -19,7 +19,7 @@ this software support following features
 3. message timeout  
 4. topic Partition  
 5. message tracking(planning)  
-6. encrypt Communication(planning)  
+6. encrypt Communication  
 7. load balanc(planning)  
 8. message get time  
 9. message subcribe  
@@ -38,6 +38,7 @@ this software support following features
 22. http verification
 23. email notify
 24. sms notify(plan)
+25. permission control
 
 ## install
 
@@ -108,6 +109,8 @@ database you need to open the database matching fields and tables are consistent
 
 ## other problems   
 You can refer to the document under the docment directory. It contains API protocol and service description.  
+#### Compiler Options
+When __XENGINE_MESSAGEQUEUE_BUILD_SWITCH_PERMISSION__ == 1, permission control can be enabled. Only users with administrator privileges can operate critical permissions, and this is mainly intended for HTTP interfaces
 
 ## Test Server Address
 Address:app.xyry.org Port:TCP 5200,WEBSOCKET 5201,HTTP Management Interface 5202  
