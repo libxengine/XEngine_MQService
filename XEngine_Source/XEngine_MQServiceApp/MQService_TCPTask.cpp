@@ -153,6 +153,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("%s客户端：%s，用户名：%s，登录失败，客户端权限不足够"), lpszClientAddr, st_UserInfo.tszUserName);
 				return false;
 			}
+			//创建TOKEN
+			BaseLib_Handle_Create(&pSt_ProtocolHdr->xhToken);
+			Session_Token_Insert(pSt_ProtocolHdr->xhToken, &st_UserInfo);
+
 			pSt_ProtocolHdr->wReserve = 0;
 			SessionModule_Client_Create(lpszClientAddr, &st_UserInfo, nNetType);
 			ProtocolModule_Packet_Common(nNetType, pSt_ProtocolHdr, NULL, tszSDBuffer, &nSDLen);

@@ -161,6 +161,13 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
             }
         }
         DBModule_MQUser_UserUPDate(&st_UserInfo);
+		//释放token
+		XNETHANDLE xhToken = 0;
+		SessionModule_Client_GetInfoByUser(st_UserInfo.tszUserName, &st_UserInfo);
+		if (Session_Token_GetUser(st_UserInfo.tszUserName, st_UserInfo.tszUserPass, &xhToken))
+		{
+			Session_Token_Delete(xhToken);
+		}
     }
     SessionModule_Client_Delete(lpszClientAddr);
 }
