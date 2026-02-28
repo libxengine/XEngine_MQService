@@ -1,3 +1,39 @@
+XEngine_MQService V3.19.0.1001
+
+增加:权限控制开关
+增加:数据传输加密支持
+更新:依赖库
+修改:mqtt协议的订阅和取消订阅不在交给tcp处理并且mqtt协议流程代码修改
+修改:当tcp登录的时候会创建http的token了
+修改:重构了tcp和http协议,现在大部分消息处理都通过http实现,tcp只处理投递订阅和获取消息
+修改:绑定消息协议字符串
+修改:协议消息统一
+修改:权限控制和处理
+修改:tcp登录权限处理
+修正:某些时候协议没有响应和解析问题
+修正:当post的协议找不到的时候没有响应问题
+修正:当没有找到http协议的时候无响应问题
+删除:http公用消息打包函数
+删除:多余的协议错误定义
+
+added:permission control of build switch
+added:data transfer crypt
+update:depend library
+modify:mqtt protcol bind and unbind does not post tcp handle and mqtt protocol process modify
+modify:create token of http when tcp login
+modify:Reconstruct the TCP and HTTP protocols,now the data processed by the HTTP protocol is no longer handed over to the TCP for processing
+modify:message and topic modify and request message number to http protocol
+modify:does not case-sensitive
+modify:bind message protocol string
+modify:protocol user unified
+modify:permission management and process
+modify:tcp login permission handle
+fixed:some protocol not reply and parse process failure
+fixed:no reply when not found post protocol
+fixed:http protocol not reply when not found protocol
+delete:http comm message packet
+delete:more protocol error define
+======================================================================================
 XEngine_MQService V3.18.0.1001
 
 ci:增加CentOS和Alma以及debian13系统支持
