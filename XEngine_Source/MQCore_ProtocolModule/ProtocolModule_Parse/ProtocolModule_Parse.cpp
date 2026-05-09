@@ -55,14 +55,18 @@ CProtocolModule_Parse::~CProtocolModule_Parse()
 *********************************************************************/
 bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer, int nMsgLen, XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, XCHAR* ptszMsgBuffer, int* pInt_MsgLen)
 {
+	// 初始化错误状态；本函数任何失败路径都会设置统一错误码后返回 false。
 	Protocol_IsErrorOccur = false;
 
+	// 基础参数校验：输入缓冲区必须有效。
 	if (NULL == lpszMsgBuffer)
 	{
 		Protocol_IsErrorOccur = true;
 		Protocol_dwErrorCode = ERROR_MQ_MODULE_PROTOCOL_PARAMENT;
 		return false;
 	}
+
+	// 第一步：将 WebSocket 文本消息解析为 JSON 根对象。
 	Json::Value st_JsonRoot;
 	JSONCPP_STRING st_JsonError;
 	Json::CharReaderBuilder st_ReaderBuilder;
@@ -75,6 +79,8 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		return false;
 	}
 
+	// 第二步：提取公共协议头字段（按字段是否存在进行兼容性读取）。
+	// pSt_ProtocolHdr 允许为空；为空时只执行消息体解析流程。
 	if (NULL != pSt_ProtocolHdr)
 	{
 		if (!st_JsonRoot["unOperatorType"].isNull())
@@ -103,6 +109,7 @@ bool CProtocolModule_Parse::ProtocolModule_Parse_Websocket(LPCXSTR lpszMsgBuffer
 		}
 	}
 	
+	// 第三步：初始化消息体解析上下文，后续根据操作类型解析具体业务字段。
 	int nPos = 0;
 	*pInt_MsgLen = 0;
 	XENGINE_PROTOCOL_XMQ st_MQProtocol;
