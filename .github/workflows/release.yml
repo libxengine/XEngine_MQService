@@ -64,7 +64,7 @@ jobs:
       - name: Download CentOS 
         uses: dawidd6/action-download-artifact@v21
         with:
-          workflow: Centos_build.yml
+          workflow: Centos_build1s.yml
           workflow_conclusion: success
           check_artifacts: false
           skip_unpack: true
