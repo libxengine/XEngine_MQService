@@ -122,14 +122,23 @@ LONG WINAPI Coredump_ExceptionFilter(EXCEPTION_POINTERS* pExceptionPointers)
 }
 #endif
 
+// Application entry point.
+// Responsibilities:
+// 1) Perform platform-specific runtime initialization.
+// 2) Initialize service components (logging/network/protocol workers).
+// 3) Start and monitor the service lifecycle until shutdown.
+// 4) Release resources in reverse order on exit paths.
 int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
+	// Windows-only socket runtime initialization.
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
+	// Register crash handler to generate minidump for post-mortem analysis.
 	SetUnhandledExceptionFilter(Coredump_ExceptionFilter);
 #ifndef _DEBUG
+	// Force UTF-8 locale in non-debug mode to keep runtime text handling consistent.
 	if (setlocale(LC_ALL, ".UTF8") == NULL)
 	{
 		fprintf(stderr, "Error setting locale.\n");
