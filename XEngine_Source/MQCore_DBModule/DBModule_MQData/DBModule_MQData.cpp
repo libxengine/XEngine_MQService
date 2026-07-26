@@ -196,11 +196,18 @@ bool CDBModule_MQData::DBModule_MQData_Delete(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
   类型：逻辑型
   意思：是否成功
 备注：
+  查询流程说明：
+  1) 参数校验：输入结构必须有效，否则设置统一错误码并返回失败；
+  2) 缓存优先：当启用查询缓存时先查内存，命中则直接返回成功；
+  3) 数据库查询：缓存未命中后拼接并执行 SQL，从结果集中填充输出结构；
+  4) 缓存回填：数据库查询成功后，将结果写回缓存以加速后续查询；
+  5) 错误语义：任一阶段失败均通过 DBModule_IsErrorOccur/DBModule_dwErrorCode 上报。
 *********************************************************************/
 bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 {
 	DBModule_IsErrorOccur = false;
 
+	// [阶段1] 输入参数校验：查询条件与输出承载结构均依赖 pSt_DBInfo。
 	if (NULL == pSt_DBInfo)
 	{
 		DBModule_IsErrorOccur = true;
@@ -208,6 +215,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 		return false;
 	}
 
+	// [阶段2] 查询缓存优先：命中则直接返回，避免访问数据库。
 	if (m_bMemoryQuery)
 	{
 		if (MemoryCache_DBData_DataQuery(pSt_DBInfo))
@@ -215,6 +223,7 @@ bool CDBModule_MQData::DBModule_MQData_Query(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo)
 			return true;
 		}
 	}
+	// [阶段3] 缓存未命中，执行数据库查询。
 	//查询
 	XNETHANDLE xhTable = 0;
 	__int64u nllLine = 0;
