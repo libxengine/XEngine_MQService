@@ -1,3 +1,27 @@
+XEngine_MQService V3.20.0.1001
+
+ci:更新了CI版本库
+ci:删除了多余的扫描
+更新:依赖库
+更新:windows 编译器VS到2026版本
+增加:AI代理解决问题
+增加:发送消息会返回序列号了
+增加:心跳支持
+修改:现在绑定消息的序列号从1开始
+修改:VS编译器的运行时库统一
+修正:codeql 扫描出的问题 
+
+ci:update last version
+ci:delete unused 
+update:depend library
+update:vs to 2026
+added:agentic workflows for issue triage and auto fix
+added:reply with serial number for post message
+added:heartbeat support
+modify:serial from 1 number to start
+modify:vs crt runtime unified
+fixed:codeql scan problem
+======================================================================================
 XEngine_MQService V3.19.0.1001
 
 增加:权限控制开关

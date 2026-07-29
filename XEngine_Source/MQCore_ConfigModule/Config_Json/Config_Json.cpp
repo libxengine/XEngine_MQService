@@ -22,10 +22,28 @@ CConfig_Json::~CConfig_Json()
 //////////////////////////////////////////////////////////////////////////
 //                        公用函数
 //////////////////////////////////////////////////////////////////////////
+// 函数名称: Config_Json_File
+// 功能说明:
+//  读取指定 JSON 配置文件，并将结果填充到 XENGINE_SERVERCONFIG 结构体中。
+//  函数按“参数校验 -> 文件读取 -> JSON 解析 -> 字段映射”流程执行。
+//
+// 参数:
+//  lpszConfigFile     [in]  配置文件路径
+//  pSt_ServerConfig   [out] 配置输出结构体，不能为空
+//
+// 返回值:
+//  true  : 读取并解析成功
+//  false : 失败（同时设置 Config_IsErrorOccur / Config_dwErrorCode）
+//
+// 错误处理:
+//  - 参数或文件打开失败: ERROR_MQ_MODULE_CONFIG_JSON_PARAMENT
+//  - JSON 解析失败      : ERROR_MQ_MODULE_CONFIG_JSON_PARSE
 bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG *pSt_ServerConfig)
 {
+    // 初始化错误状态，默认本次调用无错误
     Config_IsErrorOccur = false;
 
+    // 1) 参数有效性校验
     if ((NULL == lpszConfigFile) || (NULL == pSt_ServerConfig))
     {
         Config_IsErrorOccur = true;
@@ -36,6 +54,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     Json::Value st_JsonRoot;
     Json::CharReaderBuilder st_JsonBuilder;
 
+    // 2) 打开并读取配置文件内容
     FILE* pSt_File = _xtfopen(lpszConfigFile, _X("rb"));
     if (NULL == pSt_File)
     {
@@ -47,6 +66,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	size_t nSize = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
     fclose(pSt_File);
 
+    // 3) 解析 JSON 文本
     std::unique_ptr<Json::CharReader> const pSt_JsonReader(st_JsonBuilder.newCharReader());
     if (!pSt_JsonReader->parse(tszMsgBuffer, tszMsgBuffer + nSize, &st_JsonRoot, &st_JsonError))
     {
@@ -54,6 +74,7 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
         Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_PARSE;
         return false;
     }
+    // 4) 将 JSON 字段映射到配置结构体
     _tcsxcpy(pSt_ServerConfig->tszIPAddr,st_JsonRoot["tszIPAddr"].asCString());
     _tcsxcpy(pSt_ServerConfig->tszTopic, st_JsonRoot["tszTopic"].asCString());
     pSt_ServerConfig->bDeamon = st_JsonRoot["bDeamon"].asInt();
@@ -76,6 +97,19 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
     pSt_ServerConfig->st_XMax.nHttpThread = st_JsonXMax["nHttpThread"].asInt();
     pSt_ServerConfig->st_XMax.nWSThread = st_JsonXMax["nWSThread"].asInt();
 	pSt_ServerConfig->st_XMax.nMQTTThread = st_JsonXMax["nMQTTThread"].asInt();
+	//时间配置
+	if (st_JsonRoot["XTime"].empty() || (5 != st_JsonRoot["XTime"].size()))
+	{
+		Config_IsErrorOccur = true;
+		Config_dwErrorCode = ERROR_MQ_MODULE_CONFIG_JSON_XTIME;
+		return false;
+	}
+	Json::Value st_JsonXTime = st_JsonRoot["XTime"];
+	pSt_ServerConfig->st_XTime.nHeartCheck = st_JsonXTime["nHeartCheck"].asInt();
+	pSt_ServerConfig->st_XTime.nTCPTime = st_JsonXTime["nTCPTime"].asInt();
+	pSt_ServerConfig->st_XTime.nWSTime = st_JsonXTime["nWSTime"].asInt();
+	pSt_ServerConfig->st_XTime.nHTTPTime = st_JsonXTime["nHTTPTime"].asInt();
+	pSt_ServerConfig->st_XTime.nMQTime = st_JsonXTime["nMQTTTime"].asInt();
 
     if (st_JsonRoot["XLog"].empty() || (5 != st_JsonRoot["XLog"].size()))
     {

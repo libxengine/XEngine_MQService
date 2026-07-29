@@ -11,7 +11,7 @@ on:
 
 jobs:
   analyze:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       security-events: write
       packages: read
@@ -23,14 +23,13 @@ jobs:
       matrix:
         include:
         - language: c-cpp
+          build-mode: manual
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-          ref: 'develop'
+      uses: actions/checkout@v6
           
     - name: Checkout dependency repository (xengine)
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: libxengine/libxengine
         path: libxengine
@@ -42,24 +41,31 @@ jobs:
 
     - name: Set TERM variable
       run: echo "TERM=xterm" >> $GITHUB_ENV
-        
+      
     - name: Set up Dependency Environment
       run: |
           cd libxengine
           chmod +x ./XEngine_LINEnv.sh
           sudo ./XEngine_LINEnv.sh -i 3
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        
-    - name: make
+    - name: make pre
       run: | 
           cd XEngine_Source
-          make
+          make BUILDTYPE=1
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: manual 
+        queries: security-and-quality
+        
+    - name: make check
+      run: | 
+          cd XEngine_Source
+          make BUILDTYPE=2
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{ matrix.language }}"

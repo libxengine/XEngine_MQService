@@ -314,6 +314,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 						//可能为空表
 						st_DBQueue.nQueueSerial = 1;
 					}
+					st_MQProtocol.nSerial = st_DBQueue.nQueueSerial;
 					APIHelp_Counter_SerialSet(st_DBQueue.tszQueueName, st_DBQueue.nQueueSerial);
 				}
 			}
