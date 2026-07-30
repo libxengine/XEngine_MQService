@@ -289,7 +289,7 @@ void MQ_Get(int nType = 0)
 			else
 			{
 				_xtprintf("获取消息队列数据失败,错误码:%d\n", st_ProtocolHdr.wReserve);
-			}
+			} 
 			break;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

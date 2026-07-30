@@ -80,6 +80,11 @@ extern XHANDLE xhHTTPSocket;
 extern XHANDLE xhWSSocket;
 extern XHANDLE xhMQTTSocket;
 
+extern XHANDLE xhTCPHeart;
+extern XHANDLE xhHTTPHeart;
+extern XHANDLE xhWSHeart;
+extern XHANDLE xhMQTTHeart;
+
 extern XHANDLE xhTCPPacket;
 extern XHANDLE xhHTTPPacket;
 extern XHANDLE xhWSPacket;

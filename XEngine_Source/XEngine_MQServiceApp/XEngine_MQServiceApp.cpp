@@ -8,6 +8,11 @@ XHANDLE xhHTTPSocket = NULL;
 XHANDLE xhWSSocket = NULL;
 XHANDLE xhMQTTSocket = NULL;
 
+XHANDLE xhTCPHeart = NULL;
+XHANDLE xhHTTPHeart = NULL;
+XHANDLE xhWSHeart = NULL;
+XHANDLE xhMQTTHeart = NULL;
+
 XHANDLE xhTCPPacket = NULL;
 XHANDLE xhHTTPPacket = NULL;
 XHANDLE xhWSPacket = NULL;
@@ -32,11 +37,16 @@ void ServiceApp_Stop(int signo)
 		HttpProtocol_Server_DestroyEx(xhHTTPPacket);
 		RfcComponents_WSPacket_DestoryEx(xhWSPacket);
 		MQTTProtocol_Parse_Destory();
-
+	
 		NetCore_TCPXCore_DestroyEx(xhTCPSocket);
 		NetCore_TCPXCore_DestroyEx(xhHTTPSocket);
 		NetCore_TCPXCore_DestroyEx(xhWSSocket);
 		NetCore_TCPXCore_DestroyEx(xhMQTTSocket);
+
+		SocketOpt_HeartBeat_DestoryEx(xhTCPHeart);
+		SocketOpt_HeartBeat_DestoryEx(xhWSHeart);
+		SocketOpt_HeartBeat_DestoryEx(xhHTTPHeart);
+		SocketOpt_HeartBeat_DestoryEx(xhMQTTHeart);
 
 		ManagePool_Thread_NQDestroy(xhTCPPool);
 		ManagePool_Thread_NQDestroy(xhHttpPool);
@@ -112,14 +122,23 @@ LONG WINAPI Coredump_ExceptionFilter(EXCEPTION_POINTERS* pExceptionPointers)
 }
 #endif
 
+// Application entry point.
+// Responsibilities:
+// 1) Perform platform-specific runtime initialization.
+// 2) Initialize service components (logging/network/protocol workers).
+// 3) Start and monitor the service lifecycle until shutdown.
+// 4) Release resources in reverse order on exit paths.
 int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
+	// Windows-only socket runtime initialization.
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
+	// Register crash handler to generate minidump for post-mortem analysis.
 	SetUnhandledExceptionFilter(Coredump_ExceptionFilter);
 #ifndef _DEBUG
+	// Force UTF-8 locale in non-debug mode to keep runtime text handling consistent.
 	if (setlocale(LC_ALL, ".UTF8") == NULL)
 	{
 		fprintf(stderr, "Error setting locale.\n");
@@ -253,6 +272,21 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动TCP网络服务器成功,TCP端口:%d,IO:%d"), st_ServiceCfg.nTCPPort, st_ServiceCfg.st_XMax.nIOThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhTCPSocket, MessageQueue_Callback_TCPLogin, MessageQueue_Callback_TCPRecv, MessageQueue_Callback_TCPLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册TCP网络事件成功"));
+
+		if (st_ServiceCfg.st_XTime.nTCPTime > 0)
+		{
+			xhTCPHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nTCPTime, MessageQueue_Client_TCPHeart);
+			if (NULL == xhTCPHeart)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化TCP验证心跳服务失败，错误：%lX"), NetCore_GetLastError());
+				goto XENGINE_APPEXIST;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化TCP验证心跳服务成功,检测次数:%d,检测时间:%d"), st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nTCPTime);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到TCP心跳服务没有启用"));
+		}
 		//任务池
 		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListTCPParam, st_ServiceCfg.st_XMax.nTCPThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nTCPThread; i++)
@@ -296,6 +330,21 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhHTTPSocket, MessageQueue_Callback_HttpLogin, MessageQueue_Callback_HttpRecv, MessageQueue_Callback_HttpLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册HTTP网络事件成功"));
 
+		if (st_ServiceCfg.st_XTime.nHTTPTime > 0)
+		{
+			xhHTTPHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nHTTPTime, MessageQueue_Client_HttpHeart);
+			if (NULL == xhHTTPHeart)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化HTTP心跳服务失败，错误：%lX"), NetCore_GetLastError());
+				goto XENGINE_APPEXIST;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化HTTP心跳服务成功,检测次数:%d,检测时间:%d"), st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nHTTPTime);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到HTTP心跳服务没有启用"));
+		}
+
 		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListHTTPParam, st_ServiceCfg.st_XMax.nHttpThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nHttpThread; i++)
 		{
@@ -338,6 +387,21 @@ int main(int argc, char** argv)
 		NetCore_TCPXCore_RegisterCallBackEx(xhWSSocket, MessageQueue_Callback_WSLogin, MessageQueue_Callback_WSRecv, MessageQueue_Callback_WSLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册Websocket网络事件成功"));
 
+		if (st_ServiceCfg.st_XTime.nWSTime > 0)
+		{
+			xhWSHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nWSTime, MessageQueue_Client_WSHeart);
+			if (NULL == xhWSHeart)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化WEBSOCKET验证心跳服务失败，错误：%lX"), NetCore_GetLastError());
+				goto XENGINE_APPEXIST;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化WEBSOCKET验证心跳服务成功,检测次数:%d,检测时间:%d"), st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nWSTime);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到WEBSOCKET心跳服务没有启用"));
+		}
+
 		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListWSParam, st_ServiceCfg.st_XMax.nWSThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nWSThread; i++)
 		{
@@ -378,6 +442,21 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，启动MQTT网络服务器成功,MQTT端口:%d,IO:%d"), st_ServiceCfg.nMQTTPort, st_ServiceCfg.st_XMax.nMQTTThread);
 		NetCore_TCPXCore_RegisterCallBackEx(xhMQTTSocket, MessageQueue_Callback_MQTTLogin, MessageQueue_Callback_MQTTRecv, MessageQueue_Callback_MQTTLeave);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，注册MQTT网络事件成功"));
+
+		if (st_ServiceCfg.st_XTime.nMQTime > 0)
+		{
+			xhMQTTHeart = SocketOpt_HeartBeat_InitEx(st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nMQTime, MessageQueue_Client_MQTTHeart);
+			if (NULL == xhMQTTHeart)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("启动服务中，初始化MQTT心跳服务失败，错误：%lX"), NetCore_GetLastError());
+				goto XENGINE_APPEXIST;
+			}
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("启动服务中，初始化MQTT心跳服务成功,检测次数:%d,检测时间:%d"), st_ServiceCfg.st_XTime.nHeartCheck, st_ServiceCfg.st_XTime.nMQTime);
+		}
+		else
+		{
+			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，检测到MQTT心跳服务没有启用"));
+		}
 
 		BaseLib_Memory_Malloc((XPPPMEM)&ppSt_ListMQTTParam, st_ServiceCfg.st_XMax.nMQTTThread, sizeof(THREADPOOL_PARAMENT));
 		for (int i = 0; i < st_ServiceCfg.st_XMax.nMQTTThread; i++)

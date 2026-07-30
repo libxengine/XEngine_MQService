@@ -99,6 +99,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 			XENGINE_DBUSERKEY st_Userkey;
 			memset(&st_Userkey, '\0', sizeof(XENGINE_DBUSERKEY));
 
+			st_Userkey.nKeySerial = 1;
 			_tcsxcpy(st_Userkey.tszUserName, st_UserInfo.tszUserName);
 			_tcsxcpy(st_Userkey.tszKeyName, st_ServiceCfg.tszTopic);
 			//创建
@@ -268,7 +269,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		if (DBModule_MQUser_KeyQuery(&st_Userkey))
 		{
 			//有就更新
-			st_Userkey.nKeySerial = st_MQProtocol.nSerial;
+			st_Userkey.nKeySerial = st_MQProtocol.nSerial == 0 ? 1 : st_MQProtocol.nSerial;
 			if (!DBModule_MQUser_KeyUPDate(&st_Userkey))
 			{
 				ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_FAILURE, _X("update bind topic is failure"));

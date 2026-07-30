@@ -19,6 +19,10 @@ void XCALLBACK MessageQueue_Callback_TCPLeave(LPCXSTR lpszClientAddr, XSOCKET hS
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, false);
 }
+void XCALLBACK MessageQueue_Client_TCPHeart(LPCXSTR lpszClientAddr, XSOCKET hSocket, int nStatus, XPVOID lParam)
+{
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_TCP, true);
+}
 //////////////////////////////////////////////////////////////////////////
 bool XCALLBACK MessageQueue_Callback_MQTTLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
@@ -39,6 +43,10 @@ void XCALLBACK MessageQueue_Callback_MQTTLeave(LPCXSTR lpszClientAddr, XSOCKET h
 {
 	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_MQTT, false);
 }
+void XCALLBACK MessageQueue_Client_MQTTHeart(LPCXSTR lpszClientAddr, XSOCKET hSocket, int nStatus, XPVOID lParam)
+{
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_MQTT, true);
+}
 //////////////////////////////////////////////////////////////////////////
 bool XCALLBACK MessageQueue_Callback_HttpLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
@@ -57,6 +65,10 @@ void XCALLBACK MessageQueue_Callback_HttpRecv(LPCXSTR lpszClientAddr, XSOCKET hS
 void XCALLBACK MessageQueue_Callback_HttpLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, false);
+}
+void XCALLBACK MessageQueue_Client_HttpHeart(LPCXSTR lpszClientAddr, XSOCKET hSocket, int nStatus, XPVOID lParam)
+{
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_HTTP, true);
 }
 //////////////////////////////////////////////////////////////////////////
 bool XCALLBACK MessageQueue_Callback_WSLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
@@ -93,6 +105,10 @@ void XCALLBACK MessageQueue_Callback_WSLeave(LPCXSTR lpszClientAddr, XSOCKET hSo
 {
     XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, false);
 }
+void XCALLBACK MessageQueue_Client_WSHeart(LPCXSTR lpszClientAddr, XSOCKET hSocket, int nStatus, XPVOID lParam)
+{
+	XEngine_MQXService_Close(lpszClientAddr, XENGINE_MQAPP_NETTYPE_WEBSOCKET, true);
+}
 //////////////////////////////////////////////////////////////////////////
 void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 {
@@ -103,7 +119,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
         {
 			NetCore_TCPXCore_CloseForClientEx(xhTCPSocket, lpszClientAddr);
 		}
-        XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("TCP客户端离开，TCP客户端地址：%s"), lpszClientAddr);
+        XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("TCP客户端离开，TCP客户端地址：%s，心跳标记:%d"), lpszClientAddr, bHeart);
     }
     else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
     {
@@ -112,7 +128,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 		{
 			NetCore_TCPXCore_CloseForClientEx(xhWSSocket, lpszClientAddr);
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("Websocket客户端离开，Websocket客户端地址：%s"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("Websocket客户端离开，Websocket客户端地址：%s，心跳标记:%d"), lpszClientAddr, bHeart);
     }
     else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
 	{
@@ -121,7 +137,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 		{
 			NetCore_TCPXCore_CloseForClientEx(xhHTTPSocket, lpszClientAddr);
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端离开，HTTP客户端地址：%s"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP客户端离开，HTTP客户端地址：%s，心跳标记:%d"), lpszClientAddr, bHeart);
     }
 	else
 	{
@@ -130,7 +146,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 		{
 			NetCore_TCPXCore_CloseForClientEx(xhMQTTSocket, lpszClientAddr);
 		}
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端离开，MQTT客户端地址：%s"), lpszClientAddr);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端离开，MQTT客户端地址：%s，心跳标记:%d"), lpszClientAddr, bHeart);
 	}
 	XENGINE_PROTOCOL_USERINFO st_UserInfo;
 	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));

@@ -34,6 +34,14 @@ typedef struct
     }st_XMax;
     struct
     {
+        int nHeartCheck;                                    //检测次数
+        int nTCPTime;                                       //TCP检测时间
+        int nWSTime;                                        //WEBSOCKET检测时间
+        int nMQTime;                                        //MQTT检测时间
+        int nHTTPTime;                                      //HTTP检测时间
+    }st_XTime;
+    struct
+    {
         XCHAR tszLOGFile[XPATH_MAX];
         int nMaxSize;
         int nMaxCount;
