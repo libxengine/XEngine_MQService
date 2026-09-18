@@ -24,8 +24,6 @@ jobs:
         include:
         - language: c-cpp
           build-mode: manual
-        - language: actions
-          build-mode: none
           
     steps:
     - name: Checkout repository

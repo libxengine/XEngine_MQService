@@ -22,6 +22,9 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	LPCXSTR lpszAPIGetOnline = _X("getonline");
 	LPCXSTR lpszAPIGetNumber = _X("getnumber");      //请求消息队列编号信息
 
+	LPCXSTR lpszAPIPostMsg = _X("postmsg");     
+	LPCXSTR lpszAPIGetMsg = _X("getmsg");     
+
 	LPCXSTR lpszAPIBind = _X("bind");
 	LPCXSTR lpszAPIUMBind = _X("unbind");
 	LPCXSTR lpszAPIUNReadMsg = _X("unreadmsg");
@@ -469,6 +472,12 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 		ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen);
 		XEngine_MQXService_Send(lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("HTTP消息端:%s,修改主题名称成功,原名称:%s,目标名:%s"), lpszClientAddr, tszSrcTopic, tszDstTopic);
+	}
+	else if (0 == _tcsxncmp(lpszAPIPostMsg, lpszFuncName, _tcsxlen(lpszAPIPostMsg)) || 0 == _tcsxncmp(lpszAPIGetMsg, lpszFuncName, _tcsxlen(lpszAPIGetMsg)))
+	{
+		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
+		ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszSDBuffer, &nSDLen);
+		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
 	}
 	else
 	{
