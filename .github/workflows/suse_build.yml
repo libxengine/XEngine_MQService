@@ -1,4 +1,4 @@
-name: fedora build workflows
+name: opensuse build workflows
 
 on:
   push:
@@ -16,41 +16,21 @@ jobs:
   build:
     runs-on: ${{ matrix.runner }}
     container:
-      image: fedora:${{ matrix.fedora-version }}
-      options: --platform ${{ matrix.platform }}
+      image: opensuse/leap:${{ matrix.version }}
+      options: --platform=${{ matrix.platform }}
     strategy:
       matrix:
         include:
           - arch: amd64
             runner: ubuntu-24.04
             platform: linux/amd64
-            fedora-version: 44
-            artifact: x86-64
-          - arch: amd64
-            runner: ubuntu-24.04
-            platform: linux/amd64
-            fedora-version: 43
-            artifact: x86-64
-          - arch: amd64
-            runner: ubuntu-24.04
-            platform: linux/amd64
-            fedora-version: 42
+            version: 16.0
             artifact: x86-64
           - arch: arm64
             runner: ubuntu-24.04-arm
             platform: linux/arm64
-            fedora-version: 44
-            artifact: arm64
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
-            fedora-version: 43
-            artifact: arm64
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
-            fedora-version: 42
-            artifact: arm64
+            version: 16.0
+            artifact: Arm64
 
     steps:
       - name: Checkout main repository code
@@ -68,23 +48,24 @@ jobs:
           repository: libxengine/XEngine_OPenSource
           path: XEngine_Source/XEngine_DependLibrary
 
-      - name: install system package
-        run: |
-            dnf update -y
-            dnf install gcc g++ make git jq unzip wget -y
-
       - name: Set TERM variable
         run: echo "TERM=xterm" >> $GITHUB_ENV
+
+      - name: install system package
+        run: |
+            zypper --non-interactive update -y
+            zypper install -y gcc gcc-c++ make git jq unzip wget
 
       - name: install xengine library
         run: |
             latest_tag=$(curl -s https://api.github.com/repos/libxengine/libxengine/releases/latest | jq -r .tag_name)
-            wget https://github.com/libxengine/libxengine/releases/download/$latest_tag/XEngine_Fedora_${{ matrix.fedora-version }}_${{ matrix.artifact }}.zip
-            unzip ./XEngine_Fedora_${{ matrix.fedora-version }}_${{ matrix.artifact }}.zip -d ./XEngine_Fedora_${{ matrix.fedora-version }}_${{ matrix.artifact }}
-            cd XEngine_Fedora_${{ matrix.fedora-version }}_${{ matrix.artifact }}
+            wget https://github.com/libxengine/libxengine/releases/download/$latest_tag/XEngine_OpenSuse_${{ matrix.version }}_${{ matrix.artifact }}.zip
+            unzip ./XEngine_OpenSuse_${{ matrix.version }}_${{ matrix.artifact }}.zip -d ./XEngine_OpenSuse_${{ matrix.version }}_${{ matrix.artifact }}
+            cd XEngine_OpenSuse_${{ matrix.version }}_${{ matrix.artifact }}
             
             chmod 777 *
             ./XEngine_LINEnv.sh -i 3
+
       - name: make
         run: |
             cd XEngine_Source
@@ -104,6 +85,6 @@ jobs:
       - name: Upload folder as artifact
         uses: actions/upload-artifact@v7
         with:
-          name: XEngine_MQServiceApp-Fedora_${{ matrix.fedora-version }}_${{ matrix.artifact }}
+          name: XEngine_MQServiceApp-OPenSuse_${{ matrix.version }}_${{ matrix.artifact }}
           path: XEngine_Release/
           retention-days: 1

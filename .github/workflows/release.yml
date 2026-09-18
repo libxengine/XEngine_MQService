@@ -12,7 +12,7 @@ jobs:
     steps:
         # 检出代码并包含标签
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0 
 
@@ -56,6 +56,15 @@ jobs:
         uses: dawidd6/action-download-artifact@v24
         with:
           workflow: Alma_build.yml
+          workflow_conclusion: success
+          check_artifacts: false
+          skip_unpack: true
+          if_no_artifact_found: fail
+          path: ./XRelease/
+      - name: Download opensuse 
+        uses: dawidd6/action-download-artifact@v24
+        with:
+          workflow: suse_build.yml
           workflow_conclusion: success
           check_artifacts: false
           skip_unpack: true
