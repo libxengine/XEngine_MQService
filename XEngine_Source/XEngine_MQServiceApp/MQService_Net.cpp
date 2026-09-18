@@ -56,7 +56,7 @@ bool XCALLBACK MessageQueue_Callback_HttpLogin(LPCXSTR lpszClientAddr, XSOCKET h
 }
 void XCALLBACK MessageQueue_Callback_HttpRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
-	if (!HttpProtocol_Server_InserQueueEx(xhHTTPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	if (!HttpProtocol_Server_InsertQueueEx(xhHTTPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("投递HTTP数据包到消息队列失败，错误：%lX"), HttpProtocol_GetLastError());
 		return;

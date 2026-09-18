@@ -475,6 +475,7 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	}
 	else if (0 == _tcsxncmp(lpszAPIPostMsg, lpszFuncName, _tcsxlen(lpszAPIPostMsg)) || 0 == _tcsxncmp(lpszAPIGetMsg, lpszFuncName, _tcsxlen(lpszAPIGetMsg)))
 	{
+		//http://127.0.0.1:5202/api?function=postmsg
 		XENGINE_PROTOCOLHDR st_ProtocolHdr = {};
 		ProtocolModule_Parse_Websocket(lpszMsgBuffer, nMsgLen, &st_ProtocolHdr, tszSDBuffer, &nSDLen);
 		MessageQueue_TCP_Handle(&st_ProtocolHdr, lpszClientAddr, tszSDBuffer, nSDLen, XENGINE_MQAPP_NETTYPE_HTTP);
