@@ -814,9 +814,7 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 	{
 		if (0 == pSt_ProtocolHdr->wReserve)
 		{
-			int nRVLen = 0;
 			int nListCount = 6;
-			XCHAR tszRVBuffer[1024];
 			MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
 
 			BaseLib_Memory_Malloc((XPPPMEM)&ppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));

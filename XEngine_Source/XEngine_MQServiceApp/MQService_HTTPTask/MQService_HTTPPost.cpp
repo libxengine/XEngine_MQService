@@ -51,7 +51,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	//判断请求
 	if (0 == _tcsxncmp(lpszAPIRegister, lpszFuncName, _tcsxlen(lpszAPIRegister)))
 	{
-		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
 		if (!ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, &st_UserInfo))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
@@ -114,7 +113,6 @@ bool MessageQueue_HttpTask_Post(LPCXSTR lpszClientAddr, LPCXSTR lpszFuncName, LP
 	}
 	else if (0 == _tcsxncmp(lpszAPIDelUser, lpszFuncName, _tcsxlen(lpszAPIDelUser)))
 	{
-		XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
 		if (!ProtocolModule_Parse_Register(lpszMsgBuffer, nMsgLen, &st_UserInfo))
 		{
 			ProtocolModule_Packet_Http(tszSDBuffer, &nSDLen, ERROR_XENGINE_MESSAGE_HTTP_PARSE, _X("json load parse is failure"));
