@@ -304,6 +304,73 @@ void MQ_GetTopicList()
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBody);
 }
 
+void MQ_UserPost(LPCXSTR lpszMsgBuffer)
+{
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonMQProtocol;
+	Json::Value st_JsonPayload;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQPOST;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_STRING;
+	st_JsonRoot["byIsReply"] = 1;
+	st_JsonRoot["xhToken"] = xhToken;
+
+	XSHOT nMSGAttr = 0;
+	XENGINE_PROTOCOL_MSGATTR st_MSGAttr;
+	memset(&st_MSGAttr, '\0', sizeof(XENGINE_PROTOCOL_MSGATTR));
+
+	st_MSGAttr.byAttrSelf = 1;
+	memcpy(&nMSGAttr, &st_MSGAttr, sizeof(XENGINE_PROTOCOL_MSGATTR));
+
+	st_JsonMQProtocol["tszMQKey"] = "XEngine_CommKey";
+	st_JsonMQProtocol["nSerial"] = 0;             //序列号,0服务会自动处理
+	st_JsonMQProtocol["nKeepTime"] = 0;          //生效时间
+	st_JsonMQProtocol["nPubTime"] = -1;
+	st_JsonMQProtocol["nGetTimer"] = 0;
+	st_JsonMQProtocol["nMSGAttr"] = nMSGAttr;
+
+	st_JsonPayload["nPayLen"] = (Json::Value::UInt)strlen(lpszMsgBuffer);
+	st_JsonPayload["tszPayData"] = lpszMsgBuffer;
+
+	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+	st_JsonRoot["st_Payload"] = st_JsonPayload;
+
+	int nMSGLen = st_JsonRoot.toStyledString().length();
+	XCHAR* ptszMSGBuffer = NULL;
+	if (!APIClient_Http_Request(_X("POST"), "http://127.0.0.1:5202/api?function=postmsg", st_JsonRoot.toStyledString().c_str(), NULL, &ptszMSGBuffer, &nMSGLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+	_xtprintf("MQ_Post:%s\n", ptszMSGBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
+}
+void MQ_UserGet()
+{
+	Json::Value st_JsonRoot;
+	Json::Value st_JsonMQProtocol;
+	Json::Value st_JsonPayload;
+	st_JsonRoot["unOperatorType"] = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
+	st_JsonRoot["unOperatorCode"] = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQGET;
+	st_JsonRoot["byVersion"] = ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_JSON;
+	st_JsonRoot["byIsReply"] = 1;
+	st_JsonRoot["xhToken"] = xhToken;
+
+	st_JsonMQProtocol["tszMQKey"] = "XEngine_CommKey";
+	st_JsonMQProtocol["nSerial"] = 0;
+
+	st_JsonRoot["st_MQProtocol"] = st_JsonMQProtocol;
+
+	int nMSGLen = st_JsonRoot.toStyledString().length();
+	XCHAR* ptszMSGBuffer = NULL;
+	if (!APIClient_Http_Request(_X("POST"), "http://127.0.0.1:5202/api?function=getmsg", st_JsonRoot.toStyledString().c_str(), NULL, &ptszMSGBuffer, &nMSGLen))
+	{
+		_xtprintf("发送投递失败！\n");
+		return;
+	}
+	_xtprintf("MQ_Get:%s\n", ptszMSGBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMSGBuffer);
+}
 int main()
 {
 #ifdef _MSC_BUILD
@@ -313,6 +380,9 @@ int main()
 
 	MQ_UserRegister();
 	MQ_UserLogin();
+	MQ_UserGet();
+	MQ_UserPost("hello world");
+	
 	MQ_GetUNRead();
 	MQ_GetUserList();
 	MQ_GetOnlineList();
