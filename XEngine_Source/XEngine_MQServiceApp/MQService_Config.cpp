@@ -31,51 +31,26 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
         }
         else if (0 == _tcsxcmp("-tp",argv[i]))
         {
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
             pSt_StartlParam->nTCPPort = _ttxoi(argv[i + 1]);
             ++i;
         }
         else if (0 == _tcsxcmp("-hp",argv[i]))
         {
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
             pSt_StartlParam->nHttpPort = _ttxoi(argv[i + 1]);
             ++i;
         }
 		else if (0 == _tcsxcmp("-wp", argv[i]))
 		{
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
 			pSt_StartlParam->nWSPort = _ttxoi(argv[i + 1]);
             ++i;
 		}
 		else if (0 == _tcsxcmp("-mp", argv[i]))
 		{
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
 			pSt_StartlParam->nMQTTPort = _ttxoi(argv[i + 1]);
             ++i;
 		}
         else if (0 == _tcsxcmp("-d",argv[i]))
         {
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
             pSt_StartlParam->bDeamon = _ttxoi(argv[i + 1]);
             ++i;
         }
@@ -85,21 +60,11 @@ bool MQ_Service_Parament(int argc, char** argv, XENGINE_SERVERCONFIG* pSt_Startl
 		}
 		else if (0 == _tcsxcmp("-lt", argv[i]))
 		{
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
 			pSt_StartlParam->st_XLog.nLogType = _ttxoi(argv[i + 1]);
             ++i;
 		}
 		else if (0 == _tcsxcmp("-l", argv[i]))
 		{
-			if (i + 1 >= argc)
-			{
-				MQ_Service_ParamentHelp();
-				return false;
-			}
 			LPCXSTR lpszLogLevel = argv[i + 1];
             ++i;
 			if (0 == _tcsxcmp("debug", lpszLogLevel))
