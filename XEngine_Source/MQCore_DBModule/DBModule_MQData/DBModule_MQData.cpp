@@ -109,11 +109,8 @@ bool CDBModule_MQData::DBModule_MQData_Insert(XENGINE_DBMESSAGEQUEUE* pSt_DBInfo
         DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
         return false;
 	}
-	XCHAR tszSQLStatement[10240];
-	XCHAR tszSQLCoder[8192];
-
-    memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
-	memset(tszSQLCoder, '\0', sizeof(tszSQLCoder));
+	XCHAR tszSQLStatement[10240] = {};
+	XCHAR tszSQLCoder[10240] = {};
 
 	DataBase_MySQL_Coder(xhDBSQL, pSt_DBInfo->tszMsgBuffer, tszSQLCoder, &pSt_DBInfo->nMsgLen);
 	__int64u nRet = _xstprintf(tszSQLStatement, _X("INSERT INTO `%s` (tszUserName,tszUserBelong,tszQueueName,nQueueSerial,tszQueueLeftTime,tszQueuePublishTime,tszQueueData,nDataType,nDataAttr,tszQueueCreateTime) VALUES('%s','%s','%s',%lld,'%s','%s','"), pSt_DBInfo->tszQueueName, pSt_DBInfo->tszUserName, pSt_DBInfo->tszUserBelong, pSt_DBInfo->tszQueueName, pSt_DBInfo->nQueueSerial, pSt_DBInfo->tszQueueLeftTime, pSt_DBInfo->tszQueuePublishTime);
