@@ -11,7 +11,6 @@
 #ifdef _MSC_BUILD
 #include "framework.h"
 #endif
-#endif //PCH_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,3 +36,5 @@
 *********************************************************************/
 extern bool APIHelp_IsErrorOccur;
 extern XLONG APIHelp_dwErrorCode;
+
+#endif //PCH_H

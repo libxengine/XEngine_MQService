@@ -11,7 +11,6 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 #endif
-#endif //PCH_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,3 +47,4 @@ extern XLONG MemoryCache_dwErrorCode;
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_DataBase.lib")
 #endif
+#endif //PCH_H

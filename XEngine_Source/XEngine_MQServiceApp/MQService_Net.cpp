@@ -56,7 +56,7 @@ bool XCALLBACK MessageQueue_Callback_HttpLogin(LPCXSTR lpszClientAddr, XSOCKET h
 }
 void XCALLBACK MessageQueue_Callback_HttpRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
-	if (!HttpProtocol_Server_InserQueueEx(xhHTTPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	if (!HttpProtocol_Server_InsertQueueEx(xhHTTPPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("投递HTTP数据包到消息队列失败，错误：%lX"), HttpProtocol_GetLastError());
 		return;
@@ -148,8 +148,7 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 		}
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("MQTT客户端离开，MQTT客户端地址：%s，心跳标记:%d"), lpszClientAddr, bHeart);
 	}
-	XENGINE_PROTOCOL_USERINFO st_UserInfo;
-	memset(&st_UserInfo, '\0', sizeof(XENGINE_PROTOCOL_USERINFO));
+	XENGINE_PROTOCOL_USERINFO st_UserInfo = {};
     if (SessionModule_Client_GetUser(lpszClientAddr, st_UserInfo.tszUserName))
     {
         if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassLogout) > 0)
@@ -185,8 +184,8 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 		{
 			Session_Token_Delete(xhToken);
 		}
+		SessionModule_Client_Delete(lpszClientAddr);
     }
-    SessionModule_Client_Delete(lpszClientAddr);
 }
 //////////////////////////////////////////////////////////////////////////
 bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto, XENGINE_PROTOCOL_MSGATTR* pSt_MSGAttr, LPCXSTR lpszUserName)

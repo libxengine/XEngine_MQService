@@ -53,6 +53,10 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 	{
 		lpszClientType = _X("WEBSOCKET");
 	}
+	else if (XENGINE_MQAPP_NETTYPE_HTTP == nNetType)
+	{
+		lpszClientType = _X("HTTP");
+	}
 	else
 	{
 		lpszClientType = _X("MQTT");
@@ -180,9 +184,7 @@ bool MessageQueue_TCP_Handle(XENGINE_PROTOCOLHDR* pSt_ProtocolHdr, LPCXSTR lpszC
 			//是否需要通知
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassLogout) > 0)
 			{
-				int nSDLen = 0;
 				int nHTTPCode = 0;
-				XCHAR tszSDBuffer[1024] = {};
 				XCLIENT_APIHTTP st_HTTPParament = {};
 				XENGINE_PROTOCOL_USERAUTH st_ProtocolAuth = {};
 

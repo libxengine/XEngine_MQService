@@ -12,7 +12,6 @@
 #include "framework.h"
 #include <tchar.h>
 #endif
-#endif //PCH_H
 #include <string.h>
 #include <memory>
 #include <string>
@@ -46,3 +45,4 @@ extern XLONG Session_dwErrorCode;
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #endif
+#endif //PCH_H

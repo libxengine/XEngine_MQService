@@ -5,6 +5,10 @@ on:
     branches: 
       - master
   
+permissions:
+  contents: write
+  actions: read
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,12 +16,12 @@ jobs:
     steps:
         # 检出代码并包含标签
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0 
 
       - name: Download ubuntu build
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: Ubuntu_build.yml
           workflow_conclusion: success
@@ -25,17 +29,8 @@ jobs:
           skip_unpack: true
           if_no_artifact_found: fail
           path: ./XRelease/
-      - name: Download Mint build
-        uses: dawidd6/action-download-artifact@v21
-        with:
-          workflow: Mintbuild.yml
-          workflow_conclusion: success
-          check_artifacts: false
-          skip_unpack: true
-          if_no_artifact_found: fail
-          path: ./XRelease/
       - name: Download fedora build 
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: fedora_build.yml
           workflow_conclusion: success
@@ -44,7 +39,7 @@ jobs:
           if_no_artifact_found: fail
           path: ./XRelease/
       - name: Download debian build 
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: debian_build.yml
           workflow_conclusion: success
@@ -53,7 +48,7 @@ jobs:
           if_no_artifact_found: fail
           path: ./XRelease/
       - name: Download Rockylinux 
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: Rocky_build.yml
           workflow_conclusion: success
@@ -62,7 +57,7 @@ jobs:
           if_no_artifact_found: fail
           path: ./XRelease/
       - name: Download Alma 
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: Alma_build.yml
           workflow_conclusion: success
@@ -70,8 +65,17 @@ jobs:
           skip_unpack: true
           if_no_artifact_found: fail
           path: ./XRelease/
+      - name: Download opensuse 
+        uses: dawidd6/action-download-artifact@v24
+        with:
+          workflow: suse_build.yml
+          workflow_conclusion: success
+          check_artifacts: false
+          skip_unpack: true
+          if_no_artifact_found: fail
+          path: ./XRelease/
       - name: Download macbuild
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: macbuild.yml
           workflow_conclusion: success
@@ -80,7 +84,7 @@ jobs:
           if_no_artifact_found: fail
           path: ./XRelease/
       - name: Download msbuild
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         with:
           workflow: msbuild.yml
           workflow_conclusion: success
