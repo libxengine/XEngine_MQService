@@ -1,3 +1,26 @@
+XEngine_MQService V3.21.0.1001
+
+ci:增加opensuse 和 fedora 44系统支持
+ci:更新所有依赖到最新版本
+ci:删除了centos和Mint系统编译
+更新:vs c++版本到20
+修改:http 插入 api名称匹配
+修改:消息get和post http api 支持
+修改:注册和删除不在需要token
+修改:启动参数问题
+修正:codeql 扫描问题
+
+ci:added fedora arm and 44 and opensuse support
+ci:update to last version
+ci:delete centos and mint build
+update:depend library
+update:vs c++ version to c++20
+modify:http insert api match with last version
+modify:get and post message for http api support
+modify:register and delete does not need token
+modify:Potential fix for code scanning alert no
+fixed:code ql scan problem
+======================================================================================
 XEngine_MQService V3.20.0.1001
 
 ci:更新了CI版本库
