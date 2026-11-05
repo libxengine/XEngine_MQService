@@ -13,7 +13,6 @@
 *********************************************************************/
 CDBModule_MQUser::CDBModule_MQUser()
 {
-    xhDBSQL = 0;
 }
 CDBModule_MQUser::~CDBModule_MQUser()
 {
@@ -169,12 +168,10 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 		}
 	}
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-
-	XCHAR tszSQLStatement[1024];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[1024] = {};
 
 	if (_tcsxlen(pSt_UserInfo->tszUserPass) > 0)
 	{
@@ -184,7 +181,7 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 	{
 		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo` WHERE tszUserName = '%s'"), pSt_UserInfo->tszUserName);
 	}
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
@@ -196,7 +193,6 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return false;
 	}
-	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 	if (NULL != pptszResult[3])
 	{
 		_tcsxcpy(pSt_UserInfo->tszEMailAddr, pptszResult[3]);
@@ -225,7 +221,7 @@ bool CDBModule_MQUser::DBModule_MQUser_UserQuery(XENGINE_PROTOCOL_USERINFO* pSt_
 	{
 		_tcsxcpy(pSt_UserInfo->tszCreateTime, pptszResult[9]);
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 
 	if (m_bMemoryQuery)
 	{
@@ -344,15 +340,13 @@ bool CDBModule_MQUser::DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** ppp
 	DBModule_IsErrorOccur = false;
 
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-
-	XCHAR tszSQLStatement[256];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[256] = {};
 
 	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserInfo`"));
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
@@ -364,50 +358,60 @@ bool CDBModule_MQUser::DBModule_MQUser_UserList(XENGINE_PROTOCOL_USERINFO*** ppp
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return false;
 	}
-	*pInt_ListCount = (int)nllLine;
-	BaseLib_Memory_Malloc((XPPPMEM)pppSt_UserInfo, (int)nllLine, sizeof(XENGINE_PROTOCOL_USERINFO));
-	for (__int64u i = 0; i < nllLine; i++)
-	{
-		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
+	*pInt_ListCount = nllLine;
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_UserInfo, nllLine, sizeof(XENGINE_PROTOCOL_USERINFO));
 
-		if (NULL != pptszResult[1])
+	int nFieldNumber = nllRow;
+	for (int i = 0; i < nllLine; i++)
+	{
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserName, pptszResult[1]);
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserName, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[2])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserPass, pptszResult[2]);
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszUserPass, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[3])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserInfo)[i]->tszEMailAddr, pptszResult[3]);
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszEMailAddr, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[4])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_UserInfo)[i]->nPhoneNumber = _ttxoll(pptszResult[4]);
+			(*pppSt_UserInfo)[i]->nPhoneNumber = _ttxoll(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[5])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_UserInfo)[i]->nIDNumber = _ttxoll(pptszResult[5]);
+			(*pppSt_UserInfo)[i]->nIDNumber = _ttxoll(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[6])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_UserInfo)[i]->nUserState = _ttxoi(pptszResult[6]);
+			(*pppSt_UserInfo)[i]->nUserState = _ttxoi(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[7])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_UserInfo)[i]->nUserLevel = _ttxoi(pptszResult[7]);
+			(*pppSt_UserInfo)[i]->nUserLevel = _ttxoi(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[8])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserInfo)[i]->tszLoginTime, pptszResult[8]);
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszLoginTime, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[9])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserInfo)[i]->tszCreateTime, pptszResult[9]);
+			_tcsxcpy((*pppSt_UserInfo)[i]->tszCreateTime, pptszResult[nFieldNumber]);
 		}
+		nFieldNumber++;
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -478,15 +482,13 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 		return false;
 	}
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-
-	XCHAR tszSQLStatement[1024];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[1024] = {};
 	//名称为,消息名为必填
 	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyUser = '%s' AND tszKeyName = '%s'"), pSt_UserKey->tszUserName, pSt_UserKey->tszKeyName);
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
@@ -498,7 +500,6 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_EMPTY;
 		return false;
 	}
-	XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 	if (NULL != pptszResult[3])
 	{
 		pSt_UserKey->nKeySerial = _ttxoll(pptszResult[3]);
@@ -511,7 +512,7 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyQuery(XENGINE_DBUSERKEY* pSt_UserKey)
 	{
 		_tcsxcpy(pSt_UserKey->tszCreateTime, pptszResult[5]);
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 	return true;
 }
 /********************************************************************
@@ -553,12 +554,10 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 		return false;
 	}
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-
-	XCHAR tszSQLStatement[1024];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[1024] = {};
 	//名称为,消息名为必填
 	if (NULL != lpszUser && _tcsxlen(lpszKeyName) > 0)
 	{
@@ -573,7 +572,7 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 		_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserKey` WHERE tszKeyName = '%s'"), lpszKeyName);
 	}
 
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
@@ -587,32 +586,38 @@ bool CDBModule_MQUser::DBModule_MQUser_KeyList(LPCXSTR lpszUser, LPCXSTR lpszKey
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_Memory_Malloc((XPPPMEM)pppSt_UserKey, (int)nllLine, sizeof(XENGINE_DBUSERKEY));
-	for (__int64u i = 0; i < nllLine; i++)
-	{
-		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
 
-		if (NULL != pptszResult[1])
+	int nFieldNumber = nllRow;
+	for (int i = 0; i < nllLine; i++)
+	{
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserKey)[i]->tszUserName, pptszResult[1]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszUserName, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[2])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserKey)[i]->tszKeyName, pptszResult[2]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszKeyName, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[3])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_UserKey)[i]->nKeySerial = _ttxoll(pptszResult[3]);
+			(*pppSt_UserKey)[i]->nKeySerial = _ttxoll(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[4])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserKey)[i]->tszUPTime, pptszResult[4]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszUPTime, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[5])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[5]);
+			_tcsxcpy((*pppSt_UserKey)[i]->tszCreateTime, pptszResult[nFieldNumber]);
 		}
+		nFieldNumber++;
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 	return true;
 }
 /********************************************************************
@@ -798,19 +803,18 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	DBModule_IsErrorOccur = false;
 
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-	XCHAR tszSQLStatement[1024];
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[1024] = {};
 
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
 #ifdef _MSC_BUILD
 	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %lld AND bActive = 0"), time(NULL));
 #else
 	_xstprintf(tszSQLStatement, _X("SELECT * FROM `UserTime` WHERE nIDTime <= %ld AND bActive = 0"), time(NULL));
 #endif
 
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
@@ -818,31 +822,37 @@ bool CDBModule_MQUser::DBModule_MQUser_TimeQuery(XENGINE_DBTIMERELEASE*** pppSt_
 	}
 	*pInt_ListCount = (int)nllLine;
 	BaseLib_Memory_Malloc((XPPPMEM)pppSt_DBInfo, *pInt_ListCount, sizeof(XENGINE_DBTIMERELEASE));
-	for (__int64u i = 0; i < nllLine; i++)
+
+	int nFieldNumber = nllRow;
+	for (int i = 0; i < nllLine; i++)
 	{
-		XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBSQL, xhTable);
-		if (NULL != pptszResult[0])
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_DBInfo)[i]->tszQueueName, pptszResult[0]);
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszQueueName, pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[1])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_DBInfo)[i]->nIDMsg = _ttxoll(pptszResult[1]);
+			(*pppSt_DBInfo)[i]->nIDMsg = _ttxoll(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[2])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_DBInfo)[i]->nIDTime = _ttxoll(pptszResult[2]);
+			(*pppSt_DBInfo)[i]->nIDTime = _ttxoll(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[3])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			(*pppSt_DBInfo)[i]->bActive = _ttxoi(pptszResult[3]);
+			(*pppSt_DBInfo)[i]->bActive = _ttxoi(pptszResult[nFieldNumber]);
 		}
-		if (NULL != pptszResult[4])
+		nFieldNumber++;
+		if (NULL != pptszResult[nFieldNumber])
 		{
-			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[4]);
+			_tcsxcpy((*pppSt_DBInfo)[i]->tszCreateTime, pptszResult[nFieldNumber]);
 		}
+		nFieldNumber++;
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 
 	return true;
 }
@@ -1050,23 +1060,15 @@ bool CDBModule_MQUser::DBModule_MQUser_OwnerDelete(XENGINE_DBTOPICOWNER* pSt_DBO
 		DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_PARAMENT;
 		return false;
 	}
-	__int64u nAffectRow = 0;
-	XCHAR tszSQLStatement[10240];
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	XCHAR tszSQLStatement[10240] = {};
 
 	if ((_tcsxlen(pSt_DBOwner->tszUserName) > 0) && (_tcsxlen(pSt_DBOwner->tszQueueName) > 0))
 	{
 		_xstprintf(tszSQLStatement, _X("DELETE FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
-		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement, &nAffectRow))
+		if (!DataBase_MySQL_Execute(xhDBSQL, tszSQLStatement))
 		{
 			DBModule_IsErrorOccur = true;
 			DBModule_dwErrorCode = DataBase_GetLastError();
-			return false;
-		}
-		if (nAffectRow <= 0)
-		{
-			DBModule_IsErrorOccur = true;
-			DBModule_dwErrorCode = ERROR_XENGINE_MQCORE_DATABASE_NOTFOUND;
 			return false;
 		}
 	}
@@ -1111,22 +1113,20 @@ bool CDBModule_MQUser::DBModule_MQUser_OwnerQuery(XENGINE_DBTOPICOWNER* pSt_DBOw
 	DBModule_IsErrorOccur = false;
 
 	//查询
-	XNETHANDLE xhTable = 0;
-	__int64u nllLine = 0;
-	__int64u nllRow = 0;
-	XCHAR tszSQLStatement[1024];
-
-	memset(tszSQLStatement, '\0', sizeof(tszSQLStatement));
+	int nllLine = 0;
+	int nllRow = 0;
+	XCHAR** pptszResult;
+	XCHAR tszSQLStatement[1024] = {};
 
 	_xstprintf(tszSQLStatement, _X("SELECT * FROM `KeyOwner` WHERE tszUserName = '%s' AND tszKeyName = '%s'"), pSt_DBOwner->tszUserName, pSt_DBOwner->tszQueueName);
 
-	if (!DataBase_MySQL_ExecuteQuery(xhDBSQL, &xhTable, tszSQLStatement, &nllLine, &nllRow))
+	if (!DataBase_MySQL_ExecQuery(xhDBSQL, tszSQLStatement, &pptszResult, &nllLine, &nllRow))
 	{
 		DBModule_IsErrorOccur = true;
 		DBModule_dwErrorCode = DataBase_GetLastError();
 		return false;
 	}
-	DataBase_MySQL_FreeResult(xhDBSQL, xhTable);
+	DataBase_MySQL_FreeResult(pptszResult, nllLine * nllRow);
 	if (nllLine <= 0)
 	{
 		DBModule_IsErrorOccur = true;
