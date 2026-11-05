@@ -20,8 +20,10 @@ jobs:
         include:
           - os: ubuntu-22.04
           - os: ubuntu-24.04
+          - os: ubuntu-26.04
           - os: ubuntu-22.04-arm
           - os: ubuntu-24.04-arm
+          - os: ubuntu-26.04-arm
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -37,7 +39,17 @@ jobs:
 
       - name: Set TERM variable
         run: echo "TERM=xterm" >> $GITHUB_ENV
-        
+
+      - name: Set up Dependency ubuntu26.04 x86-64 Environment
+        if: matrix.os == 'ubuntu-26.04'
+        run: |
+            latest_tag=$(curl -s https://api.github.com/repos/libxengine/libxengine/releases/latest | jq -r .tag_name)
+            wget https://github.com/libxengine/libxengine/releases/download/$latest_tag/XEngine_UBuntu_26.04_x86-64.zip
+            unzip ./XEngine_UBuntu_26.04_x86-64.zip -d ./XEngine_UBuntu_26.04_x86-64
+            cd XEngine_UBuntu_26.04_x86-64
+            
+            chmod 777 *
+            sudo ./XEngine_LINEnv.sh -i 3        
       - name: Set up Dependency ubuntu24.04 x86-64 Environment
         if: matrix.os == 'ubuntu-24.04'
         run: |
@@ -78,6 +90,16 @@ jobs:
             
             chmod 777 *
             sudo ./XEngine_LINEnv.sh -i 3
+      - name: Set up Dependency ubuntu26.04 arm Environment
+        if: matrix.os == 'ubuntu-26.04-arm'
+        run: |
+            latest_tag=$(curl -s https://api.github.com/repos/libxengine/libxengine/releases/latest | jq -r .tag_name)
+            wget https://github.com/libxengine/libxengine/releases/download/$latest_tag/XEngine_UBuntu_26.04_Arm64.zip
+            unzip ./XEngine_UBuntu_26.04_Arm64.zip -d ./XEngine_UBuntu_26.04_Arm64
+            cd XEngine_UBuntu_26.04_Arm64
+            
+            chmod 777 *
+            sudo ./XEngine_LINEnv.sh -i 3
 
       - name: make
         run: | 
@@ -109,6 +131,13 @@ jobs:
           name: XEngine_MQServiceApp-Ubuntu_24.04_x86_64
           path: XEngine_Release/
           retention-days: 1
+      - name: Upload folder as artifact with ubuntu26.04 x86-64
+        if: matrix.os == 'ubuntu-26.04'
+        uses: actions/upload-artifact@v7
+        with:
+          name: XEngine_MQServiceApp-Ubuntu_26.04_x86_64
+          path: XEngine_Release/
+          retention-days: 1    
       - name: Upload folder as artifact with ubuntu22.04 Arm64
         if: matrix.os == 'ubuntu-22.04-arm'
         uses: actions/upload-artifact@v7
@@ -121,5 +150,12 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: XEngine_MQServiceApp-Ubuntu_24.04_Arm64
+          path: XEngine_Release/
+          retention-days: 1
+      - name: Upload folder as artifact with ubuntu26.04 Arm64
+        if: matrix.os == 'ubuntu-26.04-arm'
+        uses: actions/upload-artifact@v7
+        with:
+          name: XEngine_MQServiceApp-Ubuntu_26.04_Arm64
           path: XEngine_Release/
           retention-days: 1
