@@ -867,7 +867,9 @@ bool CProtocolModule_Packet::ProtocolModule_Packet_MQTTCommon(XENGINE_PROTOCOLHD
 		}
 		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS2 == pSt_ProtocolHdr->byIsReply)
 		{
-
+			//需要回复
+			MQTTProtocol_Packet_REPPublish(tszRVBuffer, &nRVLen, pSt_ProtocolHdr->wPacketSerial, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBREC);
+			MQTTProtocol_Packet_Header(ptszMsgBuffer, pInt_MsgLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBREC, tszRVBuffer, nRVLen, 0x02);
 		}
 	}
 	else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_MSGNOTIFY == pSt_ProtocolHdr->unOperatorCode)
