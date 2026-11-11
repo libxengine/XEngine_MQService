@@ -33,7 +33,7 @@
         "SQLAddr": "118.25.14.242",
         "SQLPort": 3306,
         "SQLUser": "root",
-        "SQLPass": "123"
+        "SQLPass": "123123Qyt!"
     },
     "XPass": {
         "nTimeout": 2,
@@ -60,10 +60,17 @@
             "tszEMailSubject": "XEngine MessageQueue Notify",
             "tszServiceAddr": "smtp://smtp.163.com",
             "tszUser": "ggqytgodlove@163.com",
-            "tszPass": "1"
+            "tszPass": "STZsBi3uuJvWsWL3"
         },
         "SMSNotify": {
-            "bEnable": false
+            "bEnable": false,
+            "tszServiceAddr": "https://sms.tencentcloudapi.com",
+            "tszSecretID": "123",
+            "tszSecretKey": "321",
+            "tszSignName": "XEngine",
+            "tszTemplateID": "123456",
+            "tszRegionStr": "ap-guangzhou",
+            "tszAPPID": "123"
         }
     },
     "XReport": {

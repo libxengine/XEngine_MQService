@@ -90,6 +90,13 @@ typedef struct
         }st_EMailNotify;
         struct  
         {
+            XCHAR tszServiceAddr[XPATH_MIN];
+            XCHAR tszSecretID[XPATH_MIN];
+            XCHAR tszSecretKey[XPATH_MIN];
+			XCHAR tszRegionStr[XPATH_MIN];
+            XCHAR tszAPPID[XPATH_MIN];
+            XCHAR tszSignName[XPATH_MIN];
+			XCHAR tszTemplateID[XPATH_MIN];
             bool bEnable;
         }st_SMSNotify;
     }st_XNotify;

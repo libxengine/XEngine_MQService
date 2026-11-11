@@ -190,6 +190,13 @@ bool CConfig_Json::Config_Json_File(LPCXSTR lpszConfigFile,XENGINE_SERVERCONFIG 
 	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_EMailNotify.tszPass, st_JsonEMailNotify["tszPass"].asCString());
 
 	pSt_ServerConfig->st_XNotify.st_SMSNotify.bEnable = st_JsonSMSNotify["bEnable"].asBool();
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszAPPID, st_JsonSMSNotify["tszAPPID"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszServiceAddr, st_JsonSMSNotify["tszServiceAddr"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszSecretID, st_JsonSMSNotify["tszSecretID"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszSecretKey, st_JsonSMSNotify["tszSecretKey"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszRegionStr, st_JsonSMSNotify["tszRegionStr"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszSignName, st_JsonSMSNotify["tszSignName"].asCString());
+	_tcsxcpy(pSt_ServerConfig->st_XNotify.st_SMSNotify.tszTemplateID, st_JsonSMSNotify["tszTemplateID"].asCString());
 
 	_tcsxcpy(pSt_ServerConfig->st_XVerification.tszAuthPass, st_JsonXVerification["tszAuthPass"].asCString());
 	if (st_JsonRoot["XReport"].empty() || (3 != st_JsonRoot["XReport"].size()))

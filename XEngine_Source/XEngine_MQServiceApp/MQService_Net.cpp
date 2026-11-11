@@ -258,6 +258,23 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 				return false;
 			}
 		}
+		if (pSt_MSGAttr->byAttrPhone)
+		{
+			if (st_UserInfo.nPhoneNumber <= 0)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,用户名:%s 请求消息通知失败,通知邮件地址不正确,错误码:%lX"), lpszClientAddr, lpszUserName, APIAddr_GetLastError());
+				return false;
+			}
+			XCHAR** pptszPhoneNumber = NULL;
+			BaseLib_Memory_Malloc((XPPPMEM)&pptszPhoneNumber, 1, XPATH_MIN);
+
+			_tcsxcpy(pptszPhoneNumber[0], std::to_string(st_UserInfo.nPhoneNumber).c_str());
+			if (!MSGNotify_SMS_SendTencent(st_ServiceCfg.st_XNotify.st_SMSNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretKey, st_ServiceCfg.st_XNotify.st_SMSNotify.tszRegionStr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszAPPID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSignName, st_ServiceCfg.st_XNotify.st_SMSNotify.tszTemplateID, &pptszPhoneNumber, 1))
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Phone地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+				return false;
+			}
+		}
 	}
 	
     return true;
