@@ -190,9 +190,20 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
 //////////////////////////////////////////////////////////////////////////
 bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto, XENGINE_PROTOCOL_MSGATTR* pSt_MSGAttr, LPCXSTR lpszUserName)
 {
+	CMQService_MemoryPool m_MQMemoryCodec(XENGINE_MEMORY_SIZE_MAX);
+
+	if (st_ServiceCfg.st_XCryption.bEnable)
+	{
+		Cryption_Api_CryptEncodec((LPCXBTR)lpszMsgBuffer, (XBYTE *)m_MQMemoryCodec.get(), &nMsgLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+	}
+	else
+	{
+		memcpy(m_MQMemoryCodec.get(), lpszMsgBuffer, nMsgLen);
+	}
+
 	if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
 	{
-		if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, m_MQMemoryCodec.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给TCP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
@@ -208,7 +219,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 		st_HTTPHdr.bIsClose = true;
 		_tcsxcpy(st_HTTPHdr.tszMimeType, _X("json"));
 
-		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, m_MQMemoryPool.get(), &nSDLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
+		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, m_MQMemoryPool.get(), &nSDLen, &st_HTTPHdr, m_MQMemoryCodec.get(), nMsgLen);
 		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, m_MQMemoryPool.get(), nSDLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
@@ -218,7 +229,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 	else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
 	{
 		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
-		RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
+		RfcComponents_WSCodec_EncodeMsg(m_MQMemoryCodec.get(), m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
 		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, m_MQMemoryPool.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
@@ -227,7 +238,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 	}
 	else if (XENGINE_MQAPP_NETTYPE_MQTT == nIPProto)
 	{
-		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, m_MQMemoryCodec.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给MQTT客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
