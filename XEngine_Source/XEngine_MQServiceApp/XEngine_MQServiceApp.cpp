@@ -507,6 +507,7 @@ int main(int argc, char** argv)
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_WARN, _X("启动服务中，信息报告给API服务器没有启用"));
 	}
 #endif
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，电子邮件通知标识:%d，短信通知标识:%d"), st_ServiceCfg.st_XNotify.st_EMailNotify.bEnable, st_ServiceCfg.st_XNotify.st_SMSNotify.bEnable);
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("所有服务成功启动，服务运行中，XEngine版本:%s%s,发行版本次数:%d,当前运行版本：%s。。。"), BaseLib_Version_XNumberStr(), BaseLib_Version_XTypeStr(), st_ServiceCfg.st_XVer.pStl_ListStorage->size(), st_ServiceCfg.st_XVer.pStl_ListStorage->front().c_str());
 
 	while (true)

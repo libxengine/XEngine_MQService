@@ -245,7 +245,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			return false;
 		}
 		//是否需要邮件通知
-		if (pSt_MSGAttr->byAttrEMail)
+		if (pSt_MSGAttr->byAttrEMail && st_ServiceCfg.st_XNotify.st_EMailNotify.bEnable)
 		{
 			if (!APIAddr_EMail_IsEMailAddr(st_UserInfo.tszEMailAddr))
 			{
@@ -254,11 +254,11 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			}
 			if (!MSGNotify_EMail_Send(st_ServiceCfg.st_XNotify.st_EMailNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszUser, st_ServiceCfg.st_XNotify.st_EMailNotify.tszPass, lpszClientAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszEMailSubject, lpszMsgBuffer))
 			{
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, st_UserInfo.tszEMailAddr, MSGNotify_GetLastError());
 				return false;
 			}
 		}
-		if (pSt_MSGAttr->byAttrPhone)
+		if (pSt_MSGAttr->byAttrPhone && st_ServiceCfg.st_XNotify.st_SMSNotify.bEnable)
 		{
 			if (st_UserInfo.nPhoneNumber <= 0)
 			{
@@ -271,9 +271,11 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			_tcsxcpy(pptszPhoneNumber[0], std::to_string(st_UserInfo.nPhoneNumber).c_str());
 			if (!MSGNotify_SMS_SendTencent(st_ServiceCfg.st_XNotify.st_SMSNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretKey, st_ServiceCfg.st_XNotify.st_SMSNotify.tszRegionStr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszAPPID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSignName, st_ServiceCfg.st_XNotify.st_SMSNotify.tszTemplateID, &pptszPhoneNumber, 1))
 			{
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Phone地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+				BaseLib_Memory_Free((XPPPMEM)&pptszPhoneNumber, 1);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,发送数据给Phone地址:%s 失败,错误码:%lX"), lpszClientAddr, pptszPhoneNumber[0], MSGNotify_GetLastError());
 				return false;
 			}
+			BaseLib_Memory_Free((XPPPMEM)&pptszPhoneNumber, 1);
 		}
 	}
 	
