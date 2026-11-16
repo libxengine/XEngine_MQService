@@ -762,7 +762,7 @@ bool CDBModule_MQData::DBModule_MQData_ShowTable(XCHAR*** pppszTableName, int* p
 	BaseLib_Memory_Malloc((XPPPMEM)pppszTableName, (int)nllLine, sizeof(XENGINE_DBMESSAGEQUEUE));
 
 	int nFieldNumber = nllRow;
-	for (__int64u i = 0; i < nllLine; i++)
+	for (int i = 0; i < nllLine; i++)
 	{
 		if (NULL != pptszResult[nFieldNumber])
 		{
