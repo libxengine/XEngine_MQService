@@ -1,3 +1,25 @@
+XEngine_MQService V3.22.0.1001
+
+ci:增加了ubuntu26.04和freebsd系统支持
+ci:删除了没有使用的clone代码以及删除mac intel版本构建
+增加:mqtt qos2响应
+增加:sms短信通知
+更新:匹配最新的xengine框架函数
+优化:注册和删除用户操作,现在在restful请求后执行数据库
+修改:发送消息加密支持
+修正:投递消息用户列表错误问题以及移除了向所有用户发送即时消息的功能。
+修正:vs运行时库错误
+
+ci:added ubuntu 26.04 and freebsd 
+ci:delete useless git clone and mac intel build
+added:qos2 reply for mqtt
+added:sms notify support
+update:match xengine last version for sql functions
+improved:register and delete user process,db operator after restful 
+modify:send message crypt support
+fixed:where the user list for sending instant messages was retrieved incorrectly, and removed the feature for sending instant messages to all users.
+fixed:crt runtime error on vs
+======================================================================================
 XEngine_MQService V3.21.0.1001
 
 ci:增加opensuse 和 fedora 44系统支持

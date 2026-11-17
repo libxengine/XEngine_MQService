@@ -188,16 +188,39 @@ void XEngine_MQXService_Close(LPCXSTR lpszClientAddr, int nIPProto, bool bHeart)
     }
 }
 //////////////////////////////////////////////////////////////////////////
+// 发送统一出口：
+// 1) 根据配置决定是否对业务负载进行对称加密；
+// 2) 按客户端网络类型分发到底层发送实现；
+// 3) 任一底层发送失败立即返回 false，并记录详细日志。
+// 参数说明：
+// - lpszClientAddr: 客户端地址/会话标识；
+// - lpszMsgBuffer/nMsgLen: 待发送原始消息及长度；
+// - nIPProto: 传输协议类型（TCP/HTTP/...）；
+// - pSt_MSGAttr/lpszUserName: 协议分支使用的附加信息。
 bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nIPProto, XENGINE_PROTOCOL_MSGATTR* pSt_MSGAttr, LPCXSTR lpszUserName)
 {
+	CMQService_MemoryPool m_MQMemoryCodec(XENGINE_MEMORY_SIZE_MAX);
+
+	// 统一编码阶段：开启加密时写入加密后的负载；否则复制原始数据。
+	if (st_ServiceCfg.st_XCryption.bEnable)
+	{
+		Cryption_Api_CryptEncodec((LPCXBTR)lpszMsgBuffer, (XBYTE *)m_MQMemoryCodec.get(), &nMsgLen, st_ServiceCfg.st_XCryption.tszPassword, (ENUM_XENGINE_CRYPTION_SYMMETRIC)st_ServiceCfg.st_XCryption.nCryptionType);
+	}
+	else
+	{
+		memcpy(m_MQMemoryCodec.get(), lpszMsgBuffer, nMsgLen);
+	}
+
+	// TCP 分支：直接通过 TCP 核心发送已编码数据。
 	if (XENGINE_MQAPP_NETTYPE_TCP == nIPProto)
 	{
-		if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		if (!NetCore_TCPXCore_SendEx(xhTCPSocket, lpszClientAddr, m_MQMemoryCodec.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给TCP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
 		}
 	}
+	// HTTP 分支：进入 HTTP 响应发送流程（使用消息属性构造响应上下文）。
 	else if (XENGINE_MQAPP_NETTYPE_HTTP == nIPProto)
 	{
 		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
@@ -208,7 +231,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 		st_HTTPHdr.bIsClose = true;
 		_tcsxcpy(st_HTTPHdr.tszMimeType, _X("json"));
 
-		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, m_MQMemoryPool.get(), &nSDLen, &st_HTTPHdr, lpszMsgBuffer, nMsgLen);
+		HttpProtocol_Server_SendMsgEx(xhHTTPPacket, m_MQMemoryPool.get(), &nSDLen, &st_HTTPHdr, m_MQMemoryCodec.get(), nMsgLen);
 		if (!NetCore_TCPXCore_SendEx(xhHTTPSocket, lpszClientAddr, m_MQMemoryPool.get(), nSDLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给HTTP客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
@@ -218,7 +241,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 	else if (XENGINE_MQAPP_NETTYPE_WEBSOCKET == nIPProto)
 	{
 		CMQService_MemoryPool m_MQMemoryPool(XENGINE_MEMORY_SIZE_MAX);
-		RfcComponents_WSCodec_EncodeMsg(lpszMsgBuffer, m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
+		RfcComponents_WSCodec_EncodeMsg(m_MQMemoryCodec.get(), m_MQMemoryPool.get(), &nMsgLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT);
 		if (!NetCore_TCPXCore_SendEx(xhWSSocket, lpszClientAddr, m_MQMemoryPool.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给Websocket客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
@@ -227,7 +250,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 	}
 	else if (XENGINE_MQAPP_NETTYPE_MQTT == nIPProto)
 	{
-		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, lpszMsgBuffer, nMsgLen))
+		if (!NetCore_TCPXCore_SendEx(xhMQTTSocket, lpszClientAddr, m_MQMemoryCodec.get(), nMsgLen))
 		{
 			XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给MQTT客户端：%s，失败，错误：%lX"), lpszClientAddr, NetCore_GetLastError());
 			return false;
@@ -245,7 +268,7 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			return false;
 		}
 		//是否需要邮件通知
-		if (pSt_MSGAttr->byAttrEMail)
+		if (pSt_MSGAttr->byAttrEMail && st_ServiceCfg.st_XNotify.st_EMailNotify.bEnable)
 		{
 			if (!APIAddr_EMail_IsEMailAddr(st_UserInfo.tszEMailAddr))
 			{
@@ -254,9 +277,28 @@ bool XEngine_MQXService_Send(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 			}
 			if (!MSGNotify_EMail_Send(st_ServiceCfg.st_XNotify.st_EMailNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszUser, st_ServiceCfg.st_XNotify.st_EMailNotify.tszPass, lpszClientAddr, st_ServiceCfg.st_XNotify.st_EMailNotify.tszEMailSubject, lpszMsgBuffer))
 			{
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, MSGNotify_GetLastError());
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,发送数据给EMail地址:%s 失败,错误码:%lX"), lpszClientAddr, st_UserInfo.tszEMailAddr, MSGNotify_GetLastError());
 				return false;
 			}
+		}
+		if (pSt_MSGAttr->byAttrPhone && st_ServiceCfg.st_XNotify.st_SMSNotify.bEnable)
+		{
+			if (st_UserInfo.nPhoneNumber <= 0)
+			{
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,用户名:%s 请求消息通知失败,通知邮件地址不正确,错误码:%lX"), lpszClientAddr, lpszUserName, APIAddr_GetLastError());
+				return false;
+			}
+			XCHAR** pptszPhoneNumber = NULL;
+			BaseLib_Memory_Malloc((XPPPMEM)&pptszPhoneNumber, 1, XPATH_MIN);
+
+			_tcsxcpy(pptszPhoneNumber[0], std::to_string(st_UserInfo.nPhoneNumber).c_str());
+			if (!MSGNotify_SMS_SendTencent(st_ServiceCfg.st_XNotify.st_SMSNotify.tszServiceAddr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSecretKey, st_ServiceCfg.st_XNotify.st_SMSNotify.tszRegionStr, st_ServiceCfg.st_XNotify.st_SMSNotify.tszAPPID, st_ServiceCfg.st_XNotify.st_SMSNotify.tszSignName, st_ServiceCfg.st_XNotify.st_SMSNotify.tszTemplateID, &pptszPhoneNumber, 1))
+			{
+				BaseLib_Memory_Free((XPPPMEM)&pptszPhoneNumber, 1);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("客户端:%s,发送数据给Phone地址:%s 失败,错误码:%lX"), lpszClientAddr, pptszPhoneNumber[0], MSGNotify_GetLastError());
+				return false;
+			}
+			BaseLib_Memory_Free((XPPPMEM)&pptszPhoneNumber, 1);
 		}
 	}
 	
