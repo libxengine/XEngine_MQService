@@ -172,31 +172,29 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				return false;
 			}
 			st_UserInfo.nUserLevel = ENUM_XENGINE_PROTOCOLHDR_LEVEL_TYPE_USER;
-			if (!DBModule_MQUser_UserInsert(&st_UserInfo))
-			{
-				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("service is failure"));
-				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求用户注册失败,插入数据库失败,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
-				return false;
-			}
 			//是否需要代理通知
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassRegister) > 0)
 			{
 				int nHTTPCode = 0;
-				XCLIENT_APIHTTP st_HTTPParament;
-				memset(&st_HTTPParament, '\0', sizeof(XCLIENT_APIHTTP));
+				XCLIENT_APIHTTP st_HTTPParament = {};
 
 				st_HTTPParament.nTimeConnect = 2;
 				ProtocolModule_Packet_PassUser(&st_UserInfo, tszPKTBuffer, &nPKTLen, XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REQREGISTER);
 				APIClient_Http_Request(_X("POST"), st_ServiceCfg.st_XPass.tszPassRegister, tszPKTBuffer, &nHTTPCode, NULL, NULL, NULL, NULL, &st_HTTPParament);
 				if (200 != nHTTPCode)
 				{
-					DBModule_MQUser_UserDelete(&st_UserInfo); //删除
 					ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_APIREG, _X("service is failure"));
 					XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求远程注册失败,HTTPCode:%d"), lpszClientAddr, nHTTPCode);
 					return false;
 				}
+			}
+			if (!DBModule_MQUser_UserInsert(&st_UserInfo))
+			{
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_SERVICE, _X("service is failure"));
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求用户注册失败,插入数据库失败,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
+				return false;
 			}
 			//是否需要订阅公用消息队列
 			if (st_DBConfig.st_MQData.bCommSub)
@@ -226,13 +224,6 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求注册消息失败,负载内容错误:%s"), lpszClientAddr, lpszMsgBuffer);
 				return false;
 			}
-			if (!DBModule_MQUser_UserDelete(&st_UserInfo))
-			{
-				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_DELETE, _X("delete user failure"));
-				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
-				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求用户删除失败,删除数据库失败,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
-				return false;
-			}
 			if (_tcsxlen(st_ServiceCfg.st_XPass.tszPassUNReg) > 0)
 			{
 				int nHTTPCode = 0;
@@ -250,11 +241,15 @@ bool MessageQueue_Http_Handle(RFCCOMPONENTS_HTTP_REQPARAM* pSt_HTTPParam, LPCXST
 					XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求远程注销失败,错误:%lX,HTTPCode:%d"), lpszClientAddr, nHTTPCode);
 				}
 			}
-			XENGINE_DBUSERKEY st_UserKey;
-			XENGINE_DBTOPICOWNER st_DBOwner;
-
-			memset(&st_UserKey, '\0', sizeof(XENGINE_DBUSERKEY));
-			memset(&st_DBOwner, '\0', sizeof(XENGINE_DBTOPICOWNER));
+			if (!DBModule_MQUser_UserDelete(&st_UserInfo))
+			{
+				ProtocolModule_Packet_Http(tszPKTBuffer, &nPKTLen, ERROR_XENGINE_MESSAGE_HTTP_DELETE, _X("delete user failure"));
+				XEngine_MQXService_Send(lpszClientAddr, tszPKTBuffer, nPKTLen, XENGINE_MQAPP_NETTYPE_HTTP);
+				XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_ERROR, _X("HTTP客户端:%s,请求用户删除失败,删除数据库失败,错误:%lX"), lpszClientAddr, SessionModule_GetLastError());
+				return false;
+			}
+			XENGINE_DBUSERKEY st_UserKey = {};
+			XENGINE_DBTOPICOWNER st_DBOwner = {};
 
 			_tcsxcpy(st_UserKey.tszUserName, st_UserInfo.tszUserName);
 			_tcsxcpy(st_DBOwner.tszUserName, st_UserInfo.tszUserName);
