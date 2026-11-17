@@ -30,10 +30,10 @@
         "LogType": 17
     },
     "XSql": {
-        "SQLAddr": "118.25.14.242",
+        "SQLAddr": "127.0.0.1",
         "SQLPort": 3306,
         "SQLUser": "root",
-        "SQLPass": "123123Qyt!"
+        "SQLPass": "1"
     },
     "XPass": {
         "nTimeout": 2,
