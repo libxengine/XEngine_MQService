@@ -41,7 +41,7 @@ jobs:
             version: 12
           - arch: arm64
             runner: ubuntu-26.04-arm
-            platform: linux/arm64-arm
+            platform: linux/arm64
             artifact: Arm64
             name: trixie
             version: 13
